@@ -1,0 +1,592 @@
+diff --git a/main_slam.py b/main_slam.py
+index 093fd73..005596f 100755
+--- a/main_slam.py
++++ b/main_slam.py
+@@ -20,6 +20,7 @@
+ 
+ import pyslam  # first: sets the OpenMP thread settings before numpy/torch are imported
+ from pyslam.utilities.native_bundle_check import warn_if_native_modules_outdated
++from scripts.coursework_export_map import export_map_observations
+ 
+ if __name__ == "__main__":
+     warn_if_native_modules_outdated()  # before anything imports the native modules
+@@ -351,6 +352,7 @@ if __name__ == "__main__":
+         has_groundtruth and need_sim3_alignment(groundtruth)
+     )
+ 
++
+     camera = PinholeCamera(config)
+     if args.verbose:
+         Printer.green(f"Camera: {json.dumps(camera.to_json(), indent=4, cls=SerializableEnumEncoder)}")
+@@ -536,6 +538,7 @@ if __name__ == "__main__":
+         # wait for the viewer3D to be ready
+         viewer3D.wait_for_ready()
+ 
++
+     timer_main = TimerFps("Main", is_verbose=False)
+     timer_main.start()
+ 
+@@ -572,6 +575,8 @@ if __name__ == "__main__":
+ 
+     img_id = 0  # 210, 340, 400, 770   # you can start from a desired frame id if needed
+ 
++    tracking_times_ms = []
++
+     try:
+         while not is_viewer_closed:
+ 
+@@ -635,8 +640,10 @@ if __name__ == "__main__":
+                         # mask covers them only partly; --mask-dilation covers part of the rest, and
+                         # what is left is rarely matched, since the left keypoints on them are gone
+                         mask_right = mask if (mask is not None and img_right is not None) else None
+-                        slam.track(img, img_right, depth, img_id, timestamp, mask=mask, mask_right=mask_right)  # main SLAM function
+ 
++                        track_start = time.perf_counter()
++                        slam.track(img, img_right, depth, img_id, timestamp, mask=mask, mask_right=mask_right)  # main SLAM function
++                        tracking_times_ms.append((time.perf_counter() - track_start) * 1000.0)
+                         # the detections of this frame, lifted with its pose and depth (--detections)
+                         if saved_detections and slam.tracking.state == SlamState.OK and slam.tracking.cur_R is not None:
+                             Twc = np.eye(4)
+@@ -954,6 +961,10 @@ if __name__ == "__main__":
+             # the frames with a pose in the final trajectory: the trajectory errors are over these only
+             f.write(f"num_tracked_frames: {len(est_poses)}\n")
+             f.write(f"percent_tracked: {len(est_poses)/num_total_frames*100:.2f}\n")
++            if tracking_times_ms:
++                f.write(f"mean_tracking_ms: {np.mean(tracking_times_ms):.3f}\n")
++                f.write(f"median_tracking_ms: {np.median(tracking_times_ms):.3f}\n")
++                f.write(f"std_tracking_ms: {np.std(tracking_times_ms):.3f}\n")
+             if ate_rmse_as_tracked is not None:
+                 f.write(f"ate_rmse_relative_poses_as_tracked: {ate_rmse_as_tracked:.6f}\n")
+             f.write(f"playback_max_speed: {playback_throttle.speed_str(playback_throttle.max_speed)}\n")
+@@ -989,6 +1000,12 @@ if __name__ == "__main__":
+ 
+         evaluate_semantic_mapping(slam, dataset, metrics_save_dir)
+ 
++        if has_groundtruth:
++            export_map_observations(
++            slam,
++            os.path.join(metrics_save_dir, "map_observations.csv"),
++        )
++
+     except Exception as e:
+         print("Exception while computing metrics: ", e)
+         print(f"traceback: {traceback.format_exc()}")
+diff --git a/pyslam/evaluation/configs/coursework_replica_mono.json b/pyslam/evaluation/configs/coursework_replica_mono.json
+new file mode 100644
+index 0000000..ceda1bc
+--- /dev/null
++++ b/pyslam/evaluation/configs/coursework_replica_mono.json
+@@ -0,0 +1,26 @@
++{
++  "num_threads": 1,
++  "dataset_base_path": "data/replica",
++  "dataset_type": "REPLICA_DATASET",
++  "number_of_runs_per_dataset": 1,
++  "sensor_type": "mono",
++  "datasets": [
++    {
++      "name": "room0",
++      "settings_path": "settings/REPLICA.yaml",
++      "groundtruth_file": "auto"
++    }
++  ],
++  "presets": [
++    {
++      "name": "ORB2",
++      "custom_parameters": {
++        "settings": {
++          "FeatureTrackerConfig.name": "ORB2"
++        }
++      }
++    }
++  ],
++  "output_path": "replica_room0_mono",
++  "saved_trajectory_format_type": "kitti"
++}
+\ No newline at end of file
+diff --git a/pyslam/evaluation/configs/coursework_replica_rgbd.json b/pyslam/evaluation/configs/coursework_replica_rgbd.json
+new file mode 100644
+index 0000000..d18e551
+--- /dev/null
++++ b/pyslam/evaluation/configs/coursework_replica_rgbd.json
+@@ -0,0 +1,26 @@
++{
++  "num_threads": 1,
++  "dataset_base_path": "data/replica",
++  "dataset_type": "REPLICA_DATASET",
++  "number_of_runs_per_dataset": 1,
++  "sensor_type": "rgbd",
++  "datasets": [
++    {
++      "name": "room0",
++      "settings_path": "settings/REPLICA.yaml",
++      "groundtruth_file": "auto"
++    }
++  ],
++  "presets": [
++    {
++      "name": "ORB2",
++      "custom_parameters": {
++        "settings": {
++          "FeatureTrackerConfig.name": "ORB2"
++        }
++      }
++    }
++  ],
++  "output_path": "replica_room0_rgbd",
++  "saved_trajectory_format_type": "kitti"
++}
+diff --git a/scripts/coursework_export_map.py b/scripts/coursework_export_map.py
+new file mode 100644
+index 0000000..c2fb68f
+--- /dev/null
++++ b/scripts/coursework_export_map.py
+@@ -0,0 +1,53 @@
++
++import csv
++import numpy as np
++
++
++def export_map_observations(slam, output_path):
++    """Export map-point depths at their observed keyframe pixels."""
++
++    rows = []
++
++    for point in slam.map.get_points():
++        world_point = np.asarray(point.pt()).reshape(3)
++        point_id = int(point.id)
++
++        for keyframe, idx in point.observations():
++            if keyframe is None or keyframe.kps is None:
++                continue
++
++            idx = int(idx)
++            if idx < 0 or idx >= len(keyframe.kps):
++                continue
++
++            # World coordinates -> camera coordinates
++            Tcw = np.asarray(keyframe.pose())
++            camera_point = (
++                Tcw[:3, :3] @ world_point + Tcw[:3, 3]
++            )
++
++            z = float(camera_point[2])
++            if not np.isfinite(z) or z <= 0:
++                continue
++
++            u, v = keyframe.kps[idx][:2]
++
++            rows.append([
++                int(keyframe.id),
++                point_id,
++                float(u),
++                float(v),
++                z,
++            ])
++
++    with open(output_path, "w", newline="") as f:
++        writer = csv.writer(f)
++        writer.writerow([
++            "frame_id", "point_id", "u", "v", "map_depth"
++        ])
++        writer.writerows(rows)
++
++    print(
++        f"Map observations exported: {len(rows)} "
++        f"to {output_path}"
++    )
+diff --git a/scripts/coursework_map_depth.py b/scripts/coursework_map_depth.py
+new file mode 100644
+index 0000000..dd50396
+--- /dev/null
++++ b/scripts/coursework_map_depth.py
+@@ -0,0 +1,76 @@
++#!/usr/bin/env python3
++"""Score SLAM map-point observation depths against corresponding reference camera depths.
++
++Input CSV (one row per genuine map-point observation):
++    frame_id,map_z_units,reference_depth_m
++
++Here map_z_units is the 3D map point's Z coordinate in the observing camera frame,
++in the units of the SLAM map. reference_depth_m is the reference depth at that
++observation's image pixel, already decoded into metres. Use --scale equal to the
++trajectory's Sim(3) fitted scale for monocular runs, or 1 for RGB-D runs.
++
++This script only scores observations. It does NOT export map observations from pySLAM.
++"""
++import argparse
++import csv
++import json
++from collections import defaultdict
++from pathlib import Path
++import numpy as np
++
++
++def main():
++    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
++    ap.add_argument('observations_csv', help='CSV with frame_id,map_z_units,reference_depth_m')
++    ap.add_argument('--scale', type=float, default=1.0, help='Apply fitted trajectory scale to SLAM map depths')
++    ap.add_argument('--min-depth', type=float, default=0.1)
++    ap.add_argument('--max-depth', type=float, default=5.0, help='Evaluation range (m); declare this in report')
++    ap.add_argument('--output', help='Optional JSON result path')
++    args = ap.parse_args()
++    if args.scale <= 0 or args.min_depth <= 0 or args.max_depth <= args.min_depth:
++        ap.error('Require scale > 0 and 0 < min-depth < max-depth')
++    by_frame = defaultdict(list)
++    total = 0
++    with open(args.observations_csv, newline='') as f:
++        rd = csv.DictReader(f)
++        required = {'frame_id', 'map_z_units', 'reference_depth_m'}
++        if not required.issubset(rd.fieldnames or []):
++            ap.error('Missing CSV columns: ' + ', '.join(sorted(required - set(rd.fieldnames or []))))
++        for row in rd:
++            total += 1
++            try:
++                zmap = float(row['map_z_units']) * args.scale
++                zref = float(row['reference_depth_m'])
++            except (ValueError, TypeError):
++                continue
++            if not (np.isfinite(zmap) and np.isfinite(zref)):
++                continue
++            if zmap <= 0 or not (args.min_depth <= zref <= args.max_depth):
++                continue
++            by_frame[row['frame_id']].append((zmap, zref))
++    pairs = np.asarray([p for points in by_frame.values() for p in points])
++    if pairs.size == 0:
++        raise SystemExit('No valid map/depth observations in selected reference depth range')
++    zmap, zref = pairs.T
++    dif = zmap - zref
++    stats = {
++        'input_observations': total,
++        'valid_observations': len(dif),
++        'valid_fraction': len(dif) / total if total else 0.0,
++        'frames_with_valid_observations': len(by_frame),
++        'min_reference_depth_m': args.min_depth,
++        'max_reference_depth_m': args.max_depth,
++        'applied_map_scale': args.scale,
++        'mae_m': float(np.mean(np.abs(dif))),
++        'rmse_m': float(np.sqrt(np.mean(dif ** 2))),
++        'median_absolute_error_m': float(np.median(np.abs(dif))),
++        'absrel': float(np.mean(np.abs(dif) / zref)),
++        'median_frame_mae_m': float(np.median([np.mean(np.abs(np.asarray(p)[:,0] - np.asarray(p)[:,1])) for p in by_frame.values()])),
++    }
++    print(json.dumps(stats, indent=2))
++    if args.output:
++        Path(args.output).write_text(json.dumps(stats, indent=2) + '\n')
++
++
++if __name__ == '__main__':
++    main()
+diff --git a/scripts/coursework_replica_reference.py b/scripts/coursework_replica_reference.py
+new file mode 100644
+index 0000000..1a300d4
+--- /dev/null
++++ b/scripts/coursework_replica_reference.py
+@@ -0,0 +1,97 @@
++
++"""Convert Replica map observations to the map-depth scorer's input format."""
++
++import argparse
++import csv
++from collections import defaultdict
++from pathlib import Path
++
++import cv2
++import numpy as np
++
++DEPTH_FACTOR = 6553.5
++
++
++def main():
++    parser = argparse.ArgumentParser()
++    parser.add_argument("observations_csv", type=Path)
++    parser.add_argument("--replica", type=Path, default=Path("data/replica/room0"))
++    parser.add_argument("--output", type=Path, required=True)
++    args = parser.parse_args()
++
++    grouped = defaultdict(list)
++    with args.observations_csv.open(newline="") as f:
++        reader = csv.DictReader(f)
++        required = {"frame_id", "point_id", "u", "v", "map_depth"}
++        if not required.issubset(reader.fieldnames or []):
++            raise ValueError(f"Missing columns: {required - set(reader.fieldnames or [])}")
++
++        for row in reader:
++            grouped[int(row["frame_id"])].append(row)
++
++    image_files = sorted((args.replica / "results").glob("frame*.jpg"))
++    depth_files = sorted((args.replica / "results").glob("depth*.png"))
++    if not image_files or len(image_files) != len(depth_files):
++        raise ValueError("RGB/depth image count mismatch or missing images")
++
++    frame_ids = sorted(grouped)
++    print("Observed frame ID range:", frame_ids[0], "to", frame_ids[-1])
++    print("Available image indices: 0 to", len(depth_files) - 1)
++
++    # The exporter uses pySLAM frame IDs. We require these to match
++    # Replica's zero-based image indices rather than silently shifting them.
++    if frame_ids[0] < 0 or frame_ids[-1] >= len(depth_files):
++        raise ValueError(
++            "Frame IDs do not match zero-based Replica image indices. "
++            "Verify frame-to-image mapping before scoring."
++        )
++
++    written = 0
++    skipped = 0
++    args.output.parent.mkdir(parents=True, exist_ok=True)
++
++    with args.output.open("w", newline="") as f:
++        writer = csv.writer(f)
++        writer.writerow(["frame_id", "map_z_units", "reference_depth_m"])
++
++        for frame_id in frame_ids:
++            depth_path = args.replica / "results" / f"depth{frame_id:06d}.png"
++            depth = cv2.imread(str(depth_path), cv2.IMREAD_UNCHANGED)
++
++            if depth is None or depth.ndim != 2:
++                raise ValueError(f"Cannot read depth image: {depth_path}")
++            if depth.dtype != np.uint16:
++                raise ValueError(f"Unexpected depth dtype: {depth.dtype}")
++
++            height, width = depth.shape
++
++            for row in grouped[frame_id]:
++                u = float(row["u"])
++                v = float(row["v"])
++                z = float(row["map_depth"])
++
++                if not np.isfinite([u, v, z]).all() or z <= 0:
++                    skipped += 1
++                    continue
++
++                x, y = int(round(u)), int(round(v))
++                if not (0 <= x < width and 0 <= y < height):
++                    skipped += 1
++                    continue
++
++                raw = int(depth[y, x])
++                if raw == 0:
++                    skipped += 1
++                    continue
++
++                reference_depth_m = raw / DEPTH_FACTOR
++                writer.writerow([frame_id, z, reference_depth_m])
++                written += 1
++
++    print(f"Valid comparisons: {written}")
++    print(f"Skipped observations: {skipped}")
++    print(f"Saved: {args.output}")
++
++
++if __name__ == "__main__":
++    main()
+diff --git a/scripts/coursework_rpe.py b/scripts/coursework_rpe.py
+new file mode 100644
+index 0000000..970299c
+--- /dev/null
++++ b/scripts/coursework_rpe.py
+@@ -0,0 +1,121 @@
++#!/usr/bin/env python3
++"""Fixed-time translational RPE on pySLAM trajectory_final.json.
++
++Examples:
++  python scripts/coursework_rpe.py path/to/plot/trajectory_final.json --timestamps data/videos/kitti06/times.txt
++  python scripts/coursework_rpe.py path/to/plot/trajectory_final.json --timestamps data/tum/SEQUENCE/associations.txt
++
++For TUM, each association row begins with the timestamp of the RGB frame.
++For KITTI, times.txt contains one timestamp per frame.
++"""
++import argparse
++import bisect
++import copy
++import json
++from pathlib import Path
++import numpy as np
++from evo.core.trajectory import PosePath3D
++
++
++def load_timestamps(path):
++    timestamps = []
++    for raw in Path(path).read_text().splitlines():
++        line = raw.strip()
++        if not line or line.startswith('#'):
++            continue
++        timestamps.append(float(line.split()[0]))
++    if not timestamps:
++        raise ValueError(f'No timestamps in {path}')
++    if any(b <= a for a, b in zip(timestamps, timestamps[1:])):
++        raise ValueError('Timestamps must be strictly increasing and in frame order')
++    return np.array(timestamps, dtype=float)
++
++
++def evaluate(json_path, timestamps_path, delta_s, tolerance_s, scale_align, require_contiguous):
++    data = json.loads(Path(json_path).read_text())
++    ids = np.asarray(data['trajectory_id'], dtype=int)
++    if len(set(ids.tolist())) != len(ids):
++        raise ValueError('Duplicate frame IDs in trajectory JSON')
++    if len(ids) < 3:
++        raise ValueError('Too few matched poses')
++    frame_times = load_timestamps(timestamps_path)
++    if ids.min() < 0 or ids.max() >= len(frame_times):
++        raise ValueError(f'Frame ID range {ids.min()}..{ids.max()} exceeds timestamps (n={len(frame_times)}); check sequence ordering')
++    if not np.all(np.diff(ids) > 0):
++        raise ValueError('Frame IDs must be in increasing order')
++
++    gt = PosePath3D(poses_se3=[np.asarray(T, dtype=float) for T in data['trajectory_gt']])
++    est = PosePath3D(poses_se3=[np.asarray(T, dtype=float) for T in data['trajectory_est']])
++    if len(ids) != len(gt.poses_se3) or len(ids) != len(est.poses_se3):
++        raise ValueError('Pose count mismatch')
++    est = copy.deepcopy(est)
++    _, _, fitted_scale = est.align(gt, correct_scale=scale_align)
++
++    # Pair by genuine camera timestamps, not by adjacent *saved* poses.
++    times = frame_times[ids]
++    index_by_id = {int(fid): idx for idx, fid in enumerate(ids)}
++    errors = []
++    actual_deltas = []
++    skipped_gap = skipped_tolerance = 0
++    for idx, i in enumerate(ids):
++        target = times[idx] + delta_s
++        loc = bisect.bisect_left(times, target, lo=idx + 1)
++        candidates = [k for k in (loc - 1, loc) if idx < k < len(ids)]
++        if not candidates:
++            continue
++        jdx = min(candidates, key=lambda k: abs(times[k] - target))
++        dt = float(times[jdx] - times[idx])
++        if abs(dt - delta_s) > tolerance_s:
++            skipped_tolerance += 1
++            continue
++        j = int(ids[jdx])
++        if require_contiguous and j - int(i) != jdx - idx:
++            skipped_gap += 1
++            continue
++        # T_i^-1 T_j gives motion relative to camera i.
++        rel_gt = np.linalg.inv(gt.poses_se3[idx]) @ gt.poses_se3[jdx]
++        rel_est = np.linalg.inv(est.poses_se3[idx]) @ est.poses_se3[jdx]
++        err_T = np.linalg.inv(rel_gt) @ rel_est
++        errors.append(float(np.linalg.norm(err_T[:3, 3])))
++        actual_deltas.append(dt)
++    if not errors:
++        raise ValueError('No valid RPE pairs; check timestamps, delta and tolerance')
++    err = np.asarray(errors)
++    return dict(
++        rpe_rmse_m=float(np.sqrt(np.mean(err**2))),
++        rpe_median_m=float(np.median(err)),
++        rpe_mean_m=float(np.mean(err)),
++        valid_pairs=len(errors),
++        skipped_due_to_tracking_gaps=skipped_gap,
++        skipped_due_to_time_tolerance=skipped_tolerance,
++        delta_target_s=delta_s,
++        delta_actual_median_s=float(np.median(actual_deltas)),
++        delta_actual_min_s=float(np.min(actual_deltas)),
++        delta_actual_max_s=float(np.max(actual_deltas)),
++        scale_alignment='similarity' if scale_align else 'rigid',
++        fitted_scale=float(fitted_scale),
++        matched_pose_count=len(ids),
++    )
++
++
++def main():
++    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
++    ap.add_argument('trajectory_json')
++    ap.add_argument('--timestamps', required=True, help='KITTI times.txt or TUM associations.txt; one row per input frame')
++    ap.add_argument('--delta-seconds', type=float, default=1.0)
++    ap.add_argument('--tolerance-seconds', type=float, default=0.06, help='Maximum difference from target interval')
++    ap.add_argument('--no-scale-align', action='store_true', help='Use rigid SE(3) alignment instead of scale-correcting Sim(3)')
++    ap.add_argument('--allow-gaps', action='store_true', help='Include endpoints even when intermediate frame poses are missing')
++    ap.add_argument('--json-output', help='Optional summary JSON output path')
++    args = ap.parse_args()
++    if args.delta_seconds <= 0 or args.tolerance_seconds < 0:
++        ap.error('delta-seconds must be > 0 and tolerance-seconds must be >= 0')
++    result = evaluate(args.trajectory_json, args.timestamps, args.delta_seconds,
++                      args.tolerance_seconds, not args.no_scale_align, not args.allow_gaps)
++    print(json.dumps(result, indent=2))
++    if args.json_output:
++        Path(args.json_output).write_text(json.dumps(result, indent=2) + '\n')
++
++
++if __name__ == '__main__':
++    main()
+diff --git a/scripts/coursework_tum_reference.py b/scripts/coursework_tum_reference.py
+new file mode 100644
+index 0000000..c671b2c
+--- /dev/null
++++ b/scripts/coursework_tum_reference.py
+@@ -0,0 +1,77 @@
++import argparse
++import csv
++from collections import defaultdict
++from pathlib import Path
++
++import cv2
++import numpy as np
++
++parser = argparse.ArgumentParser()
++parser.add_argument("observations_csv", type=Path)
++parser.add_argument("--tum", type=Path, required=True)
++parser.add_argument("--output", type=Path, required=True)
++args = parser.parse_args()
++
++associations = []
++with (args.tum / "associations.txt").open() as f:
++    for line in f:
++        line = line.strip()
++        if not line or line.startswith("#"):
++            continue
++        parts = line.split()
++        if len(parts) < 4:
++            raise ValueError(f"Unexpected association: {line}")
++        associations.append(parts[3])
++
++grouped = defaultdict(list)
++with args.observations_csv.open(newline="") as f:
++    for row in csv.DictReader(f):
++        grouped[int(row["frame_id"])].append(row)
++
++if not grouped:
++    raise ValueError("No map observations found")
++
++if min(grouped) < 0 or max(grouped) >= len(associations):
++    raise ValueError("Frame IDs outside association index range")
++
++args.output.parent.mkdir(parents=True, exist_ok=True)
++valid = skipped = 0
++
++with args.output.open("w", newline="") as f:
++    writer = csv.writer(f)
++    writer.writerow(["frame_id", "map_z_units", "reference_depth_m"])
++
++    for frame_id, rows in sorted(grouped.items()):
++        depth_path = args.tum / associations[frame_id]
++        depth = cv2.imread(str(depth_path), cv2.IMREAD_UNCHANGED)
++
++        if depth is None or depth.ndim != 2 or depth.dtype != np.uint16:
++            raise ValueError(f"Invalid depth image: {depth_path}")
++
++        height, width = depth.shape
++
++        for row in rows:
++            u = float(row["u"])
++            v = float(row["v"])
++            z = float(row["map_depth"])
++
++            if not np.isfinite([u, v, z]).all() or z <= 0:
++                skipped += 1
++                continue
++
++            x, y = round(u), round(v)
++            if not (0 <= x < width and 0 <= y < height):
++                skipped += 1
++                continue
++
++            raw_depth = int(depth[y, x])
++            if raw_depth == 0:
++                skipped += 1
++                continue
++
++            writer.writerow([frame_id, z, raw_depth / 5000.0])
++            valid += 1
++
++print(f"Reference comparisons: {valid}")
++print(f"Skipped observations: {skipped}")
++print(f"Saved: {args.output}")
