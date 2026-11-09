@@ -1,0 +1,14 @@
+2026-11-09 02:02:42 start on skate-l.cs.ucl.ac.uk, pySLAM 302cf18
+2026-11-09 02:02:42 fr3_A: 10 runs on skate-l.cs.ucl.ac.uk
+2026-11-09 04:05:16 fr3_A: done -> results/eval_2026_11_09-02_02_51
+2026-11-09 04:05:16 room0_A: 10 runs on skate-l.cs.ucl.ac.uk
+2026-11-09 06:16:42 room0_A: done -> results/eval_2026_11_09-04_05_33
+2026-11-09 06:16:42 all done
+2026-11-09 15:59:29 start on skate-l.cs.ucl.ac.uk, pySLAM 302cf18 + our changes
+2026-11-09 15:59:29 fr3_mono: 5 runs on skate-l.cs.ucl.ac.uk [method= sigma=100 until=0]
+2026-11-09 16:05:38 start on skate-l.cs.ucl.ac.uk, pySLAM 302cf18 + our changes
+2026-11-09 16:05:38 fr3_mono: 5 runs on skate-l.cs.ucl.ac.uk [method= sigma=100 until=0]
+2026-11-09 16:25:00 fr3_mono: done -> results/eval_2026_11_09-16_05_49
+2026-11-09 16:25:00 fr3_E1: 5 runs on skate-l.cs.ucl.ac.uk [method=E1 sigma=100 until=0]
+2026-11-09 16:40:49 fr3_E1: done -> results/eval_2026_11_09-16_25_09
+2026-11-09 16:40:49 fr3_B50: 5 runs on skate-l.cs.ucl.ac.uk [method=B sigma=50 until=0]

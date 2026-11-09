@@ -1,0 +1,6 @@
+room0_rgbd results/eval_2026_11_08-15_19_46
+room0_mono results/eval_2026_11_08-16_17_23
+fr3_rgbd results/eval_2026_11_08-16_49_42
+fr3_mono results/eval_2026_11_08-17_40_17
+kitti results/eval_2026_11_08-18_38_42
+py_room0_mono results/eval_2026_11_08-19_14_01

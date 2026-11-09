@@ -1,0 +1,12 @@
+=== test_E1_fr3 results/eval_2026_11_09-15_07_30
+ORB2/rgbd_dataset_freiburg3_long_office_household/iteration_0: 0.050 m without scale; 0.025 m with scale (fitted scale 1.02)
+results/eval_2026_11_09-15_07_30/ORB2/rgbd_dataset_freiburg3_long_office_household/iteration_0/other_metrics_info.txt:percent_tracked: 98.79
+=== test_E1_room0 results/eval_2026_11_09-15_36_09
+ORB2/replica_room0_tum/iteration_0: 0.527 m without scale; 0.007 m with scale (fitted scale 0.68)
+results/eval_2026_11_09-15_36_09/ORB2/replica_room0_tum/iteration_0/other_metrics_info.txt:percent_tracked: 99.85
+=== test_B80_fr3 results/eval_2026_11_09-15_46_19
+ORB2/rgbd_dataset_freiburg3_long_office_household/iteration_0: 1.464 m without scale; 0.025 m with scale (fitted scale 3.44)
+results/eval_2026_11_09-15_46_19/ORB2/rgbd_dataset_freiburg3_long_office_household/iteration_0/other_metrics_info.txt:percent_tracked: 98.79
+=== test_B80E1_kitti results/eval_2026_11_09-15_54_45
+ORB2/kitti06_tum/iteration_0: 77.188 m without scale; 16.900 m with scale (fitted scale 0.64)
+results/eval_2026_11_09-15_54_45/ORB2/kitti06_tum/iteration_0/other_metrics_info.txt:percent_tracked: 99.82
