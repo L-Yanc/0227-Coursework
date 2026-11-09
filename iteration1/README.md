@@ -1,4 +1,4 @@
-# iteration 1 (9 Nov)
+# iteration 1 
 
 Everything from parts 1 to 3 so far. Each folder has its own README.
 
