@@ -1,0 +1,84 @@
+{
+  "sequence": "data/replica/room0",
+  "name": "dav2b",
+  "settings": {
+    "seq": "data/replica/room0",
+    "name": "dav2b",
+    "settings": "settings/REPLICA.yaml",
+    "fx": null,
+    "fy": null,
+    "cx": null,
+    "cy": null,
+    "factor": 6553.5,
+    "pred_factor": null,
+    "groundtruth": "groundtruth.txt",
+    "gaps": [
+      1,
+      10,
+      25
+    ],
+    "step": 10,
+    "stride": 4,
+    "occlusion": 0.05,
+    "min_depth": 0.1,
+    "max_depth": 10.0,
+    "max_dt": 0.02,
+    "out": "results/part2/replica_dav2b_stability"
+  },
+  "gaps": {
+    "1": {
+      "pairs": 200,
+      "points_per_pair": 50474.745,
+      "camera_moved_m_median": 0.012429504168172859,
+      "change_median": 0.004213716735567696,
+      "change_p90": 0.012058118957093246,
+      "flicker_median": 0.0026371937816234703,
+      "flicker_p90": 0.008957660837104945,
+      "scale_jump_abs_median": 0.0031841653332385644,
+      "scale_jump_p10_p90": [
+        0.9934874263317454,
+        1.0050017913952967
+      ],
+      "gt_floor_median": 0.0003099192309207188,
+      "gt_floor_p90": 0.0011301215240946294,
+      "naive_pred_median": 0.005089192322807579,
+      "naive_gt_median": 0.0032247536909694174
+    },
+    "10": {
+      "pairs": 199,
+      "points_per_pair": 46577.452261306535,
+      "camera_moved_m_median": 0.12453695782136519,
+      "change_median": 0.009971318757208802,
+      "change_p90": 0.028039895536011154,
+      "flicker_median": 0.006183282150540648,
+      "flicker_p90": 0.02012405106503307,
+      "scale_jump_abs_median": 0.007286925013597179,
+      "scale_jump_p10_p90": [
+        0.9861882464752678,
+        1.0133862987386368
+      ],
+      "gt_floor_median": 0.0003100773294912873,
+      "gt_floor_p90": 0.001141829668825989,
+      "naive_pred_median": 0.03369877329625348,
+      "naive_gt_median": 0.03321364452423703
+    },
+    "25": {
+      "pairs": 198,
+      "points_per_pair": 41489.833333333336,
+      "camera_moved_m_median": 0.2958113215545689,
+      "change_median": 0.01914300698137167,
+      "change_p90": 0.05173542215916677,
+      "flicker_median": 0.010690224084834887,
+      "flicker_p90": 0.035063939771796025,
+      "scale_jump_abs_median": 0.01567953527463256,
+      "scale_jump_p10_p90": [
+        0.9724965962797165,
+        1.0307987806738537
+      ],
+      "gt_floor_median": 0.0003322489947951146,
+      "gt_floor_p90": 0.0011653028587862992,
+      "naive_pred_median": 0.08383090598529785,
+      "naive_gt_median": 0.08648959218093605
+    }
+  }
+}

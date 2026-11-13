@@ -1,0 +1,19 @@
+\begin{table}[t]
+\centering
+\caption{Tracking and map quality (mean and sample SD, five runs).}
+\scriptsize
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{lrrrr}
+\toprule
+Sequence / mode & RPE (m) & Tracked (\%) & Time (ms) & Map MAE (m) \\
+\midrule
+KITTI M/C++ & $1.197\pm0.148$ & 99.82 & $37.73\pm2.20$ & -- \\
+KITTI M/Py & $1.126\pm0.103$ & 99.82 & $203.55\pm5.55$ & -- \\
+fr3 M/C++ & $0.0137\pm0.0020$ & 98.79 & $33.95\pm1.86$ & $0.0862\pm0.0026$ \\
+fr3 D/C++ & $0.0096\pm0.0006$ & 99.96 & $42.73\pm2.69$ & $0.0469\pm0.0020$ \\
+room0 M/C++ & $0.00440\pm0.00027$ & 99.85 & $54.94\pm5.14$ & $0.0588\pm0.0016$ \\
+room0 D/C++ & $0.00357\pm0.00043$ & 99.95 & $58.28\pm3.45$ & $0.0511\pm0.0017$ \\
+\bottomrule
+\end{tabular}
+}
+\end{table}

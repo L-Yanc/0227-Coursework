@@ -1,0 +1,42 @@
+{
+  "part3": {
+    "machines": [
+      "skate-l",
+      "shark-l"
+    ],
+    "cpu": "Intel Core i7-9800X @ 3.80 GHz",
+    "ram_gb": 30,
+    "slam": "CPU",
+    "depth_generation": "once on NVIDIA RTX 4070",
+    "model": "Depth Anything V2 large metric indoor TUM/Replica, outdoor KITTI; pySLAM models-depth download",
+    "provenance": "teammate statement supplied by owner; no checkpoint binary hash supplied"
+  },
+  "part4": {
+    "cpu": "Apple M5 Pro",
+    "cpu_cores": 15,
+    "ram_gb": 24,
+    "depth_device": "MPS",
+    "model": "Depth Anything V2 base",
+    "protocol": "five repeats, 1.5x source cadence; cached inference excluded from tracking-only timing"
+  },
+  "limits": [
+    "Own reference is approximate, not ground truth; 0.500 m check reconstructed as 0.53987 m.",
+    "Part 3 largest per-run median GT mismatch 0.59 mm; largest per-pose rounded mismatch 2.56 mm.",
+    "Part 3 canonical TUM timestamps within 11.258 ms of corrected times."
+  ],
+  "part1": {
+    "cpu": "Intel i5-1240P",
+    "logical_cpus": 16,
+    "ram_reported_by_linux_gib": 3.8,
+    "timing": "slam.track() wall-clock duration, not end-to-end processing",
+    "source": "original Part 1 upload README"
+  },
+  "part2": {
+    "model": "DAV2 base metric indoor/outdoor for final report; older large-model exploration kept separate",
+    "machine": null,
+    "cpu": null,
+    "ram_gb": null,
+    "inference_device": null,
+    "provenance": "Final Part 2 hardware confirmation requested from teammate."
+  }
+}

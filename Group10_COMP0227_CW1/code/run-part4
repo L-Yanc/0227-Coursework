@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+set -euo pipefail
+CW1_CODE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+export CW1_REPO="${CW1_REPO:-$(dirname "$CW1_CODE")}"
+export PART4_ROOT="${PART4_ROOT:-$(dirname "$CW1_REPO")/_work}"
+export PYSLAM_ROOT="${PYSLAM_ROOT:-$PART4_ROOT/external/pyslam}"
+CW1_PYTHON="${CW1_PYTHON:-$PYSLAM_ROOT/.pixi/envs/${CW1_SLAM_ENV:-default}/bin/python}"
+if [[ ! -x "$CW1_PYTHON" ]]; then
+  echo 'Set PYSLAM_ROOT or CW1_PYTHON to Python 3.11+ with analysis dependencies.' >&2
+  exit 2
+fi
+exec "$CW1_PYTHON" "$CW1_CODE/scripts/part4/part4.py" "$@"

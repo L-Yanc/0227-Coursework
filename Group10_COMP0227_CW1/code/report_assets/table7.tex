@@ -1,0 +1,22 @@
+\begin{table*}[t]
+\centering
+\caption{Part 4 scale-corrected ATE RMSE in metres (mean $\pm$ sample SD, five runs per configuration; all runs included). The own-room trajectory is evaluated against an approximate COLMAP reference. These fresh DAV2-base batches have matched monocular baselines and are separate from the historical Part 3 experiments.}
+\label{tab:p4}
+\scriptsize
+\setlength{\tabcolsep}{5pt}
+\begin{tabular}{lcccc}
+\toprule
+Method & TUM fr3 & Replica room0 & KITTI 06 & Own room \\
+\midrule
+Mono & $0.038 \pm 0.015$ & $0.0049 \pm 0.0007$ & $12.18 \pm 1.22$ & $0.258 \pm 0.133$ \\
+\midrule
+Pseudo RGB-D & $0.204 \pm 0.004$ & $0.0106 \pm 0.0011$ & $15.36 \pm 7.23$ & $0.507 \pm 0.274$ \\
+Pseudo RGB-D, stride 5 & $0.169 \pm 0.011$ & $0.0064 \pm 0.0007$ & $24.00 \pm 0.98$ & $0.372 \pm 0.117$ \\
+\midrule
+B80+E1, every frame & $0.046 \pm 0.013$ & $0.0055 \pm 0.0013$ & $11.34 \pm 0.45$ & $0.280 \pm 0.189$ \\
+B80+E1, keyframes & $0.043 \pm 0.013$ & $0.0046 \pm 0.0004$ & $11.05 \pm 0.74$ & $0.318 \pm 0.253$ \\
+B80+E1, stride 5 & $0.321 \pm 0.629$ & $0.0046 \pm 0.0008$ & $13.68 \pm 0.67$ & $0.393 \pm 0.511$ \\
+B80+E1, temporal + keyframes & $0.046 \pm 0.017$ & $0.0043 \pm 0.0007$ & $11.36 \pm 0.66$ & $0.207 \pm 0.086$ \\
+\bottomrule
+\end{tabular}
+\end{table*}

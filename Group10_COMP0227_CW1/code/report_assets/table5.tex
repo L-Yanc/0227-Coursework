@@ -1,0 +1,17 @@
+\begin{table}[t]
+\centering
+\caption{Map scale from predicted depth (mean and run SD; metres = scale times map units).}
+\scriptsize
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{lrrr}
+\toprule
+Quantity & TUM (5) & Replica (5) & KITTI (3) \\
+\midrule
+Scale fitted to true trajectory & $2.842\pm0.133$ & $2.864\pm0.019$ & $23.105\pm0.439$ \\
+Scale from predicted depth & $3.239\pm0.169$ & $3.869\pm0.035$ & $25.796\pm0.651$ \\
+Error (\%) & $13.9\pm1.3$ & $35.1\pm0.8$ & $11.6\pm0.7$ \\
+SLAM scale drift (range of run p10--p90) & 0.97--1.04 & 1.00--1.01 & 0.88--1.21 \\
+\bottomrule
+\end{tabular}
+}
+\end{table}

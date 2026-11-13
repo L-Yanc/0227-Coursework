@@ -1,0 +1,91 @@
+{
+  "sequence": "data/kitti06_tum",
+  "name": "dav2b",
+  "runs": 3,
+  "has_true_depth": false,
+  "window": 10,
+  "traj_window": 50,
+  "model": "results/part2/kitti_sigma_model/model.json",
+  "oracle": {
+    "mean": 23.10451043611434,
+    "sd": 0.438767303690113
+  },
+  "global": {
+    "mean": 25.795815231103465,
+    "sd": 0.6513672233505333
+  },
+  "global_err_pct": {
+    "mean": 11.639490688390195,
+    "sd": 0.7135903654970933
+  },
+  "global_unweighted_err_pct": {
+    "mean": 11.721397475037199,
+    "sd": 0.6468796116644077
+  },
+  "network_bias_traj": {
+    "mean": 1.086905828635129,
+    "sd": 0.012144335307438128
+  },
+  "same_point_change": {
+    "mean": 0.031703135275367965,
+    "sd": 0.00042630740220657795
+  },
+  "same_point_flicker": {
+    "mean": 0.03859409656139045,
+    "sd": 0.0006819810332727243
+  },
+  "vs_local_oracle_const": {
+    "mean": 0.09648418682116351,
+    "sd": 0.00500024098564581
+  },
+  "vs_local_global": {
+    "mean": 0.09252285804660303,
+    "sd": 0.010062463865480887
+  },
+  "vs_local_causal": {
+    "mean": 0.09227100639692791,
+    "sd": 0.00854714068464334
+  },
+  "vs_local_keyframe": {
+    "mean": 0.10412048360517638,
+    "sd": 0.0013313285875521984
+  },
+  "bias_by_distance": [
+    {
+      "from_m": 3,
+      "to_m": 5,
+      "median_ratio_mean": 1.3232380965962622,
+      "runs": 3
+    },
+    {
+      "from_m": 5,
+      "to_m": 10,
+      "median_ratio_mean": 1.2533259839410216,
+      "runs": 3
+    },
+    {
+      "from_m": 10,
+      "to_m": 20,
+      "median_ratio_mean": 1.2780613053479304,
+      "runs": 3
+    },
+    {
+      "from_m": 20,
+      "to_m": 40,
+      "median_ratio_mean": 1.149569922845601,
+      "runs": 3
+    },
+    {
+      "from_m": 40,
+      "to_m": 80,
+      "median_ratio_mean": 0.8947178211698255,
+      "runs": 3
+    },
+    {
+      "from_m": 80,
+      "to_m": null,
+      "median_ratio_mean": 0.5763344873183696,
+      "runs": 3
+    }
+  ]
+}

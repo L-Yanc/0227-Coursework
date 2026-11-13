@@ -17,3 +17,11 @@ release/
 *.MOV
 *.mov
 *.mp4
+
+# Local assembly evidence and validation checkouts; never submission source.
+/_assembly/
+/_preserved/
+/_work/
+
+# Report PDFs are local Moodle artifacts, kept out of GitHub.
+/Group10_COMP0227_CW1/*.pdf

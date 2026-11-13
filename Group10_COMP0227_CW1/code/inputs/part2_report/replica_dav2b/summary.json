@@ -1,0 +1,37 @@
+{
+  "sequence": "data/replica/room0",
+  "name": "dav2b",
+  "frames_scored": 400,
+  "step": 5,
+  "valid_pixels_mean_frac": 0.999985594362745,
+  "scale_median": 0.7344868183135986,
+  "scale_p10_p90": [
+    0.7129970133304596,
+    0.7775708556175231
+  ],
+  "settings": {
+    "seq": "data/replica/room0",
+    "name": "dav2b",
+    "factor": 6553.5,
+    "pred_factor": null,
+    "step": 5,
+    "min_depth": 0.1,
+    "max_depth": 10.0,
+    "edge_jump": 0.05,
+    "edge_width": 3,
+    "border": 0.1,
+    "out": "results/part2/replica_dav2b"
+  },
+  "raw_all": {
+    "absrel": 0.3680545665271042,
+    "mae_m": 1.0777943552054479,
+    "rmse_m": 1.1292019166886536,
+    "delta125": 0.0708661556760539
+  },
+  "scaled_all": {
+    "absrel": 0.04594681036828137,
+    "mae_m": 0.12580396314122913,
+    "rmse_m": 0.16746239535773347,
+    "delta125": 0.9954664297890713
+  }
+}

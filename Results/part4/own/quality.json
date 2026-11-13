@@ -1,9 +1,0 @@
-{
-  "frames": 805,
-  "source_frames": 2415,
-  "selected_all_methods_identically": true,
-  "warnings": [],
-  "colour_policy": "FFmpeg BGR8 conversion of HDR base layer; applied identically to calibration/scene",
-  "challenging_frames_discarded": false,
-  "timestamps": "actual source PTS; no synthetic spacing"
-}

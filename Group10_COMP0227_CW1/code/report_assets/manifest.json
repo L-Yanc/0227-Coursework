@@ -1,0 +1,136 @@
+{
+  "draft_pdf": "COMP0227_Scene_Understanding (1).pdf",
+  "draft_pdf_sha256": "3f3dc88801806cc84150788a63213a2c9016f9d1adc0e172d915b15272ea28ef",
+  "draft_pages": 8,
+  "command_from_code": "python3 scripts/report/reproduce_report.py",
+  "tables": [
+    {
+      "number": "I",
+      "asset": "table1.tex",
+      "generator": "scripts/report/part1.py",
+      "inputs": [
+        "inputs/part1.csv"
+      ],
+      "description": "six five-run baseline groups, mean/sample SD ATE and mean scale"
+    },
+    {
+      "number": "II",
+      "asset": "table2.tex",
+      "generator": "scripts/report/part1.py",
+      "inputs": [
+        "inputs/part1.csv"
+      ],
+      "description": "RPE, tracked percentage, tracking latency and map MAE"
+    },
+    {
+      "number": "III",
+      "asset": "table3.tex",
+      "generator": "scripts/report/part2.py",
+      "inputs": [
+        "inputs/part2_report/tum_dav2b/summary.json",
+        "inputs/part2_report/replica_dav2b/summary.json"
+      ],
+      "description": "final base-model depth accuracy; sampled every fifth frame"
+    },
+    {
+      "number": "IV",
+      "asset": "table4.tex",
+      "generator": "scripts/report/part2.py",
+      "inputs": [
+        "inputs/part2_report/tum_dav2b_uncertainty/validation.json",
+        "inputs/part2_report/replica_dav2b_uncertainty_tummodel/validation.json",
+        "inputs/part2_report/tum_dav2b_uncertainty_kittimodel/validation.json"
+      ],
+      "description": "four-feature and transferable uncertainty; original fitting/scoring code in scripts/part2/part2_keypoint_uncertainty.py"
+    },
+    {
+      "number": "V",
+      "asset": "table5.tex",
+      "generator": "scripts/report/part2.py",
+      "inputs": [
+        "inputs/part2_report/tum_dav2b_scale",
+        "inputs/part2_report/replica_dav2b_scale",
+        "inputs/part2_report/kitti_dav2b_scale"
+      ],
+      "description": "scale mean/SD and range of per-run drift quantiles; original scorer scripts/part2/part2_map_scale.py"
+    },
+    {
+      "number": "VI",
+      "asset": "table6.tex",
+      "generator": "scripts/report/part3.py",
+      "inputs": [
+        "inputs/part3/runs.csv",
+        "inputs/part3/measures.csv"
+      ],
+      "description": "final Part 3 table, same source/body as teammate export"
+    },
+    {
+      "number": "VII",
+      "asset": "table7.tex",
+      "generator": "scripts/report/part4.py",
+      "inputs": [
+        "inputs/part4.csv"
+      ],
+      "description": "140-run Part 4 comparison, 28 groups/five repeats"
+    }
+  ],
+  "figures": [
+    {
+      "number": 1,
+      "asset": "figure1.png",
+      "generator": "scripts/report/part3.py",
+      "inputs": [
+        "inputs/part3/runs.csv",
+        "reference/standard/tum_fr3.txt",
+        "../trajectories_tum/part3/"
+      ],
+      "source_snapshot": "original teammate part3_traj_fr3.png; decoded pixels match PDF image on page 4",
+      "regeneration_note": "Canonical TUM/GT fallback regenerates the plot. Exact selected-run original JSONs are not bundled; tiny alignment/rendering differences are possible."
+    },
+    {
+      "number": 2,
+      "asset": "figure2.png",
+      "generator": "scripts/report/part4.py",
+      "inputs": [
+        "inputs/part4.csv",
+        "inputs/part4/tum_fr3/analysis/"
+      ],
+      "source_snapshot": "lossless decoded PDF image on page 6",
+      "regeneration_note": "Original saved bin values; font/layout differences can change pixel dimensions."
+    },
+    {
+      "number": 3,
+      "asset": "figure3.png",
+      "generator": "scripts/report/part4.py",
+      "inputs": [
+        "inputs/part4/own/failure_trace.json",
+        "inputs/part4/own/matched/",
+        "scripts/report/inputs/part4_failure_candidate.png"
+      ],
+      "source_snapshot": "lossless decoded PDF image on page 7",
+      "regeneration_note": "Fixed candidate/baseline and saved error traces; no new inference."
+    }
+  ],
+  "assets_sha256": {
+    "figure3.tex": "89dd9051f57b05119903e263eb89211606d6aa3f322719b3f94adce60ebbfc6f",
+    "figure2.tex": "57ba84b316b0168b3d7217730cd86a6bad1afac75090261e9fab271e2f5bab07",
+    "figure1.tex": "d04db870940975fa67174a9c52c38264f0b3aae2f71b6dfdccdb50b974d5bf01",
+    "figure3.png": "83b5073a31cc7d0e1da769f4336cf652cb85a2fc24f934c5b2a62be951094a91",
+    "table1.tex": "07b19a3b8c97398345b869cfea1b1aa7b398f433f386a02eb40f0fba6a1ae73e",
+    "figure2.png": "5806986b314f490466299316712c86ad14c59bfefd998d62f41356eea4627faf",
+    "table2.tex": "054a625cb3f5d63696caf8b41f7e414a1233d3aaba5ee9048a5731a837d86495",
+    "table3.tex": "9f5ed18890f1c29c5f1689135ce5453c960cd2ee8e29f758849222bf769a6319",
+    "figure1.png": "55b644e4f8eb4fec6a567307f7ae91b7f8bc587526b73938088b44d075b66eaa",
+    "table7.tex": "7e5c0700a5cc928e58250067ae672c895fd53359424ebdaee5b51bc814a642bf",
+    "table6.tex": "0b0fc7327ba546e4f4696c86f2524a2ef073f192861181afa313bd4cfff2a020",
+    "table4.tex": "6309530e0300ad1e7caeee4bf67f06c1aba2b914d1af6905737f71c7947c36a9",
+    "table5.tex": "8b1de28ab715f8e161d89456fb9ad86e0a01aa216e5b56eedc90d0bd51278962"
+  },
+  "notes": [
+    "All assets and scripts are included in code.zip, not as new separate required uploads.",
+    "The draft is not approved as final; PDF bytes were left unchanged.",
+    "Table III saved summaries score 498/400 every-fifth frames; clarify every-frame wording.",
+    "Table I room0 RGBD Sim3 ATE rounds to 0.00408 m from source CSV vs draft 0.00409 m; data not altered.",
+    "Table V KITTI drift upper bound is 1.21 at two decimals vs draft 1.2 at one decimal; precision difference."
+  ]
+}

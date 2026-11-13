@@ -1,0 +1,31 @@
+{
+  "weights": [
+    -1.5362096123855316,
+    -0.6712611407385246,
+    0.7210653742114278,
+    0.41984645487313904,
+    0.3976525268349853
+  ],
+  "feature_names": [
+    "constant",
+    "log d",
+    "(log d)^2",
+    "log spread",
+    "border"
+  ],
+  "calibration": 0.37274553735939986,
+  "scale_sigma": 0.12927631681053076,
+  "window": 5,
+  "border_frac": 0.1,
+  "min_depth": 0.1,
+  "max_depth": 10.0,
+  "max_sigma": 0.3,
+  "fitted_on": {
+    "sequence": "data/tum/rgbd_dataset_freiburg3_long_office_household",
+    "name": "dav2b",
+    "frames": 249,
+    "keypoints": 234337,
+    "s_global_oracle": 0.8926901488308232
+  },
+  "units": "sigma_m = sigma_rel * depth_m; in map units divide by s (metres = s x map units)"
+}

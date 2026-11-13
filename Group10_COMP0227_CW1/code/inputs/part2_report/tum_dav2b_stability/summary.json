@@ -1,0 +1,84 @@
+{
+  "sequence": "data/tum/rgbd_dataset_freiburg3_long_office_household",
+  "name": "dav2b",
+  "settings": {
+    "seq": "data/tum/rgbd_dataset_freiburg3_long_office_household",
+    "name": "dav2b",
+    "settings": "settings/TUM3.yaml",
+    "fx": null,
+    "fy": null,
+    "cx": null,
+    "cy": null,
+    "factor": 5000.0,
+    "pred_factor": null,
+    "groundtruth": "groundtruth.txt",
+    "gaps": [
+      1,
+      10,
+      30
+    ],
+    "step": 10,
+    "stride": 4,
+    "occlusion": 0.05,
+    "min_depth": 0.1,
+    "max_depth": 10.0,
+    "max_dt": 0.02,
+    "out": "results/part2/tum_dav2b_stability"
+  },
+  "gaps": {
+    "1": {
+      "pairs": 249,
+      "points_per_pair": 15219.064257028112,
+      "camera_moved_m_median": 0.008591856609604397,
+      "change_median": 0.012975748049725788,
+      "change_p90": 0.045348816894524996,
+      "flicker_median": 0.00872166882187797,
+      "flicker_p90": 0.03632805753410452,
+      "scale_jump_abs_median": 0.008298839360613819,
+      "scale_jump_p10_p90": [
+        0.9820868997864997,
+        1.0187289804868211
+      ],
+      "gt_floor_median": 0.003513782734371529,
+      "gt_floor_p90": 0.012691885302802743,
+      "naive_pred_median": 0.013578105602286672,
+      "naive_gt_median": 0.004516129032258176
+    },
+    "10": {
+      "pairs": 248,
+      "points_per_pair": 13559.072580645161,
+      "camera_moved_m_median": 0.08984757517783509,
+      "change_median": 0.02301096725895596,
+      "change_p90": 0.07604864972001137,
+      "flicker_median": 0.012929920178641863,
+      "flicker_p90": 0.05285450601571586,
+      "scale_jump_abs_median": 0.016182580293925608,
+      "scale_jump_p10_p90": [
+        0.9657561983861714,
+        1.034414973222209
+      ],
+      "gt_floor_median": 0.005731552435660758,
+      "gt_floor_p90": 0.01856271390492911,
+      "naive_pred_median": 0.04118352841704484,
+      "naive_gt_median": 0.03367459230149383
+    },
+    "30": {
+      "pairs": 246,
+      "points_per_pair": 11260.174796747968,
+      "camera_moved_m_median": 0.2712572169569011,
+      "change_median": 0.036971105156873685,
+      "change_p90": 0.11519226895589411,
+      "flicker_median": 0.017492790220055787,
+      "flicker_p90": 0.07327661643315277,
+      "scale_jump_abs_median": 0.030502642206985564,
+      "scale_jump_p10_p90": [
+        0.9422786928109779,
+        1.0522092862894372
+      ],
+      "gt_floor_median": 0.00691857885189423,
+      "gt_floor_p90": 0.02062829339220767,
+      "naive_pred_median": 0.09266344320126668,
+      "naive_gt_median": 0.09086616076649856
+    }
+  }
+}

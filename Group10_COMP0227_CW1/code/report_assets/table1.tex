@@ -1,0 +1,19 @@
+\begin{table}[t]
+\centering
+\caption{Baseline trajectory error (mean and sample SD, five runs).}
+\scriptsize
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{lrrr}
+\toprule
+Sequence / mode & Rigid ATE (m) & Sim(3) ATE (m) & Scale \\
+\midrule
+KITTI M/C++ & $131.79\pm0.21$ & $13.51\pm1.60$ & 23.30 \\
+KITTI M/Py & $131.63\pm0.17$ & $12.37\pm1.77$ & 22.71 \\
+fr3 M/C++ & $1.336\pm0.033$ & $0.0309\pm0.0107$ & 2.84 \\
+fr3 D/C++ & $0.0104\pm0.0010$ & $0.0099\pm0.0009$ & 1.001 \\
+room0 M/C++ & $0.734\pm0.003$ & $0.00446\pm0.00056$ & 2.86 \\
+room0 D/C++ & $0.00566\pm0.00052$ & $0.00408\pm0.00062$ & 0.997 \\
+\bottomrule
+\end{tabular}
+}
+\end{table}
