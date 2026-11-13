@@ -1,0 +1,4 @@
+test_E1_fr3 results/eval_2026_11_09-15_07_30
+test_E1_room0 results/eval_2026_11_09-15_36_09
+test_B80_fr3 results/eval_2026_11_09-15_46_19
+test_B80E1_kitti results/eval_2026_11_09-15_54_45

@@ -1,0 +1,14 @@
+2026-11-08 15:18:59 start on shark-l.cs.ucl.ac.uk, pySLAM 302cf18
+2026-11-08 15:18:59 room0_rgbd: 10 runs
+2026-11-08 16:17:19 room0_rgbd: done -> results/eval_2026_11_08-15_19_46
+2026-11-08 16:17:19 room0_mono: 10 runs
+2026-11-08 16:49:38 room0_mono: done -> results/eval_2026_11_08-16_17_23
+2026-11-08 16:49:38 fr3_rgbd: 10 runs
+2026-11-08 17:39:33 fr3_rgbd: done -> results/eval_2026_11_08-16_49_42
+2026-11-08 17:39:33 fr3_mono: 10 runs
+2026-11-08 18:38:07 fr3_mono: done -> results/eval_2026_11_08-17_40_17
+2026-11-08 18:38:07 kitti: 10 runs
+2026-11-08 19:13:31 kitti: done -> results/eval_2026_11_08-18_38_42
+2026-11-08 19:13:31 py_room0_mono: 3 runs
+2026-11-08 20:55:17 py_room0_mono: done -> results/eval_2026_11_08-19_14_01
+2026-11-08 20:55:17 all done

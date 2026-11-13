@@ -1,0 +1,112 @@
+=== room0_rgbd results/eval_2026_11_08-15_19_46
+ORB2/replica_room0_tum/iteration_0: 0.006 m without scale; 0.004 m with scale (fitted scale 1.00)
+ORB2/replica_room0_tum/iteration_1: 0.006 m without scale; 0.004 m with scale (fitted scale 1.00)
+ORB2/replica_room0_tum/iteration_2: 0.006 m without scale; 0.004 m with scale (fitted scale 1.00)
+ORB2/replica_room0_tum/iteration_3: 0.005 m without scale; 0.004 m with scale (fitted scale 1.00)
+ORB2/replica_room0_tum/iteration_4: 0.007 m without scale; 0.005 m with scale (fitted scale 1.00)
+ORB2/replica_room0_tum/iteration_5: 0.005 m without scale; 0.004 m with scale (fitted scale 1.00)
+ORB2/replica_room0_tum/iteration_6: 0.005 m without scale; 0.004 m with scale (fitted scale 1.00)
+ORB2/replica_room0_tum/iteration_7: 0.006 m without scale; 0.005 m with scale (fitted scale 1.00)
+ORB2/replica_room0_tum/iteration_8: 0.007 m without scale; 0.004 m with scale (fitted scale 0.99)
+ORB2/replica_room0_tum/iteration_9: 0.006 m without scale; 0.004 m with scale (fitted scale 1.00)
+results/eval_2026_11_08-15_19_46/ORB2/replica_room0_tum/iteration_0/other_metrics_info.txt:percent_tracked: 99.95
+results/eval_2026_11_08-15_19_46/ORB2/replica_room0_tum/iteration_1/other_metrics_info.txt:percent_tracked: 99.95
+results/eval_2026_11_08-15_19_46/ORB2/replica_room0_tum/iteration_2/other_metrics_info.txt:percent_tracked: 99.95
+results/eval_2026_11_08-15_19_46/ORB2/replica_room0_tum/iteration_3/other_metrics_info.txt:percent_tracked: 99.95
+results/eval_2026_11_08-15_19_46/ORB2/replica_room0_tum/iteration_4/other_metrics_info.txt:percent_tracked: 99.95
+results/eval_2026_11_08-15_19_46/ORB2/replica_room0_tum/iteration_5/other_metrics_info.txt:percent_tracked: 99.95
+results/eval_2026_11_08-15_19_46/ORB2/replica_room0_tum/iteration_6/other_metrics_info.txt:percent_tracked: 99.95
+results/eval_2026_11_08-15_19_46/ORB2/replica_room0_tum/iteration_7/other_metrics_info.txt:percent_tracked: 99.95
+results/eval_2026_11_08-15_19_46/ORB2/replica_room0_tum/iteration_8/other_metrics_info.txt:percent_tracked: 99.95
+results/eval_2026_11_08-15_19_46/ORB2/replica_room0_tum/iteration_9/other_metrics_info.txt:percent_tracked: 99.95
+=== room0_mono results/eval_2026_11_08-16_17_23
+ORB2/replica_room0_tum/iteration_0: 0.732 m without scale; 0.005 m with scale (fitted scale 2.85)
+ORB2/replica_room0_tum/iteration_1: 0.731 m without scale; 0.004 m with scale (fitted scale 2.85)
+ORB2/replica_room0_tum/iteration_2: 0.733 m without scale; 0.005 m with scale (fitted scale 2.86)
+ORB2/replica_room0_tum/iteration_3: 0.730 m without scale; 0.004 m with scale (fitted scale 2.84)
+ORB2/replica_room0_tum/iteration_4: 0.731 m without scale; 0.005 m with scale (fitted scale 2.84)
+ORB2/replica_room0_tum/iteration_5: 0.731 m without scale; 0.005 m with scale (fitted scale 2.85)
+ORB2/replica_room0_tum/iteration_6: 0.729 m without scale; 0.004 m with scale (fitted scale 2.83)
+ORB2/replica_room0_tum/iteration_7: 0.736 m without scale; 0.007 m with scale (fitted scale 2.88)
+ORB2/replica_room0_tum/iteration_8: 0.734 m without scale; 0.004 m with scale (fitted scale 2.87)
+ORB2/replica_room0_tum/iteration_9: 0.732 m without scale; 0.004 m with scale (fitted scale 2.85)
+results/eval_2026_11_08-16_17_23/ORB2/replica_room0_tum/iteration_0/other_metrics_info.txt:percent_tracked: 99.85
+results/eval_2026_11_08-16_17_23/ORB2/replica_room0_tum/iteration_1/other_metrics_info.txt:percent_tracked: 99.85
+results/eval_2026_11_08-16_17_23/ORB2/replica_room0_tum/iteration_2/other_metrics_info.txt:percent_tracked: 99.85
+results/eval_2026_11_08-16_17_23/ORB2/replica_room0_tum/iteration_3/other_metrics_info.txt:percent_tracked: 99.85
+results/eval_2026_11_08-16_17_23/ORB2/replica_room0_tum/iteration_4/other_metrics_info.txt:percent_tracked: 99.85
+results/eval_2026_11_08-16_17_23/ORB2/replica_room0_tum/iteration_5/other_metrics_info.txt:percent_tracked: 99.85
+results/eval_2026_11_08-16_17_23/ORB2/replica_room0_tum/iteration_6/other_metrics_info.txt:percent_tracked: 99.85
+results/eval_2026_11_08-16_17_23/ORB2/replica_room0_tum/iteration_7/other_metrics_info.txt:percent_tracked: 99.85
+results/eval_2026_11_08-16_17_23/ORB2/replica_room0_tum/iteration_8/other_metrics_info.txt:percent_tracked: 99.85
+results/eval_2026_11_08-16_17_23/ORB2/replica_room0_tum/iteration_9/other_metrics_info.txt:percent_tracked: 99.85
+=== fr3_rgbd results/eval_2026_11_08-16_49_42
+ORB2/rgbd_dataset_freiburg3_long_office_household/iteration_0: 0.009 m without scale; 0.009 m with scale (fitted scale 1.00)
+ORB2/rgbd_dataset_freiburg3_long_office_household/iteration_1: 0.023 m without scale; 0.023 m with scale (fitted scale 1.00)
+ORB2/rgbd_dataset_freiburg3_long_office_household/iteration_2: 0.011 m without scale; 0.010 m with scale (fitted scale 1.00)
+ORB2/rgbd_dataset_freiburg3_long_office_household/iteration_3: 0.009 m without scale; 0.008 m with scale (fitted scale 1.00)
+ORB2/rgbd_dataset_freiburg3_long_office_household/iteration_4: 0.010 m without scale; 0.009 m with scale (fitted scale 1.00)
+ORB2/rgbd_dataset_freiburg3_long_office_household/iteration_5: 0.009 m without scale; 0.009 m with scale (fitted scale 1.00)
+ORB2/rgbd_dataset_freiburg3_long_office_household/iteration_6: 0.012 m without scale; 0.012 m with scale (fitted scale 1.00)
+ORB2/rgbd_dataset_freiburg3_long_office_household/iteration_7: 0.009 m without scale; 0.009 m with scale (fitted scale 1.00)
+ORB2/rgbd_dataset_freiburg3_long_office_household/iteration_8: 0.009 m without scale; 0.009 m with scale (fitted scale 1.00)
+ORB2/rgbd_dataset_freiburg3_long_office_household/iteration_9: 0.011 m without scale; 0.010 m with scale (fitted scale 1.00)
+results/eval_2026_11_08-16_49_42/ORB2/rgbd_dataset_freiburg3_long_office_household/iteration_0/other_metrics_info.txt:percent_tracked: 99.96
+results/eval_2026_11_08-16_49_42/ORB2/rgbd_dataset_freiburg3_long_office_household/iteration_1/other_metrics_info.txt:percent_tracked: 99.96
+results/eval_2026_11_08-16_49_42/ORB2/rgbd_dataset_freiburg3_long_office_household/iteration_2/other_metrics_info.txt:percent_tracked: 99.96
+results/eval_2026_11_08-16_49_42/ORB2/rgbd_dataset_freiburg3_long_office_household/iteration_3/other_metrics_info.txt:percent_tracked: 99.96
+results/eval_2026_11_08-16_49_42/ORB2/rgbd_dataset_freiburg3_long_office_household/iteration_4/other_metrics_info.txt:percent_tracked: 99.96
+results/eval_2026_11_08-16_49_42/ORB2/rgbd_dataset_freiburg3_long_office_household/iteration_5/other_metrics_info.txt:percent_tracked: 99.96
+results/eval_2026_11_08-16_49_42/ORB2/rgbd_dataset_freiburg3_long_office_household/iteration_6/other_metrics_info.txt:percent_tracked: 99.96
+results/eval_2026_11_08-16_49_42/ORB2/rgbd_dataset_freiburg3_long_office_household/iteration_7/other_metrics_info.txt:percent_tracked: 99.96
+results/eval_2026_11_08-16_49_42/ORB2/rgbd_dataset_freiburg3_long_office_household/iteration_8/other_metrics_info.txt:percent_tracked: 99.96
+results/eval_2026_11_08-16_49_42/ORB2/rgbd_dataset_freiburg3_long_office_household/iteration_9/other_metrics_info.txt:percent_tracked: 99.96
+=== fr3_mono results/eval_2026_11_08-17_40_17
+ORB2/rgbd_dataset_freiburg3_long_office_household/iteration_0: 1.273 m without scale; 0.047 m with scale (fitted scale 2.61)
+ORB2/rgbd_dataset_freiburg3_long_office_household/iteration_1: 1.291 m without scale; 0.024 m with scale (fitted scale 2.67)
+ORB2/rgbd_dataset_freiburg3_long_office_household/iteration_2: 1.277 m without scale; 0.044 m with scale (fitted scale 2.62)
+ORB2/rgbd_dataset_freiburg3_long_office_household/iteration_3: 1.308 m without scale; 0.038 m with scale (fitted scale 2.73)
+ORB2/rgbd_dataset_freiburg3_long_office_household/iteration_4: 1.294 m without scale; 0.038 m with scale (fitted scale 2.68)
+ORB2/rgbd_dataset_freiburg3_long_office_household/iteration_5: 1.318 m without scale; 0.047 m with scale (fitted scale 2.77)
+ORB2/rgbd_dataset_freiburg3_long_office_household/iteration_6: 1.277 m without scale; 0.063 m with scale (fitted scale 2.62)
+ORB2/rgbd_dataset_freiburg3_long_office_household/iteration_7: 1.269 m without scale; 0.039 m with scale (fitted scale 2.60)
+ORB2/rgbd_dataset_freiburg3_long_office_household/iteration_8: 1.291 m without scale; 0.046 m with scale (fitted scale 2.67)
+ORB2/rgbd_dataset_freiburg3_long_office_household/iteration_9: 1.278 m without scale; 0.025 m with scale (fitted scale 2.63)
+results/eval_2026_11_08-17_40_17/ORB2/rgbd_dataset_freiburg3_long_office_household/iteration_0/other_metrics_info.txt:percent_tracked: 98.79
+results/eval_2026_11_08-17_40_17/ORB2/rgbd_dataset_freiburg3_long_office_household/iteration_1/other_metrics_info.txt:percent_tracked: 98.79
+results/eval_2026_11_08-17_40_17/ORB2/rgbd_dataset_freiburg3_long_office_household/iteration_2/other_metrics_info.txt:percent_tracked: 98.79
+results/eval_2026_11_08-17_40_17/ORB2/rgbd_dataset_freiburg3_long_office_household/iteration_3/other_metrics_info.txt:percent_tracked: 98.79
+results/eval_2026_11_08-17_40_17/ORB2/rgbd_dataset_freiburg3_long_office_household/iteration_4/other_metrics_info.txt:percent_tracked: 98.79
+results/eval_2026_11_08-17_40_17/ORB2/rgbd_dataset_freiburg3_long_office_household/iteration_5/other_metrics_info.txt:percent_tracked: 98.79
+results/eval_2026_11_08-17_40_17/ORB2/rgbd_dataset_freiburg3_long_office_household/iteration_6/other_metrics_info.txt:percent_tracked: 98.79
+results/eval_2026_11_08-17_40_17/ORB2/rgbd_dataset_freiburg3_long_office_household/iteration_7/other_metrics_info.txt:percent_tracked: 98.79
+results/eval_2026_11_08-17_40_17/ORB2/rgbd_dataset_freiburg3_long_office_household/iteration_8/other_metrics_info.txt:percent_tracked: 98.79
+results/eval_2026_11_08-17_40_17/ORB2/rgbd_dataset_freiburg3_long_office_household/iteration_9/other_metrics_info.txt:percent_tracked: 98.79
+=== kitti results/eval_2026_11_08-18_38_42
+ORB2/video_color.mp4/iteration_0: 131.723 m without scale; 12.545 m with scale (fitted scale 23.03)
+ORB2/video_color.mp4/iteration_1: 131.579 m without scale; 13.594 m with scale (fitted scale 22.45)
+ORB2/video_color.mp4/iteration_2: 128.505 m without scale; 25.504 m with scale (fitted scale 16.39)
+ORB2/video_color.mp4/iteration_3: 131.932 m without scale; 12.232 m with scale (fitted scale 23.89)
+ORB2/video_color.mp4/iteration_4: 131.690 m without scale; 12.803 m with scale (fitted scale 22.90)
+ORB2/video_color.mp4/iteration_5: 131.728 m without scale; 13.180 m with scale (fitted scale 23.03)
+ORB2/video_color.mp4/iteration_6: 131.587 m without scale; 13.295 m with scale (fitted scale 22.49)
+ORB2/video_color.mp4/iteration_7: 83.872 m without scale; 24.398 m with scale (fitted scale 19.24)
+ORB2/video_color.mp4/iteration_8: 132.029 m without scale; 12.909 m with scale (fitted scale 24.27)
+ORB2/video_color.mp4/iteration_9: 131.933 m without scale; 12.387 m with scale (fitted scale 23.88)
+results/eval_2026_11_08-18_38_42/ORB2/video_color.mp4/iteration_0/other_metrics_info.txt:percent_tracked: 99.82
+results/eval_2026_11_08-18_38_42/ORB2/video_color.mp4/iteration_1/other_metrics_info.txt:percent_tracked: 99.82
+results/eval_2026_11_08-18_38_42/ORB2/video_color.mp4/iteration_2/other_metrics_info.txt:percent_tracked: 94.82
+results/eval_2026_11_08-18_38_42/ORB2/video_color.mp4/iteration_3/other_metrics_info.txt:percent_tracked: 99.82
+results/eval_2026_11_08-18_38_42/ORB2/video_color.mp4/iteration_4/other_metrics_info.txt:percent_tracked: 99.82
+results/eval_2026_11_08-18_38_42/ORB2/video_color.mp4/iteration_5/other_metrics_info.txt:percent_tracked: 99.82
+results/eval_2026_11_08-18_38_42/ORB2/video_color.mp4/iteration_6/other_metrics_info.txt:percent_tracked: 99.82
+results/eval_2026_11_08-18_38_42/ORB2/video_color.mp4/iteration_7/other_metrics_info.txt:percent_tracked: 72.12
+results/eval_2026_11_08-18_38_42/ORB2/video_color.mp4/iteration_8/other_metrics_info.txt:percent_tracked: 99.82
+results/eval_2026_11_08-18_38_42/ORB2/video_color.mp4/iteration_9/other_metrics_info.txt:percent_tracked: 99.82
+=== py_room0_mono results/eval_2026_11_08-19_14_01
+ORB2/replica_room0_tum/iteration_0: 0.738 m without scale; 0.005 m with scale (fitted scale 2.89)
+ORB2/replica_room0_tum/iteration_1: 0.735 m without scale; 0.004 m with scale (fitted scale 2.87)
+ORB2/replica_room0_tum/iteration_2: 0.737 m without scale; 0.005 m with scale (fitted scale 2.89)
+results/eval_2026_11_08-19_14_01/ORB2/replica_room0_tum/iteration_0/other_metrics_info.txt:percent_tracked: 99.85
+results/eval_2026_11_08-19_14_01/ORB2/replica_room0_tum/iteration_1/other_metrics_info.txt:percent_tracked: 99.85
+results/eval_2026_11_08-19_14_01/ORB2/replica_room0_tum/iteration_2/other_metrics_info.txt:percent_tracked: 99.85
