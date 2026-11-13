@@ -111,6 +111,29 @@ def frame_times(seq_dir):
     return _times[seq_dir]
 
 
+_gt = {}
+
+
+def ground_truth(seq_dir):
+    if seq_dir not in _gt:
+        _gt[seq_dir] = np.array([[float(x) for x in l.split()[:4]] for l in open(os.path.join(seq_dir, "groundtruth.txt"))
+                                 if l.strip() and not l.startswith("#")])
+    return _gt[seq_dir]
+
+
+def frame_offset(data, t, g):
+    ids = np.asarray(data["trajectory_id"], dtype=int)
+    xyz = np.asarray(data["trajectory_gt"])[:, :3, 3]
+    n = min(len(ids), len(xyz), 300)
+
+    def err(k):
+        tt = t[(ids[:n] + k).clip(0, len(t) - 1)]
+        j = np.searchsorted(g[:, 0], tt).clip(1, len(g) - 1)
+        j = np.where(np.abs(g[j - 1, 0] - tt) < np.abs(g[j, 0] - tt), j - 1, j)
+        return np.median(np.linalg.norm(g[j, 1:4] - xyz[:n], axis=1))
+    return min(range(-3, 4), key=err)
+
+
 seq_dirs = {os.path.basename(os.path.normpath(p)): p for p in datasets}
 rows = list(csv.DictReader(open(runs_csv)))
 out = []
@@ -124,7 +147,11 @@ for n, r in enumerate(rows):
     data = json.load(open(os.path.join(d, "plot", "trajectory_final.json")
                           if os.path.exists(os.path.join(d, "plot", "trajectory_final.json"))
                           else glob.glob(os.path.join(d, "**", "trajectory_final.json"), recursive=True)[0]))
-    res["rpe_1s_m"], res["rpe_pairs"] = rpe_1s(data, frame_times(seq_dirs[r["seq"]]))
+    ft = frame_times(seq_dirs[r["seq"]])
+    off = frame_offset(data, ft, ground_truth(seq_dirs[r["seq"]]))
+    ft = ft[(np.arange(len(ft)) + off).clip(0, len(ft) - 1)]
+    res["frame_offset"] = off
+    res["rpe_1s_m"], res["rpe_pairs"] = rpe_1s(data, ft)
     res["track_ms"], res["track_frames"] = track_ms(d)
     rgbd = r["mode"] in ("rgbd", "pseudo-rgbd") or r["config"] == "kitti_A"
     res["map_depth_mae_m"], res["map_obs"] = map_mae(d, r["seq"], seq_dirs.get(r["seq"]), 1.0 if rgbd else float(r["scale"]))
@@ -132,7 +159,7 @@ for n, r in enumerate(rows):
     print(f"{n + 1}/{len(rows)} {r['config']} {r['mode']} {r['run']}: RPE 1 s {res['rpe_1s_m']:.4f}, "
           f"track {res['track_ms']:.1f} ms ({res['track_frames']}), map MAE {res['map_depth_mae_m']:.4f} ({res['map_obs']})")
 
-keys = ["config", "mode", "seq", "run", "rpe_1s_m", "rpe_pairs", "track_ms", "track_frames", "map_depth_mae_m", "map_obs"]
+keys = ["config", "mode", "seq", "run", "frame_offset", "rpe_1s_m", "rpe_pairs", "track_ms", "track_frames", "map_depth_mae_m", "map_obs"]
 with open(out_csv, "w", newline="") as f:
     w = csv.DictWriter(f, fieldnames=keys)
     w.writeheader()

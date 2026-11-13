@@ -113,3 +113,6 @@ The runs were made in three batches: batch 1 on skate-l; batch 2 on skate-l (TUM
 | `results/summary.csv` | `part3_table.py` | Median, min and max of every measure per configuration |
 
 `part3_results.csv` is `runs.csv` and `measures.csv` joined on configuration, mode and run, with each configuration's method and settings written out.
+In the 20 TUM runs of batch 1 (the Reference and true RGB-D), pySLAM's frame ids are 2 behind `associations.txt`. `part3_pose_times.py` and `part3_measures.py` find each run's offset from the ground truth (shift -3..+3, best match) and use it for the timestamps, RPE over 1 s and map depth error. `results/pose_times/summary.csv` gives the offset of every run (0 for the other 200) and the ground-truth mismatch after it (at most 0.6 mm).
+
+In the 20 TUM runs of batch 1 (the Reference and true RGB-D), the frame ids saved with the trajectory are 2 behind `associations.txt`. `part3_pose_times.py` and `part3_measures.py` find each run's offset from the ground truth and use it for the timestamps and the RPE over 1 s. `results/pose_times/summary.csv` gives the offset of every run (0 for the other 200) and the ground-truth mismatch after it (at most 0.6 mm). The map's keyframe ids need no offset: for these runs the map depth error is lowest at offset 0 (true RGB-D: 0.049 m at 0, 0.068 m at +2).
