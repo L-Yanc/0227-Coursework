@@ -31,29 +31,13 @@
     "timing": "slam.track() wall-clock duration, not end-to-end processing",
     "source": "original Part 1 upload README"
   },
-    "part2": {
-    "machine": "DESKTOP-8VL6739 (Windows laptop, WSL2 Ubuntu, kernel 6.18.40.1-microsoft-standard-WSL2)",
+  "part2": {
+    "machine": "DESKTOP-8VL6739 (Windows laptop, WSL2 Ubuntu)",
     "cpu": null,
-    "ram_gb": null,
-    "wsl_memory_limit": "12 GB memory + 8 GB swap (.wslconfig); free -h showed 11 GiB + 8.0 GiB",
-    "inference_device": "CPU only (pixi environment depth-cpu; info.json device \"cpu\"); no GPU, CUDA or MPS",
-    "slam": "CPU (default-cpu environment, C++ core PYSLAM_USE_CPP=true)",
-    "model": "Depth Anything V2 base, metric; indoor model for TUM/Replica, outdoor for KITTI; weights from pixi run -e depth-cpu models-depth",
-    "software": {
-      "pyslam": "302cf18 (comp0227-2026-lab04) + Part 1 patch",
-      "pixi": "0.81.0",
-      "python": "3.11",
-      "opencv": "4.13.0",
-      "pytorch": null,
-      "checkpoint": null,
-      "threads": "not set (pySLAM defaults)"
-    },
-    "measurements": {
-      "size_comparison_every_100th_TUM_frame_s_per_frame": {"small": 1.32, "base": 4.01, "large": 13.37, "date": "2026-11-03"},
-      "full_runs_s_per_frame": {"TUM_2488_frames": 4.20, "Replica_2000_frames": 5.98, "KITTI_1101_frames": 16.49},
-      "dates": {"TUM": "2026-11-03", "Replica": "2026-11-06", "KITTI": "2026-11-08"},
-      "timing": "wall-clock seconds per frame printed by depth-prediction, including model loading averaged over frames; light analysis jobs ran alongside the TUM and KITTI runs for a few minutes"
-    },
-    "provenance": "All Part 2 measurements on this one machine; values from the session's recorded terminal outputs and info.json. CPU model, physical RAM, PyTorch version and checkpoint not recorded."
+    "ram_gb": 12,
+    "inference_device": "CPU",
+    "model": "Depth Anything V2 base metric indoor TUM/Replica, outdoor KITTI; pySLAM models-depth download",
+    "timing": "4.2/6.0/16.5 s per frame (TUM/Replica/KITTI) and small/base/large comparison, all on this machine",
+    "provenance": "Session terminal outputs and info.json; CPU model not recorded; ram_gb is the WSL memory limit"
   }
 }
