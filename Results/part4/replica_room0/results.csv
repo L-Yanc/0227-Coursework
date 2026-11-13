@@ -1,0 +1,1091 @@
+run_id,sequence,method,settings,run_number,ate_unscaled_m,ate_scaled_m,fitted_scale,rpe_rmse_m,fraction_tracked,fraction_lost,time_per_frame_ms,map_depth_mae_m,trajectory_file
+replica_room0_mono_every_r1_014b886e4cddb962,replica_room0,mono,"{
+  ""method"": ""mono"",
+  ""policy"": ""every"",
+  ""run_number"": 1,
+  ""features"": ""ORB2"",
+  ""backend"": ""cpp"",
+  ""playback_speed"": 1.5,
+  ""max_frames"": null,
+  ""selected"": null,
+  ""temporal"": {
+    ""enabled"": false,
+    ""development_fraction"": 0.5,
+    ""min_samples"": 30,
+    ""min_relative_threshold"": 0.05,
+    ""mad_multiplier"": 3.0
+  },
+  ""png_factor"": 6553.5,
+  ""environment"": ""indoor"",
+  ""prepare"": ""part4/work/living_room_recording2/standard_reruns/replica_room0/prepare/0effb00d621aee65"",
+  ""out"": ""part4/work/living_room_recording2/standard_reruns/replica_room0/slam/014b886e4cddb962"",
+  ""depth_path"": null
+}",1,0.6977339401489467,0.005053989221764155,2.620957270933862,0.0047539747777902985,0.999,0.0,28.576177233830094,1.113470067547641,trajectories_tum/part4/replica_room0_mono_every_r1_014b886e4cddb962.tum
+replica_room0_mono_every_r2_d35b23147d82414e,replica_room0,mono,"{
+  ""method"": ""mono"",
+  ""policy"": ""every"",
+  ""run_number"": 2,
+  ""features"": ""ORB2"",
+  ""backend"": ""cpp"",
+  ""playback_speed"": 1.5,
+  ""max_frames"": null,
+  ""selected"": null,
+  ""temporal"": {
+    ""enabled"": false,
+    ""development_fraction"": 0.5,
+    ""min_samples"": 30,
+    ""min_relative_threshold"": 0.05,
+    ""mad_multiplier"": 3.0
+  },
+  ""png_factor"": 6553.5,
+  ""environment"": ""indoor"",
+  ""prepare"": ""part4/work/living_room_recording2/standard_reruns/replica_room0/prepare/0effb00d621aee65"",
+  ""out"": ""part4/work/living_room_recording2/standard_reruns/replica_room0/slam/d35b23147d82414e"",
+  ""depth_path"": null
+}",2,0.7022302711733025,0.005056398356155196,2.648625556392027,0.004292271775871422,0.999,0.0,28.66678878653329,1.0794671323035965,trajectories_tum/part4/replica_room0_mono_every_r2_d35b23147d82414e.tum
+replica_room0_mono_every_r3_9eeb82a6f443d325,replica_room0,mono,"{
+  ""method"": ""mono"",
+  ""policy"": ""every"",
+  ""run_number"": 3,
+  ""features"": ""ORB2"",
+  ""backend"": ""cpp"",
+  ""playback_speed"": 1.5,
+  ""max_frames"": null,
+  ""selected"": null,
+  ""temporal"": {
+    ""enabled"": false,
+    ""development_fraction"": 0.5,
+    ""min_samples"": 30,
+    ""min_relative_threshold"": 0.05,
+    ""mad_multiplier"": 3.0
+  },
+  ""png_factor"": 6553.5,
+  ""environment"": ""indoor"",
+  ""prepare"": ""part4/work/living_room_recording2/standard_reruns/replica_room0/prepare/0effb00d621aee65"",
+  ""out"": ""part4/work/living_room_recording2/standard_reruns/replica_room0/slam/9eeb82a6f443d325"",
+  ""depth_path"": null
+}",3,0.7031050580712616,0.005232000693833582,2.6540717068122914,0.004071256824920312,0.999,0.0,28.054387093288824,1.0855648114759597,trajectories_tum/part4/replica_room0_mono_every_r3_9eeb82a6f443d325.tum
+replica_room0_mono_every_r4_38d89c11ab0fb8e3,replica_room0,mono,"{
+  ""method"": ""mono"",
+  ""policy"": ""every"",
+  ""run_number"": 4,
+  ""features"": ""ORB2"",
+  ""backend"": ""cpp"",
+  ""playback_speed"": 1.5,
+  ""max_frames"": null,
+  ""selected"": null,
+  ""temporal"": {
+    ""enabled"": false,
+    ""development_fraction"": 0.5,
+    ""min_samples"": 30,
+    ""min_relative_threshold"": 0.05,
+    ""mad_multiplier"": 3.0
+  },
+  ""png_factor"": 6553.5,
+  ""environment"": ""indoor"",
+  ""prepare"": ""part4/work/living_room_recording2/standard_reruns/replica_room0/prepare/0effb00d621aee65"",
+  ""out"": ""part4/work/living_room_recording2/standard_reruns/replica_room0/slam/38d89c11ab0fb8e3"",
+  ""depth_path"": null
+}",4,0.7002325950254058,0.0037152748519576756,2.6362928137619663,0.00388278365146777,0.999,0.0,28.118141323095188,1.0350620919164801,trajectories_tum/part4/replica_room0_mono_every_r4_38d89c11ab0fb8e3.tum
+replica_room0_mono_every_r5_2778b560e627d7b3,replica_room0,mono,"{
+  ""method"": ""mono"",
+  ""policy"": ""every"",
+  ""run_number"": 5,
+  ""features"": ""ORB2"",
+  ""backend"": ""cpp"",
+  ""playback_speed"": 1.5,
+  ""max_frames"": null,
+  ""selected"": null,
+  ""temporal"": {
+    ""enabled"": false,
+    ""development_fraction"": 0.5,
+    ""min_samples"": 30,
+    ""min_relative_threshold"": 0.05,
+    ""mad_multiplier"": 3.0
+  },
+  ""png_factor"": 6553.5,
+  ""environment"": ""indoor"",
+  ""prepare"": ""part4/work/living_room_recording2/standard_reruns/replica_room0/prepare/0effb00d621aee65"",
+  ""out"": ""part4/work/living_room_recording2/standard_reruns/replica_room0/slam/2778b560e627d7b3"",
+  ""depth_path"": null
+}",5,0.7006829464141473,0.005544957730295143,2.6390243314189386,0.004235721176132061,0.999,0.0,28.015597787394654,1.1096349717513734,trajectories_tum/part4/replica_room0_mono_every_r5_2778b560e627d7b3.tum
+replica_room0_pseudo_rgbd_every_r1_e14258ed2526497b,replica_room0,pseudo_rgbd,"{
+  ""method"": ""pseudo_rgbd"",
+  ""policy"": ""every"",
+  ""run_number"": 1,
+  ""features"": ""ORB2"",
+  ""backend"": ""cpp"",
+  ""playback_speed"": 1.5,
+  ""max_frames"": null,
+  ""selected"": null,
+  ""temporal"": {
+    ""enabled"": false,
+    ""development_fraction"": 0.5,
+    ""min_samples"": 30,
+    ""min_relative_threshold"": 0.05,
+    ""mad_multiplier"": 3.0
+  },
+  ""png_factor"": 6553.5,
+  ""environment"": ""indoor"",
+  ""prepare"": ""part4/work/living_room_recording2/standard_reruns/replica_room0/prepare/0effb00d621aee65"",
+  ""out"": ""part4/work/living_room_recording2/standard_reruns/replica_room0/slam/e14258ed2526497b"",
+  ""depth_path"": ""part4/work/living_room_recording2/standard_reruns/replica_room0/depth/44df58f005a67118""
+}",1,0.4563304060166965,0.012491902331139147,0.712074490496177,0.008429962563972684,0.9995,0.0,36.07958675996633,1.155199411982552,trajectories_tum/part4/replica_room0_pseudo_rgbd_every_r1_e14258ed2526497b.tum
+replica_room0_pseudo_rgbd_every_r2_76a1268247cf517b,replica_room0,pseudo_rgbd,"{
+  ""method"": ""pseudo_rgbd"",
+  ""policy"": ""every"",
+  ""run_number"": 2,
+  ""features"": ""ORB2"",
+  ""backend"": ""cpp"",
+  ""playback_speed"": 1.5,
+  ""max_frames"": null,
+  ""selected"": null,
+  ""temporal"": {
+    ""enabled"": false,
+    ""development_fraction"": 0.5,
+    ""min_samples"": 30,
+    ""min_relative_threshold"": 0.05,
+    ""mad_multiplier"": 3.0
+  },
+  ""png_factor"": 6553.5,
+  ""environment"": ""indoor"",
+  ""prepare"": ""part4/work/living_room_recording2/standard_reruns/replica_room0/prepare/0effb00d621aee65"",
+  ""out"": ""part4/work/living_room_recording2/standard_reruns/replica_room0/slam/76a1268247cf517b"",
+  ""depth_path"": ""part4/work/living_room_recording2/standard_reruns/replica_room0/depth/44df58f005a67118""
+}",2,0.4570829173541658,0.009766849400841465,0.7117113901683149,0.0074974051605928346,0.9995,0.0,35.37394852319267,1.1628259675292083,trajectories_tum/part4/replica_room0_pseudo_rgbd_every_r2_76a1268247cf517b.tum
+replica_room0_pseudo_rgbd_every_r3_2462803e0bf78803,replica_room0,pseudo_rgbd,"{
+  ""method"": ""pseudo_rgbd"",
+  ""policy"": ""every"",
+  ""run_number"": 3,
+  ""features"": ""ORB2"",
+  ""backend"": ""cpp"",
+  ""playback_speed"": 1.5,
+  ""max_frames"": null,
+  ""selected"": null,
+  ""temporal"": {
+    ""enabled"": false,
+    ""development_fraction"": 0.5,
+    ""min_samples"": 30,
+    ""min_relative_threshold"": 0.05,
+    ""mad_multiplier"": 3.0
+  },
+  ""png_factor"": 6553.5,
+  ""environment"": ""indoor"",
+  ""prepare"": ""part4/work/living_room_recording2/standard_reruns/replica_room0/prepare/0effb00d621aee65"",
+  ""out"": ""part4/work/living_room_recording2/standard_reruns/replica_room0/slam/2462803e0bf78803"",
+  ""depth_path"": ""part4/work/living_room_recording2/standard_reruns/replica_room0/depth/44df58f005a67118""
+}",3,0.4640349005089684,0.010715503907065592,0.7086107053406298,0.007963523457488316,0.9995,0.0,34.69511526165297,1.1610109807098417,trajectories_tum/part4/replica_room0_pseudo_rgbd_every_r3_2462803e0bf78803.tum
+replica_room0_pseudo_rgbd_every_r4_3f22208bdd99311c,replica_room0,pseudo_rgbd,"{
+  ""method"": ""pseudo_rgbd"",
+  ""policy"": ""every"",
+  ""run_number"": 4,
+  ""features"": ""ORB2"",
+  ""backend"": ""cpp"",
+  ""playback_speed"": 1.5,
+  ""max_frames"": null,
+  ""selected"": null,
+  ""temporal"": {
+    ""enabled"": false,
+    ""development_fraction"": 0.5,
+    ""min_samples"": 30,
+    ""min_relative_threshold"": 0.05,
+    ""mad_multiplier"": 3.0
+  },
+  ""png_factor"": 6553.5,
+  ""environment"": ""indoor"",
+  ""prepare"": ""part4/work/living_room_recording2/standard_reruns/replica_room0/prepare/0effb00d621aee65"",
+  ""out"": ""part4/work/living_room_recording2/standard_reruns/replica_room0/slam/3f22208bdd99311c"",
+  ""depth_path"": ""part4/work/living_room_recording2/standard_reruns/replica_room0/depth/44df58f005a67118""
+}",4,0.4530967579018905,0.010401052466341343,0.7135114016181829,0.008244960362742394,0.9995,0.0,35.80914441333152,1.159772427789551,trajectories_tum/part4/replica_room0_pseudo_rgbd_every_r4_3f22208bdd99311c.tum
+replica_room0_pseudo_rgbd_every_r5_7ed61f1de8d65d51,replica_room0,pseudo_rgbd,"{
+  ""method"": ""pseudo_rgbd"",
+  ""policy"": ""every"",
+  ""run_number"": 5,
+  ""features"": ""ORB2"",
+  ""backend"": ""cpp"",
+  ""playback_speed"": 1.5,
+  ""max_frames"": null,
+  ""selected"": null,
+  ""temporal"": {
+    ""enabled"": false,
+    ""development_fraction"": 0.5,
+    ""min_samples"": 30,
+    ""min_relative_threshold"": 0.05,
+    ""mad_multiplier"": 3.0
+  },
+  ""png_factor"": 6553.5,
+  ""environment"": ""indoor"",
+  ""prepare"": ""part4/work/living_room_recording2/standard_reruns/replica_room0/prepare/0effb00d621aee65"",
+  ""out"": ""part4/work/living_room_recording2/standard_reruns/replica_room0/slam/7ed61f1de8d65d51"",
+  ""depth_path"": ""part4/work/living_room_recording2/standard_reruns/replica_room0/depth/44df58f005a67118""
+}",5,0.4536280875747222,0.009738158259332006,0.7132660837284548,0.008627143146977241,0.9995,0.0,34.95744197873864,1.1607328930616378,trajectories_tum/part4/replica_room0_pseudo_rgbd_every_r5_7ed61f1de8d65d51.tum
+replica_room0_pseudo_rgbd_stride5_r1_89a89d74ebfb1aff,replica_room0,pseudo_rgbd_stride5,"{
+  ""method"": ""pseudo_rgbd"",
+  ""policy"": ""stride5"",
+  ""run_number"": 1,
+  ""features"": ""ORB2"",
+  ""backend"": ""cpp"",
+  ""playback_speed"": 1.5,
+  ""max_frames"": null,
+  ""selected"": null,
+  ""temporal"": {
+    ""enabled"": false,
+    ""development_fraction"": 0.5,
+    ""min_samples"": 30,
+    ""min_relative_threshold"": 0.05,
+    ""mad_multiplier"": 3.0
+  },
+  ""png_factor"": 6553.5,
+  ""environment"": ""indoor"",
+  ""prepare"": ""part4/work/living_room_recording2/standard_reruns/replica_room0/prepare/0effb00d621aee65"",
+  ""out"": ""part4/work/living_room_recording2/standard_reruns/replica_room0/slam/89a89d74ebfb1aff"",
+  ""depth_path"": ""part4/work/living_room_recording2/standard_reruns/replica_room0/depth/44df58f005a67118""
+}",1,0.46058830316569016,0.006135433388087338,0.7101172725773923,0.006527472940755457,0.9995,0.0,30.467984409129713,1.175764692808451,trajectories_tum/part4/replica_room0_pseudo_rgbd_stride5_r1_89a89d74ebfb1aff.tum
+replica_room0_pseudo_rgbd_stride5_r2_715db5f062206c69,replica_room0,pseudo_rgbd_stride5,"{
+  ""method"": ""pseudo_rgbd"",
+  ""policy"": ""stride5"",
+  ""run_number"": 2,
+  ""features"": ""ORB2"",
+  ""backend"": ""cpp"",
+  ""playback_speed"": 1.5,
+  ""max_frames"": null,
+  ""selected"": null,
+  ""temporal"": {
+    ""enabled"": false,
+    ""development_fraction"": 0.5,
+    ""min_samples"": 30,
+    ""min_relative_threshold"": 0.05,
+    ""mad_multiplier"": 3.0
+  },
+  ""png_factor"": 6553.5,
+  ""environment"": ""indoor"",
+  ""prepare"": ""part4/work/living_room_recording2/standard_reruns/replica_room0/prepare/0effb00d621aee65"",
+  ""out"": ""part4/work/living_room_recording2/standard_reruns/replica_room0/slam/715db5f062206c69"",
+  ""depth_path"": ""part4/work/living_room_recording2/standard_reruns/replica_room0/depth/44df58f005a67118""
+}",2,0.4657456734354304,0.0064065652113203045,0.7078206875287224,0.005721058084482305,0.9995,0.0,30.553084631508682,1.196614716249581,trajectories_tum/part4/replica_room0_pseudo_rgbd_stride5_r2_715db5f062206c69.tum
+replica_room0_pseudo_rgbd_stride5_r3_046f8782a074a1b3,replica_room0,pseudo_rgbd_stride5,"{
+  ""method"": ""pseudo_rgbd"",
+  ""policy"": ""stride5"",
+  ""run_number"": 3,
+  ""features"": ""ORB2"",
+  ""backend"": ""cpp"",
+  ""playback_speed"": 1.5,
+  ""max_frames"": null,
+  ""selected"": null,
+  ""temporal"": {
+    ""enabled"": false,
+    ""development_fraction"": 0.5,
+    ""min_samples"": 30,
+    ""min_relative_threshold"": 0.05,
+    ""mad_multiplier"": 3.0
+  },
+  ""png_factor"": 6553.5,
+  ""environment"": ""indoor"",
+  ""prepare"": ""part4/work/living_room_recording2/standard_reruns/replica_room0/prepare/0effb00d621aee65"",
+  ""out"": ""part4/work/living_room_recording2/standard_reruns/replica_room0/slam/046f8782a074a1b3"",
+  ""depth_path"": ""part4/work/living_room_recording2/standard_reruns/replica_room0/depth/44df58f005a67118""
+}",3,0.45452752469388347,0.0064591787350681395,0.7128385685812045,0.0068799165426790985,0.9995,0.0,30.582759662996978,1.1651654888874292,trajectories_tum/part4/replica_room0_pseudo_rgbd_stride5_r3_046f8782a074a1b3.tum
+replica_room0_pseudo_rgbd_stride5_r4_a8efb22c0ce88f60,replica_room0,pseudo_rgbd_stride5,"{
+  ""method"": ""pseudo_rgbd"",
+  ""policy"": ""stride5"",
+  ""run_number"": 4,
+  ""features"": ""ORB2"",
+  ""backend"": ""cpp"",
+  ""playback_speed"": 1.5,
+  ""max_frames"": null,
+  ""selected"": null,
+  ""temporal"": {
+    ""enabled"": false,
+    ""development_fraction"": 0.5,
+    ""min_samples"": 30,
+    ""min_relative_threshold"": 0.05,
+    ""mad_multiplier"": 3.0
+  },
+  ""png_factor"": 6553.5,
+  ""environment"": ""indoor"",
+  ""prepare"": ""part4/work/living_room_recording2/standard_reruns/replica_room0/prepare/0effb00d621aee65"",
+  ""out"": ""part4/work/living_room_recording2/standard_reruns/replica_room0/slam/a8efb22c0ce88f60"",
+  ""depth_path"": ""part4/work/living_room_recording2/standard_reruns/replica_room0/depth/44df58f005a67118""
+}",4,0.47480352871940834,0.0075010813862845796,0.7038263937388163,0.005847429390613027,0.9995,0.0,30.279678183200303,1.2144402605487354,trajectories_tum/part4/replica_room0_pseudo_rgbd_stride5_r4_a8efb22c0ce88f60.tum
+replica_room0_pseudo_rgbd_stride5_r5_de53ddd304628c6a,replica_room0,pseudo_rgbd_stride5,"{
+  ""method"": ""pseudo_rgbd"",
+  ""policy"": ""stride5"",
+  ""run_number"": 5,
+  ""features"": ""ORB2"",
+  ""backend"": ""cpp"",
+  ""playback_speed"": 1.5,
+  ""max_frames"": null,
+  ""selected"": null,
+  ""temporal"": {
+    ""enabled"": false,
+    ""development_fraction"": 0.5,
+    ""min_samples"": 30,
+    ""min_relative_threshold"": 0.05,
+    ""mad_multiplier"": 3.0
+  },
+  ""png_factor"": 6553.5,
+  ""environment"": ""indoor"",
+  ""prepare"": ""part4/work/living_room_recording2/standard_reruns/replica_room0/prepare/0effb00d621aee65"",
+  ""out"": ""part4/work/living_room_recording2/standard_reruns/replica_room0/slam/de53ddd304628c6a"",
+  ""depth_path"": ""part4/work/living_room_recording2/standard_reruns/replica_room0/depth/44df58f005a67118""
+}",5,0.4638203452018813,0.005431006004453894,0.7086722045510775,0.006312062230057261,0.9995,0.0,31.03607941052178,1.179579438788081,trajectories_tum/part4/replica_room0_pseudo_rgbd_stride5_r5_de53ddd304628c6a.tum
+replica_room0_selected_every_r1_d6c5b0522aaf0135,replica_room0,selected,"{
+  ""method"": ""selected"",
+  ""policy"": ""every"",
+  ""run_number"": 1,
+  ""features"": ""ORB2"",
+  ""backend"": ""cpp"",
+  ""playback_speed"": 1.5,
+  ""max_frames"": null,
+  ""selected"": {
+    ""module"": ""part4/part3_adapter.py"",
+    ""sensor"": ""mono"",
+    ""parameters"": {
+      ""method"": ""B+E1"",
+      ""sigma_pct"": 80,
+      ""depth_until"": 0
+    },
+    ""insertion_location"": ""E1: Initializer initial map scale; B: LocalMapping low-parallax point insertion"",
+    ""persistent_constraint"": false,
+    ""conflict_policy"": ""Keep triangulated points; B fills only rejected low-parallax matches passing existing map checks"",
+    ""metric_scale_semantics"": ""E1 initialises in network metres; B estimates recent metres per map unit from triangulated correspondences; subsequent optimisation can change points and scale"",
+    ""random_seed_support"": ""upstream backend has no validated deterministic seed; five independent processes"",
+    ""source_revision"": ""94c47e1"",
+    ""source_patch"": ""0227 Coursework/patches/part3_changes.patch"",
+    ""selection_rationale"": ""B80E1 is the combined Part 3 method, chosen before own-sequence scoring to exercise both scale initialisation and low-parallax depth insertion. It has lower median KITTI Sim3 ATE than mono in the uploaded batch; no universal best configuration is claimed. Own DAV2 base indoor differs from any unverified teammate model size.""
+  },
+  ""temporal"": {
+    ""enabled"": false,
+    ""development_fraction"": 0.5,
+    ""min_samples"": 30,
+    ""min_relative_threshold"": 0.05,
+    ""mad_multiplier"": 3.0
+  },
+  ""png_factor"": 6553.5,
+  ""environment"": ""indoor"",
+  ""prepare"": ""part4/work/living_room_recording2/standard_reruns/replica_room0/prepare/0effb00d621aee65"",
+  ""out"": ""part4/work/living_room_recording2/standard_reruns/replica_room0/slam/d6c5b0522aaf0135"",
+  ""depth_path"": ""part4/work/living_room_recording2/standard_reruns/replica_room0/depth/44df58f005a67118""
+}",1,0.23489095978184532,0.004586677294748191,0.8276988281658891,0.003972394940414558,0.999,0.0,27.331154340470675,0.6048030275220465,trajectories_tum/part4/replica_room0_selected_every_r1_d6c5b0522aaf0135.tum
+replica_room0_selected_every_r2_51c468125ae5abb8,replica_room0,selected,"{
+  ""method"": ""selected"",
+  ""policy"": ""every"",
+  ""run_number"": 2,
+  ""features"": ""ORB2"",
+  ""backend"": ""cpp"",
+  ""playback_speed"": 1.5,
+  ""max_frames"": null,
+  ""selected"": {
+    ""module"": ""part4/part3_adapter.py"",
+    ""sensor"": ""mono"",
+    ""parameters"": {
+      ""method"": ""B+E1"",
+      ""sigma_pct"": 80,
+      ""depth_until"": 0
+    },
+    ""insertion_location"": ""E1: Initializer initial map scale; B: LocalMapping low-parallax point insertion"",
+    ""persistent_constraint"": false,
+    ""conflict_policy"": ""Keep triangulated points; B fills only rejected low-parallax matches passing existing map checks"",
+    ""metric_scale_semantics"": ""E1 initialises in network metres; B estimates recent metres per map unit from triangulated correspondences; subsequent optimisation can change points and scale"",
+    ""random_seed_support"": ""upstream backend has no validated deterministic seed; five independent processes"",
+    ""source_revision"": ""94c47e1"",
+    ""source_patch"": ""0227 Coursework/patches/part3_changes.patch"",
+    ""selection_rationale"": ""B80E1 is the combined Part 3 method, chosen before own-sequence scoring to exercise both scale initialisation and low-parallax depth insertion. It has lower median KITTI Sim3 ATE than mono in the uploaded batch; no universal best configuration is claimed. Own DAV2 base indoor differs from any unverified teammate model size.""
+  },
+  ""temporal"": {
+    ""enabled"": false,
+    ""development_fraction"": 0.5,
+    ""min_samples"": 30,
+    ""min_relative_threshold"": 0.05,
+    ""mad_multiplier"": 3.0
+  },
+  ""png_factor"": 6553.5,
+  ""environment"": ""indoor"",
+  ""prepare"": ""part4/work/living_room_recording2/standard_reruns/replica_room0/prepare/0effb00d621aee65"",
+  ""out"": ""part4/work/living_room_recording2/standard_reruns/replica_room0/slam/51c468125ae5abb8"",
+  ""depth_path"": ""part4/work/living_room_recording2/standard_reruns/replica_room0/depth/44df58f005a67118""
+}",2,0.23584609850675203,0.006653793355964551,0.8271476799670858,0.004182979856893895,0.999,0.0,28.030046847008634,0.6131657900328807,trajectories_tum/part4/replica_room0_selected_every_r2_51c468125ae5abb8.tum
+replica_room0_selected_every_r3_f6ce9844711d1bf1,replica_room0,selected,"{
+  ""method"": ""selected"",
+  ""policy"": ""every"",
+  ""run_number"": 3,
+  ""features"": ""ORB2"",
+  ""backend"": ""cpp"",
+  ""playback_speed"": 1.5,
+  ""max_frames"": null,
+  ""selected"": {
+    ""module"": ""part4/part3_adapter.py"",
+    ""sensor"": ""mono"",
+    ""parameters"": {
+      ""method"": ""B+E1"",
+      ""sigma_pct"": 80,
+      ""depth_until"": 0
+    },
+    ""insertion_location"": ""E1: Initializer initial map scale; B: LocalMapping low-parallax point insertion"",
+    ""persistent_constraint"": false,
+    ""conflict_policy"": ""Keep triangulated points; B fills only rejected low-parallax matches passing existing map checks"",
+    ""metric_scale_semantics"": ""E1 initialises in network metres; B estimates recent metres per map unit from triangulated correspondences; subsequent optimisation can change points and scale"",
+    ""random_seed_support"": ""upstream backend has no validated deterministic seed; five independent processes"",
+    ""source_revision"": ""94c47e1"",
+    ""source_patch"": ""0227 Coursework/patches/part3_changes.patch"",
+    ""selection_rationale"": ""B80E1 is the combined Part 3 method, chosen before own-sequence scoring to exercise both scale initialisation and low-parallax depth insertion. It has lower median KITTI Sim3 ATE than mono in the uploaded batch; no universal best configuration is claimed. Own DAV2 base indoor differs from any unverified teammate model size.""
+  },
+  ""temporal"": {
+    ""enabled"": false,
+    ""development_fraction"": 0.5,
+    ""min_samples"": 30,
+    ""min_relative_threshold"": 0.05,
+    ""mad_multiplier"": 3.0
+  },
+  ""png_factor"": 6553.5,
+  ""environment"": ""indoor"",
+  ""prepare"": ""part4/work/living_room_recording2/standard_reruns/replica_room0/prepare/0effb00d621aee65"",
+  ""out"": ""part4/work/living_room_recording2/standard_reruns/replica_room0/slam/f6ce9844711d1bf1"",
+  ""depth_path"": ""part4/work/living_room_recording2/standard_reruns/replica_room0/depth/44df58f005a67118""
+}",3,0.2418924277728689,0.00494138642094419,0.8234720494621314,0.004974316369102475,0.999,0.0,27.858516392007004,0.6205214513439172,trajectories_tum/part4/replica_room0_selected_every_r3_f6ce9844711d1bf1.tum
+replica_room0_selected_every_r4_b150d098e0aca35a,replica_room0,selected,"{
+  ""method"": ""selected"",
+  ""policy"": ""every"",
+  ""run_number"": 4,
+  ""features"": ""ORB2"",
+  ""backend"": ""cpp"",
+  ""playback_speed"": 1.5,
+  ""max_frames"": null,
+  ""selected"": {
+    ""module"": ""part4/part3_adapter.py"",
+    ""sensor"": ""mono"",
+    ""parameters"": {
+      ""method"": ""B+E1"",
+      ""sigma_pct"": 80,
+      ""depth_until"": 0
+    },
+    ""insertion_location"": ""E1: Initializer initial map scale; B: LocalMapping low-parallax point insertion"",
+    ""persistent_constraint"": false,
+    ""conflict_policy"": ""Keep triangulated points; B fills only rejected low-parallax matches passing existing map checks"",
+    ""metric_scale_semantics"": ""E1 initialises in network metres; B estimates recent metres per map unit from triangulated correspondences; subsequent optimisation can change points and scale"",
+    ""random_seed_support"": ""upstream backend has no validated deterministic seed; five independent processes"",
+    ""source_revision"": ""94c47e1"",
+    ""source_patch"": ""0227 Coursework/patches/part3_changes.patch"",
+    ""selection_rationale"": ""B80E1 is the combined Part 3 method, chosen before own-sequence scoring to exercise both scale initialisation and low-parallax depth insertion. It has lower median KITTI Sim3 ATE than mono in the uploaded batch; no universal best configuration is claimed. Own DAV2 base indoor differs from any unverified teammate model size.""
+  },
+  ""temporal"": {
+    ""enabled"": false,
+    ""development_fraction"": 0.5,
+    ""min_samples"": 30,
+    ""min_relative_threshold"": 0.05,
+    ""mad_multiplier"": 3.0
+  },
+  ""png_factor"": 6553.5,
+  ""environment"": ""indoor"",
+  ""prepare"": ""part4/work/living_room_recording2/standard_reruns/replica_room0/prepare/0effb00d621aee65"",
+  ""out"": ""part4/work/living_room_recording2/standard_reruns/replica_room0/slam/b150d098e0aca35a"",
+  ""depth_path"": ""part4/work/living_room_recording2/standard_reruns/replica_room0/depth/44df58f005a67118""
+}",4,0.22788094238804013,0.00694580949313095,0.8320137536425827,0.005664861356182054,0.999,0.0,28.104766936856322,0.5705008597316712,trajectories_tum/part4/replica_room0_selected_every_r4_b150d098e0aca35a.tum
+replica_room0_selected_every_r5_931b5f0f87575474,replica_room0,selected,"{
+  ""method"": ""selected"",
+  ""policy"": ""every"",
+  ""run_number"": 5,
+  ""features"": ""ORB2"",
+  ""backend"": ""cpp"",
+  ""playback_speed"": 1.5,
+  ""max_frames"": null,
+  ""selected"": {
+    ""module"": ""part4/part3_adapter.py"",
+    ""sensor"": ""mono"",
+    ""parameters"": {
+      ""method"": ""B+E1"",
+      ""sigma_pct"": 80,
+      ""depth_until"": 0
+    },
+    ""insertion_location"": ""E1: Initializer initial map scale; B: LocalMapping low-parallax point insertion"",
+    ""persistent_constraint"": false,
+    ""conflict_policy"": ""Keep triangulated points; B fills only rejected low-parallax matches passing existing map checks"",
+    ""metric_scale_semantics"": ""E1 initialises in network metres; B estimates recent metres per map unit from triangulated correspondences; subsequent optimisation can change points and scale"",
+    ""random_seed_support"": ""upstream backend has no validated deterministic seed; five independent processes"",
+    ""source_revision"": ""94c47e1"",
+    ""source_patch"": ""0227 Coursework/patches/part3_changes.patch"",
+    ""selection_rationale"": ""B80E1 is the combined Part 3 method, chosen before own-sequence scoring to exercise both scale initialisation and low-parallax depth insertion. It has lower median KITTI Sim3 ATE than mono in the uploaded batch; no universal best configuration is claimed. Own DAV2 base indoor differs from any unverified teammate model size.""
+  },
+  ""temporal"": {
+    ""enabled"": false,
+    ""development_fraction"": 0.5,
+    ""min_samples"": 30,
+    ""min_relative_threshold"": 0.05,
+    ""mad_multiplier"": 3.0
+  },
+  ""png_factor"": 6553.5,
+  ""environment"": ""indoor"",
+  ""prepare"": ""part4/work/living_room_recording2/standard_reruns/replica_room0/prepare/0effb00d621aee65"",
+  ""out"": ""part4/work/living_room_recording2/standard_reruns/replica_room0/slam/931b5f0f87575474"",
+  ""depth_path"": ""part4/work/living_room_recording2/standard_reruns/replica_room0/depth/44df58f005a67118""
+}",5,0.2125137696993532,0.004152437319358496,0.8415120503621327,0.004129019994896641,0.999,0.0,28.19467318430543,0.5495671976559916,trajectories_tum/part4/replica_room0_selected_every_r5_931b5f0f87575474.tum
+replica_room0_selected_keyframes_r1_05cc2dcd0c62b8d0,replica_room0,selected_keyframes,"{
+  ""method"": ""selected"",
+  ""policy"": ""keyframes"",
+  ""run_number"": 1,
+  ""features"": ""ORB2"",
+  ""backend"": ""cpp"",
+  ""playback_speed"": 1.5,
+  ""max_frames"": null,
+  ""selected"": {
+    ""module"": ""part4/part3_adapter.py"",
+    ""sensor"": ""mono"",
+    ""parameters"": {
+      ""method"": ""B+E1"",
+      ""sigma_pct"": 80,
+      ""depth_until"": 0
+    },
+    ""insertion_location"": ""E1: Initializer initial map scale; B: LocalMapping low-parallax point insertion"",
+    ""persistent_constraint"": false,
+    ""conflict_policy"": ""Keep triangulated points; B fills only rejected low-parallax matches passing existing map checks"",
+    ""metric_scale_semantics"": ""E1 initialises in network metres; B estimates recent metres per map unit from triangulated correspondences; subsequent optimisation can change points and scale"",
+    ""random_seed_support"": ""upstream backend has no validated deterministic seed; five independent processes"",
+    ""source_revision"": ""94c47e1"",
+    ""source_patch"": ""0227 Coursework/patches/part3_changes.patch"",
+    ""selection_rationale"": ""B80E1 is the combined Part 3 method, chosen before own-sequence scoring to exercise both scale initialisation and low-parallax depth insertion. It has lower median KITTI Sim3 ATE than mono in the uploaded batch; no universal best configuration is claimed. Own DAV2 base indoor differs from any unverified teammate model size.""
+  },
+  ""temporal"": {
+    ""enabled"": false,
+    ""development_fraction"": 0.5,
+    ""min_samples"": 30,
+    ""min_relative_threshold"": 0.05,
+    ""mad_multiplier"": 3.0
+  },
+  ""png_factor"": 6553.5,
+  ""environment"": ""indoor"",
+  ""prepare"": ""part4/work/living_room_recording2/standard_reruns/replica_room0/prepare/0effb00d621aee65"",
+  ""out"": ""part4/work/living_room_recording2/standard_reruns/replica_room0/slam/05cc2dcd0c62b8d0"",
+  ""depth_path"": ""part4/work/living_room_recording2/standard_reruns/replica_room0/depth/44df58f005a67118""
+}",1,0.22712388601002836,0.004676870629128609,0.8324445447522136,0.003635480532942585,0.999,0.0,27.45900957332924,0.5767237628630164,trajectories_tum/part4/replica_room0_selected_keyframes_r1_05cc2dcd0c62b8d0.tum
+replica_room0_selected_keyframes_r2_1255d8ce5444e66f,replica_room0,selected_keyframes,"{
+  ""method"": ""selected"",
+  ""policy"": ""keyframes"",
+  ""run_number"": 2,
+  ""features"": ""ORB2"",
+  ""backend"": ""cpp"",
+  ""playback_speed"": 1.5,
+  ""max_frames"": null,
+  ""selected"": {
+    ""module"": ""part4/part3_adapter.py"",
+    ""sensor"": ""mono"",
+    ""parameters"": {
+      ""method"": ""B+E1"",
+      ""sigma_pct"": 80,
+      ""depth_until"": 0
+    },
+    ""insertion_location"": ""E1: Initializer initial map scale; B: LocalMapping low-parallax point insertion"",
+    ""persistent_constraint"": false,
+    ""conflict_policy"": ""Keep triangulated points; B fills only rejected low-parallax matches passing existing map checks"",
+    ""metric_scale_semantics"": ""E1 initialises in network metres; B estimates recent metres per map unit from triangulated correspondences; subsequent optimisation can change points and scale"",
+    ""random_seed_support"": ""upstream backend has no validated deterministic seed; five independent processes"",
+    ""source_revision"": ""94c47e1"",
+    ""source_patch"": ""0227 Coursework/patches/part3_changes.patch"",
+    ""selection_rationale"": ""B80E1 is the combined Part 3 method, chosen before own-sequence scoring to exercise both scale initialisation and low-parallax depth insertion. It has lower median KITTI Sim3 ATE than mono in the uploaded batch; no universal best configuration is claimed. Own DAV2 base indoor differs from any unverified teammate model size.""
+  },
+  ""temporal"": {
+    ""enabled"": false,
+    ""development_fraction"": 0.5,
+    ""min_samples"": 30,
+    ""min_relative_threshold"": 0.05,
+    ""mad_multiplier"": 3.0
+  },
+  ""png_factor"": 6553.5,
+  ""environment"": ""indoor"",
+  ""prepare"": ""part4/work/living_room_recording2/standard_reruns/replica_room0/prepare/0effb00d621aee65"",
+  ""out"": ""part4/work/living_room_recording2/standard_reruns/replica_room0/slam/1255d8ce5444e66f"",
+  ""depth_path"": ""part4/work/living_room_recording2/standard_reruns/replica_room0/depth/44df58f005a67118""
+}",2,0.2403674713960796,0.004166790956235075,0.824381440130668,0.0041009652273037486,0.999,0.0,27.59829416492721,0.6228746946593771,trajectories_tum/part4/replica_room0_selected_keyframes_r2_1255d8ce5444e66f.tum
+replica_room0_selected_keyframes_r3_265a648153b7e796,replica_room0,selected_keyframes,"{
+  ""method"": ""selected"",
+  ""policy"": ""keyframes"",
+  ""run_number"": 3,
+  ""features"": ""ORB2"",
+  ""backend"": ""cpp"",
+  ""playback_speed"": 1.5,
+  ""max_frames"": null,
+  ""selected"": {
+    ""module"": ""part4/part3_adapter.py"",
+    ""sensor"": ""mono"",
+    ""parameters"": {
+      ""method"": ""B+E1"",
+      ""sigma_pct"": 80,
+      ""depth_until"": 0
+    },
+    ""insertion_location"": ""E1: Initializer initial map scale; B: LocalMapping low-parallax point insertion"",
+    ""persistent_constraint"": false,
+    ""conflict_policy"": ""Keep triangulated points; B fills only rejected low-parallax matches passing existing map checks"",
+    ""metric_scale_semantics"": ""E1 initialises in network metres; B estimates recent metres per map unit from triangulated correspondences; subsequent optimisation can change points and scale"",
+    ""random_seed_support"": ""upstream backend has no validated deterministic seed; five independent processes"",
+    ""source_revision"": ""94c47e1"",
+    ""source_patch"": ""0227 Coursework/patches/part3_changes.patch"",
+    ""selection_rationale"": ""B80E1 is the combined Part 3 method, chosen before own-sequence scoring to exercise both scale initialisation and low-parallax depth insertion. It has lower median KITTI Sim3 ATE than mono in the uploaded batch; no universal best configuration is claimed. Own DAV2 base indoor differs from any unverified teammate model size.""
+  },
+  ""temporal"": {
+    ""enabled"": false,
+    ""development_fraction"": 0.5,
+    ""min_samples"": 30,
+    ""min_relative_threshold"": 0.05,
+    ""mad_multiplier"": 3.0
+  },
+  ""png_factor"": 6553.5,
+  ""environment"": ""indoor"",
+  ""prepare"": ""part4/work/living_room_recording2/standard_reruns/replica_room0/prepare/0effb00d621aee65"",
+  ""out"": ""part4/work/living_room_recording2/standard_reruns/replica_room0/slam/265a648153b7e796"",
+  ""depth_path"": ""part4/work/living_room_recording2/standard_reruns/replica_room0/depth/44df58f005a67118""
+}",3,0.23017340690170254,0.004897538419647553,0.8305778906961481,0.004344120931164542,0.999,0.0,27.658072605903726,0.5954167281394895,trajectories_tum/part4/replica_room0_selected_keyframes_r3_265a648153b7e796.tum
+replica_room0_selected_keyframes_r4_71c36243cf606048,replica_room0,selected_keyframes,"{
+  ""method"": ""selected"",
+  ""policy"": ""keyframes"",
+  ""run_number"": 4,
+  ""features"": ""ORB2"",
+  ""backend"": ""cpp"",
+  ""playback_speed"": 1.5,
+  ""max_frames"": null,
+  ""selected"": {
+    ""module"": ""part4/part3_adapter.py"",
+    ""sensor"": ""mono"",
+    ""parameters"": {
+      ""method"": ""B+E1"",
+      ""sigma_pct"": 80,
+      ""depth_until"": 0
+    },
+    ""insertion_location"": ""E1: Initializer initial map scale; B: LocalMapping low-parallax point insertion"",
+    ""persistent_constraint"": false,
+    ""conflict_policy"": ""Keep triangulated points; B fills only rejected low-parallax matches passing existing map checks"",
+    ""metric_scale_semantics"": ""E1 initialises in network metres; B estimates recent metres per map unit from triangulated correspondences; subsequent optimisation can change points and scale"",
+    ""random_seed_support"": ""upstream backend has no validated deterministic seed; five independent processes"",
+    ""source_revision"": ""94c47e1"",
+    ""source_patch"": ""0227 Coursework/patches/part3_changes.patch"",
+    ""selection_rationale"": ""B80E1 is the combined Part 3 method, chosen before own-sequence scoring to exercise both scale initialisation and low-parallax depth insertion. It has lower median KITTI Sim3 ATE than mono in the uploaded batch; no universal best configuration is claimed. Own DAV2 base indoor differs from any unverified teammate model size.""
+  },
+  ""temporal"": {
+    ""enabled"": false,
+    ""development_fraction"": 0.5,
+    ""min_samples"": 30,
+    ""min_relative_threshold"": 0.05,
+    ""mad_multiplier"": 3.0
+  },
+  ""png_factor"": 6553.5,
+  ""environment"": ""indoor"",
+  ""prepare"": ""part4/work/living_room_recording2/standard_reruns/replica_room0/prepare/0effb00d621aee65"",
+  ""out"": ""part4/work/living_room_recording2/standard_reruns/replica_room0/slam/71c36243cf606048"",
+  ""depth_path"": ""part4/work/living_room_recording2/standard_reruns/replica_room0/depth/44df58f005a67118""
+}",4,0.2223587019572461,0.005063691896908206,0.8353875509557348,0.004272410020162761,0.999,0.0,27.10271766950609,0.5725869016326472,trajectories_tum/part4/replica_room0_selected_keyframes_r4_71c36243cf606048.tum
+replica_room0_selected_keyframes_r5_6d5901a8567a7350,replica_room0,selected_keyframes,"{
+  ""method"": ""selected"",
+  ""policy"": ""keyframes"",
+  ""run_number"": 5,
+  ""features"": ""ORB2"",
+  ""backend"": ""cpp"",
+  ""playback_speed"": 1.5,
+  ""max_frames"": null,
+  ""selected"": {
+    ""module"": ""part4/part3_adapter.py"",
+    ""sensor"": ""mono"",
+    ""parameters"": {
+      ""method"": ""B+E1"",
+      ""sigma_pct"": 80,
+      ""depth_until"": 0
+    },
+    ""insertion_location"": ""E1: Initializer initial map scale; B: LocalMapping low-parallax point insertion"",
+    ""persistent_constraint"": false,
+    ""conflict_policy"": ""Keep triangulated points; B fills only rejected low-parallax matches passing existing map checks"",
+    ""metric_scale_semantics"": ""E1 initialises in network metres; B estimates recent metres per map unit from triangulated correspondences; subsequent optimisation can change points and scale"",
+    ""random_seed_support"": ""upstream backend has no validated deterministic seed; five independent processes"",
+    ""source_revision"": ""94c47e1"",
+    ""source_patch"": ""0227 Coursework/patches/part3_changes.patch"",
+    ""selection_rationale"": ""B80E1 is the combined Part 3 method, chosen before own-sequence scoring to exercise both scale initialisation and low-parallax depth insertion. It has lower median KITTI Sim3 ATE than mono in the uploaded batch; no universal best configuration is claimed. Own DAV2 base indoor differs from any unverified teammate model size.""
+  },
+  ""temporal"": {
+    ""enabled"": false,
+    ""development_fraction"": 0.5,
+    ""min_samples"": 30,
+    ""min_relative_threshold"": 0.05,
+    ""mad_multiplier"": 3.0
+  },
+  ""png_factor"": 6553.5,
+  ""environment"": ""indoor"",
+  ""prepare"": ""part4/work/living_room_recording2/standard_reruns/replica_room0/prepare/0effb00d621aee65"",
+  ""out"": ""part4/work/living_room_recording2/standard_reruns/replica_room0/slam/6d5901a8567a7350"",
+  ""depth_path"": ""part4/work/living_room_recording2/standard_reruns/replica_room0/depth/44df58f005a67118""
+}",5,0.22876717534107904,0.004341286570951441,0.8314322821398259,0.0035625740924834924,0.999,0.0,27.526434776955284,0.5804160425973716,trajectories_tum/part4/replica_room0_selected_keyframes_r5_6d5901a8567a7350.tum
+replica_room0_selected_stride5_r1_f3c8e3d677f546f2,replica_room0,selected_stride5,"{
+  ""method"": ""selected"",
+  ""policy"": ""stride5"",
+  ""run_number"": 1,
+  ""features"": ""ORB2"",
+  ""backend"": ""cpp"",
+  ""playback_speed"": 1.5,
+  ""max_frames"": null,
+  ""selected"": {
+    ""module"": ""part4/part3_adapter.py"",
+    ""sensor"": ""mono"",
+    ""parameters"": {
+      ""method"": ""B+E1"",
+      ""sigma_pct"": 80,
+      ""depth_until"": 0
+    },
+    ""insertion_location"": ""E1: Initializer initial map scale; B: LocalMapping low-parallax point insertion"",
+    ""persistent_constraint"": false,
+    ""conflict_policy"": ""Keep triangulated points; B fills only rejected low-parallax matches passing existing map checks"",
+    ""metric_scale_semantics"": ""E1 initialises in network metres; B estimates recent metres per map unit from triangulated correspondences; subsequent optimisation can change points and scale"",
+    ""random_seed_support"": ""upstream backend has no validated deterministic seed; five independent processes"",
+    ""source_revision"": ""94c47e1"",
+    ""source_patch"": ""0227 Coursework/patches/part3_changes.patch"",
+    ""selection_rationale"": ""B80E1 is the combined Part 3 method, chosen before own-sequence scoring to exercise both scale initialisation and low-parallax depth insertion. It has lower median KITTI Sim3 ATE than mono in the uploaded batch; no universal best configuration is claimed. Own DAV2 base indoor differs from any unverified teammate model size.""
+  },
+  ""temporal"": {
+    ""enabled"": false,
+    ""development_fraction"": 0.5,
+    ""min_samples"": 30,
+    ""min_relative_threshold"": 0.05,
+    ""mad_multiplier"": 3.0
+  },
+  ""png_factor"": 6553.5,
+  ""environment"": ""indoor"",
+  ""prepare"": ""part4/work/living_room_recording2/standard_reruns/replica_room0/prepare/0effb00d621aee65"",
+  ""out"": ""part4/work/living_room_recording2/standard_reruns/replica_room0/slam/f3c8e3d677f546f2"",
+  ""depth_path"": ""part4/work/living_room_recording2/standard_reruns/replica_room0/depth/44df58f005a67118""
+}",1,0.22989152897525625,0.005404838977206867,0.8307569997508946,0.004344798781307942,0.999,0.0,28.182291812670883,0.588322111036576,trajectories_tum/part4/replica_room0_selected_stride5_r1_f3c8e3d677f546f2.tum
+replica_room0_selected_stride5_r2_0d64891313657049,replica_room0,selected_stride5,"{
+  ""method"": ""selected"",
+  ""policy"": ""stride5"",
+  ""run_number"": 2,
+  ""features"": ""ORB2"",
+  ""backend"": ""cpp"",
+  ""playback_speed"": 1.5,
+  ""max_frames"": null,
+  ""selected"": {
+    ""module"": ""part4/part3_adapter.py"",
+    ""sensor"": ""mono"",
+    ""parameters"": {
+      ""method"": ""B+E1"",
+      ""sigma_pct"": 80,
+      ""depth_until"": 0
+    },
+    ""insertion_location"": ""E1: Initializer initial map scale; B: LocalMapping low-parallax point insertion"",
+    ""persistent_constraint"": false,
+    ""conflict_policy"": ""Keep triangulated points; B fills only rejected low-parallax matches passing existing map checks"",
+    ""metric_scale_semantics"": ""E1 initialises in network metres; B estimates recent metres per map unit from triangulated correspondences; subsequent optimisation can change points and scale"",
+    ""random_seed_support"": ""upstream backend has no validated deterministic seed; five independent processes"",
+    ""source_revision"": ""94c47e1"",
+    ""source_patch"": ""0227 Coursework/patches/part3_changes.patch"",
+    ""selection_rationale"": ""B80E1 is the combined Part 3 method, chosen before own-sequence scoring to exercise both scale initialisation and low-parallax depth insertion. It has lower median KITTI Sim3 ATE than mono in the uploaded batch; no universal best configuration is claimed. Own DAV2 base indoor differs from any unverified teammate model size.""
+  },
+  ""temporal"": {
+    ""enabled"": false,
+    ""development_fraction"": 0.5,
+    ""min_samples"": 30,
+    ""min_relative_threshold"": 0.05,
+    ""mad_multiplier"": 3.0
+  },
+  ""png_factor"": 6553.5,
+  ""environment"": ""indoor"",
+  ""prepare"": ""part4/work/living_room_recording2/standard_reruns/replica_room0/prepare/0effb00d621aee65"",
+  ""out"": ""part4/work/living_room_recording2/standard_reruns/replica_room0/slam/0d64891313657049"",
+  ""depth_path"": ""part4/work/living_room_recording2/standard_reruns/replica_room0/depth/44df58f005a67118""
+}",2,0.22984285131062512,0.005558131517961511,0.8307889326493317,0.0037705092591927055,0.999,0.0,27.90923181344988,0.6010628017465015,trajectories_tum/part4/replica_room0_selected_stride5_r2_0d64891313657049.tum
+replica_room0_selected_stride5_r3_508fe018199f771f,replica_room0,selected_stride5,"{
+  ""method"": ""selected"",
+  ""policy"": ""stride5"",
+  ""run_number"": 3,
+  ""features"": ""ORB2"",
+  ""backend"": ""cpp"",
+  ""playback_speed"": 1.5,
+  ""max_frames"": null,
+  ""selected"": {
+    ""module"": ""part4/part3_adapter.py"",
+    ""sensor"": ""mono"",
+    ""parameters"": {
+      ""method"": ""B+E1"",
+      ""sigma_pct"": 80,
+      ""depth_until"": 0
+    },
+    ""insertion_location"": ""E1: Initializer initial map scale; B: LocalMapping low-parallax point insertion"",
+    ""persistent_constraint"": false,
+    ""conflict_policy"": ""Keep triangulated points; B fills only rejected low-parallax matches passing existing map checks"",
+    ""metric_scale_semantics"": ""E1 initialises in network metres; B estimates recent metres per map unit from triangulated correspondences; subsequent optimisation can change points and scale"",
+    ""random_seed_support"": ""upstream backend has no validated deterministic seed; five independent processes"",
+    ""source_revision"": ""94c47e1"",
+    ""source_patch"": ""0227 Coursework/patches/part3_changes.patch"",
+    ""selection_rationale"": ""B80E1 is the combined Part 3 method, chosen before own-sequence scoring to exercise both scale initialisation and low-parallax depth insertion. It has lower median KITTI Sim3 ATE than mono in the uploaded batch; no universal best configuration is claimed. Own DAV2 base indoor differs from any unverified teammate model size.""
+  },
+  ""temporal"": {
+    ""enabled"": false,
+    ""development_fraction"": 0.5,
+    ""min_samples"": 30,
+    ""min_relative_threshold"": 0.05,
+    ""mad_multiplier"": 3.0
+  },
+  ""png_factor"": 6553.5,
+  ""environment"": ""indoor"",
+  ""prepare"": ""part4/work/living_room_recording2/standard_reruns/replica_room0/prepare/0effb00d621aee65"",
+  ""out"": ""part4/work/living_room_recording2/standard_reruns/replica_room0/slam/508fe018199f771f"",
+  ""depth_path"": ""part4/work/living_room_recording2/standard_reruns/replica_room0/depth/44df58f005a67118""
+}",3,0.2373416892172466,0.00450972834216678,0.826212128274867,0.004206649245859908,0.999,0.0,27.748784800234716,0.5975659039758363,trajectories_tum/part4/replica_room0_selected_stride5_r3_508fe018199f771f.tum
+replica_room0_selected_stride5_r4_4f11eb673ef64a07,replica_room0,selected_stride5,"{
+  ""method"": ""selected"",
+  ""policy"": ""stride5"",
+  ""run_number"": 4,
+  ""features"": ""ORB2"",
+  ""backend"": ""cpp"",
+  ""playback_speed"": 1.5,
+  ""max_frames"": null,
+  ""selected"": {
+    ""module"": ""part4/part3_adapter.py"",
+    ""sensor"": ""mono"",
+    ""parameters"": {
+      ""method"": ""B+E1"",
+      ""sigma_pct"": 80,
+      ""depth_until"": 0
+    },
+    ""insertion_location"": ""E1: Initializer initial map scale; B: LocalMapping low-parallax point insertion"",
+    ""persistent_constraint"": false,
+    ""conflict_policy"": ""Keep triangulated points; B fills only rejected low-parallax matches passing existing map checks"",
+    ""metric_scale_semantics"": ""E1 initialises in network metres; B estimates recent metres per map unit from triangulated correspondences; subsequent optimisation can change points and scale"",
+    ""random_seed_support"": ""upstream backend has no validated deterministic seed; five independent processes"",
+    ""source_revision"": ""94c47e1"",
+    ""source_patch"": ""0227 Coursework/patches/part3_changes.patch"",
+    ""selection_rationale"": ""B80E1 is the combined Part 3 method, chosen before own-sequence scoring to exercise both scale initialisation and low-parallax depth insertion. It has lower median KITTI Sim3 ATE than mono in the uploaded batch; no universal best configuration is claimed. Own DAV2 base indoor differs from any unverified teammate model size.""
+  },
+  ""temporal"": {
+    ""enabled"": false,
+    ""development_fraction"": 0.5,
+    ""min_samples"": 30,
+    ""min_relative_threshold"": 0.05,
+    ""mad_multiplier"": 3.0
+  },
+  ""png_factor"": 6553.5,
+  ""environment"": ""indoor"",
+  ""prepare"": ""part4/work/living_room_recording2/standard_reruns/replica_room0/prepare/0effb00d621aee65"",
+  ""out"": ""part4/work/living_room_recording2/standard_reruns/replica_room0/slam/4f11eb673ef64a07"",
+  ""depth_path"": ""part4/work/living_room_recording2/standard_reruns/replica_room0/depth/44df58f005a67118""
+}",4,0.22432364363956328,0.0036961914505018053,0.8341576736394551,0.0035039936387676295,0.999,0.0,28.111251342343166,0.5631525673359752,trajectories_tum/part4/replica_room0_selected_stride5_r4_4f11eb673ef64a07.tum
+replica_room0_selected_stride5_r5_194e95f801f94caf,replica_room0,selected_stride5,"{
+  ""method"": ""selected"",
+  ""policy"": ""stride5"",
+  ""run_number"": 5,
+  ""features"": ""ORB2"",
+  ""backend"": ""cpp"",
+  ""playback_speed"": 1.5,
+  ""max_frames"": null,
+  ""selected"": {
+    ""module"": ""part4/part3_adapter.py"",
+    ""sensor"": ""mono"",
+    ""parameters"": {
+      ""method"": ""B+E1"",
+      ""sigma_pct"": 80,
+      ""depth_until"": 0
+    },
+    ""insertion_location"": ""E1: Initializer initial map scale; B: LocalMapping low-parallax point insertion"",
+    ""persistent_constraint"": false,
+    ""conflict_policy"": ""Keep triangulated points; B fills only rejected low-parallax matches passing existing map checks"",
+    ""metric_scale_semantics"": ""E1 initialises in network metres; B estimates recent metres per map unit from triangulated correspondences; subsequent optimisation can change points and scale"",
+    ""random_seed_support"": ""upstream backend has no validated deterministic seed; five independent processes"",
+    ""source_revision"": ""94c47e1"",
+    ""source_patch"": ""0227 Coursework/patches/part3_changes.patch"",
+    ""selection_rationale"": ""B80E1 is the combined Part 3 method, chosen before own-sequence scoring to exercise both scale initialisation and low-parallax depth insertion. It has lower median KITTI Sim3 ATE than mono in the uploaded batch; no universal best configuration is claimed. Own DAV2 base indoor differs from any unverified teammate model size.""
+  },
+  ""temporal"": {
+    ""enabled"": false,
+    ""development_fraction"": 0.5,
+    ""min_samples"": 30,
+    ""min_relative_threshold"": 0.05,
+    ""mad_multiplier"": 3.0
+  },
+  ""png_factor"": 6553.5,
+  ""environment"": ""indoor"",
+  ""prepare"": ""part4/work/living_room_recording2/standard_reruns/replica_room0/prepare/0effb00d621aee65"",
+  ""out"": ""part4/work/living_room_recording2/standard_reruns/replica_room0/slam/194e95f801f94caf"",
+  ""depth_path"": ""part4/work/living_room_recording2/standard_reruns/replica_room0/depth/44df58f005a67118""
+}",5,0.22220514459348023,0.0040595144479844796,0.8354703140101953,0.003959802079563155,0.999,0.0,27.858286791830324,0.5686582198411781,trajectories_tum/part4/replica_room0_selected_stride5_r5_194e95f801f94caf.tum
+replica_room0_selected_temporal_keyframes_r1_11e20df6e5eab1f5,replica_room0,selected_temporal_keyframes,"{
+  ""method"": ""selected_temporal"",
+  ""policy"": ""keyframes"",
+  ""run_number"": 1,
+  ""features"": ""ORB2"",
+  ""backend"": ""cpp"",
+  ""playback_speed"": 1.5,
+  ""max_frames"": null,
+  ""selected"": {
+    ""module"": ""part4/part3_adapter.py"",
+    ""sensor"": ""mono"",
+    ""parameters"": {
+      ""method"": ""B+E1"",
+      ""sigma_pct"": 80,
+      ""depth_until"": 0
+    },
+    ""insertion_location"": ""E1: Initializer initial map scale; B: LocalMapping low-parallax point insertion"",
+    ""persistent_constraint"": false,
+    ""conflict_policy"": ""Keep triangulated points; B fills only rejected low-parallax matches passing existing map checks"",
+    ""metric_scale_semantics"": ""E1 initialises in network metres; B estimates recent metres per map unit from triangulated correspondences; subsequent optimisation can change points and scale"",
+    ""random_seed_support"": ""upstream backend has no validated deterministic seed; five independent processes"",
+    ""source_revision"": ""94c47e1"",
+    ""source_patch"": ""0227 Coursework/patches/part3_changes.patch"",
+    ""selection_rationale"": ""B80E1 is the combined Part 3 method, chosen before own-sequence scoring to exercise both scale initialisation and low-parallax depth insertion. It has lower median KITTI Sim3 ATE than mono in the uploaded batch; no universal best configuration is claimed. Own DAV2 base indoor differs from any unverified teammate model size.""
+  },
+  ""temporal"": {
+    ""enabled"": true,
+    ""development_fraction"": 0.5,
+    ""min_samples"": 30,
+    ""min_relative_threshold"": 0.05,
+    ""mad_multiplier"": 3.0
+  },
+  ""png_factor"": 6553.5,
+  ""environment"": ""indoor"",
+  ""prepare"": ""part4/work/living_room_recording2/standard_reruns/replica_room0/prepare/0effb00d621aee65"",
+  ""out"": ""part4/work/living_room_recording2/standard_reruns/replica_room0/slam/11e20df6e5eab1f5"",
+  ""depth_path"": ""part4/work/living_room_recording2/standard_reruns/replica_room0/depth/44df58f005a67118""
+}",1,0.23488340418370113,0.0042615248146855465,0.8276998587164289,0.003744683150970702,0.999,0.0,27.498346109408885,0.5818289739289275,trajectories_tum/part4/replica_room0_selected_temporal_keyframes_r1_11e20df6e5eab1f5.tum
+replica_room0_selected_temporal_keyframes_r2_17260799a5febdea,replica_room0,selected_temporal_keyframes,"{
+  ""method"": ""selected_temporal"",
+  ""policy"": ""keyframes"",
+  ""run_number"": 2,
+  ""features"": ""ORB2"",
+  ""backend"": ""cpp"",
+  ""playback_speed"": 1.5,
+  ""max_frames"": null,
+  ""selected"": {
+    ""module"": ""part4/part3_adapter.py"",
+    ""sensor"": ""mono"",
+    ""parameters"": {
+      ""method"": ""B+E1"",
+      ""sigma_pct"": 80,
+      ""depth_until"": 0
+    },
+    ""insertion_location"": ""E1: Initializer initial map scale; B: LocalMapping low-parallax point insertion"",
+    ""persistent_constraint"": false,
+    ""conflict_policy"": ""Keep triangulated points; B fills only rejected low-parallax matches passing existing map checks"",
+    ""metric_scale_semantics"": ""E1 initialises in network metres; B estimates recent metres per map unit from triangulated correspondences; subsequent optimisation can change points and scale"",
+    ""random_seed_support"": ""upstream backend has no validated deterministic seed; five independent processes"",
+    ""source_revision"": ""94c47e1"",
+    ""source_patch"": ""0227 Coursework/patches/part3_changes.patch"",
+    ""selection_rationale"": ""B80E1 is the combined Part 3 method, chosen before own-sequence scoring to exercise both scale initialisation and low-parallax depth insertion. It has lower median KITTI Sim3 ATE than mono in the uploaded batch; no universal best configuration is claimed. Own DAV2 base indoor differs from any unverified teammate model size.""
+  },
+  ""temporal"": {
+    ""enabled"": true,
+    ""development_fraction"": 0.5,
+    ""min_samples"": 30,
+    ""min_relative_threshold"": 0.05,
+    ""mad_multiplier"": 3.0
+  },
+  ""png_factor"": 6553.5,
+  ""environment"": ""indoor"",
+  ""prepare"": ""part4/work/living_room_recording2/standard_reruns/replica_room0/prepare/0effb00d621aee65"",
+  ""out"": ""part4/work/living_room_recording2/standard_reruns/replica_room0/slam/17260799a5febdea"",
+  ""depth_path"": ""part4/work/living_room_recording2/standard_reruns/replica_room0/depth/44df58f005a67118""
+}",2,0.23165257787303445,0.004363707643441649,0.8296679265343189,0.0038465349619803105,0.999,0.0,27.618119010236114,0.5962481812717835,trajectories_tum/part4/replica_room0_selected_temporal_keyframes_r2_17260799a5febdea.tum
+replica_room0_selected_temporal_keyframes_r3_16597d3f5d63b739,replica_room0,selected_temporal_keyframes,"{
+  ""method"": ""selected_temporal"",
+  ""policy"": ""keyframes"",
+  ""run_number"": 3,
+  ""features"": ""ORB2"",
+  ""backend"": ""cpp"",
+  ""playback_speed"": 1.5,
+  ""max_frames"": null,
+  ""selected"": {
+    ""module"": ""part4/part3_adapter.py"",
+    ""sensor"": ""mono"",
+    ""parameters"": {
+      ""method"": ""B+E1"",
+      ""sigma_pct"": 80,
+      ""depth_until"": 0
+    },
+    ""insertion_location"": ""E1: Initializer initial map scale; B: LocalMapping low-parallax point insertion"",
+    ""persistent_constraint"": false,
+    ""conflict_policy"": ""Keep triangulated points; B fills only rejected low-parallax matches passing existing map checks"",
+    ""metric_scale_semantics"": ""E1 initialises in network metres; B estimates recent metres per map unit from triangulated correspondences; subsequent optimisation can change points and scale"",
+    ""random_seed_support"": ""upstream backend has no validated deterministic seed; five independent processes"",
+    ""source_revision"": ""94c47e1"",
+    ""source_patch"": ""0227 Coursework/patches/part3_changes.patch"",
+    ""selection_rationale"": ""B80E1 is the combined Part 3 method, chosen before own-sequence scoring to exercise both scale initialisation and low-parallax depth insertion. It has lower median KITTI Sim3 ATE than mono in the uploaded batch; no universal best configuration is claimed. Own DAV2 base indoor differs from any unverified teammate model size.""
+  },
+  ""temporal"": {
+    ""enabled"": true,
+    ""development_fraction"": 0.5,
+    ""min_samples"": 30,
+    ""min_relative_threshold"": 0.05,
+    ""mad_multiplier"": 3.0
+  },
+  ""png_factor"": 6553.5,
+  ""environment"": ""indoor"",
+  ""prepare"": ""part4/work/living_room_recording2/standard_reruns/replica_room0/prepare/0effb00d621aee65"",
+  ""out"": ""part4/work/living_room_recording2/standard_reruns/replica_room0/slam/16597d3f5d63b739"",
+  ""depth_path"": ""part4/work/living_room_recording2/standard_reruns/replica_room0/depth/44df58f005a67118""
+}",3,0.23462916678296114,0.003698648019819807,0.8278487518290338,0.0036976293914345723,0.999,0.0,27.867669963045046,0.6041030934038316,trajectories_tum/part4/replica_room0_selected_temporal_keyframes_r3_16597d3f5d63b739.tum
+replica_room0_selected_temporal_keyframes_r4_f243a7f1b4c307f9,replica_room0,selected_temporal_keyframes,"{
+  ""method"": ""selected_temporal"",
+  ""policy"": ""keyframes"",
+  ""run_number"": 4,
+  ""features"": ""ORB2"",
+  ""backend"": ""cpp"",
+  ""playback_speed"": 1.5,
+  ""max_frames"": null,
+  ""selected"": {
+    ""module"": ""part4/part3_adapter.py"",
+    ""sensor"": ""mono"",
+    ""parameters"": {
+      ""method"": ""B+E1"",
+      ""sigma_pct"": 80,
+      ""depth_until"": 0
+    },
+    ""insertion_location"": ""E1: Initializer initial map scale; B: LocalMapping low-parallax point insertion"",
+    ""persistent_constraint"": false,
+    ""conflict_policy"": ""Keep triangulated points; B fills only rejected low-parallax matches passing existing map checks"",
+    ""metric_scale_semantics"": ""E1 initialises in network metres; B estimates recent metres per map unit from triangulated correspondences; subsequent optimisation can change points and scale"",
+    ""random_seed_support"": ""upstream backend has no validated deterministic seed; five independent processes"",
+    ""source_revision"": ""94c47e1"",
+    ""source_patch"": ""0227 Coursework/patches/part3_changes.patch"",
+    ""selection_rationale"": ""B80E1 is the combined Part 3 method, chosen before own-sequence scoring to exercise both scale initialisation and low-parallax depth insertion. It has lower median KITTI Sim3 ATE than mono in the uploaded batch; no universal best configuration is claimed. Own DAV2 base indoor differs from any unverified teammate model size.""
+  },
+  ""temporal"": {
+    ""enabled"": true,
+    ""development_fraction"": 0.5,
+    ""min_samples"": 30,
+    ""min_relative_threshold"": 0.05,
+    ""mad_multiplier"": 3.0
+  },
+  ""png_factor"": 6553.5,
+  ""environment"": ""indoor"",
+  ""prepare"": ""part4/work/living_room_recording2/standard_reruns/replica_room0/prepare/0effb00d621aee65"",
+  ""out"": ""part4/work/living_room_recording2/standard_reruns/replica_room0/slam/f243a7f1b4c307f9"",
+  ""depth_path"": ""part4/work/living_room_recording2/standard_reruns/replica_room0/depth/44df58f005a67118""
+}",4,0.22924618471984623,0.00535945539612979,0.8311514678008198,0.004435631302861635,0.999,0.0,27.680101276142523,0.5873349872012804,trajectories_tum/part4/replica_room0_selected_temporal_keyframes_r4_f243a7f1b4c307f9.tum
+replica_room0_selected_temporal_keyframes_r5_a2c8ac70478b7faa,replica_room0,selected_temporal_keyframes,"{
+  ""method"": ""selected_temporal"",
+  ""policy"": ""keyframes"",
+  ""run_number"": 5,
+  ""features"": ""ORB2"",
+  ""backend"": ""cpp"",
+  ""playback_speed"": 1.5,
+  ""max_frames"": null,
+  ""selected"": {
+    ""module"": ""part4/part3_adapter.py"",
+    ""sensor"": ""mono"",
+    ""parameters"": {
+      ""method"": ""B+E1"",
+      ""sigma_pct"": 80,
+      ""depth_until"": 0
+    },
+    ""insertion_location"": ""E1: Initializer initial map scale; B: LocalMapping low-parallax point insertion"",
+    ""persistent_constraint"": false,
+    ""conflict_policy"": ""Keep triangulated points; B fills only rejected low-parallax matches passing existing map checks"",
+    ""metric_scale_semantics"": ""E1 initialises in network metres; B estimates recent metres per map unit from triangulated correspondences; subsequent optimisation can change points and scale"",
+    ""random_seed_support"": ""upstream backend has no validated deterministic seed; five independent processes"",
+    ""source_revision"": ""94c47e1"",
+    ""source_patch"": ""0227 Coursework/patches/part3_changes.patch"",
+    ""selection_rationale"": ""B80E1 is the combined Part 3 method, chosen before own-sequence scoring to exercise both scale initialisation and low-parallax depth insertion. It has lower median KITTI Sim3 ATE than mono in the uploaded batch; no universal best configuration is claimed. Own DAV2 base indoor differs from any unverified teammate model size.""
+  },
+  ""temporal"": {
+    ""enabled"": true,
+    ""development_fraction"": 0.5,
+    ""min_samples"": 30,
+    ""min_relative_threshold"": 0.05,
+    ""mad_multiplier"": 3.0
+  },
+  ""png_factor"": 6553.5,
+  ""environment"": ""indoor"",
+  ""prepare"": ""part4/work/living_room_recording2/standard_reruns/replica_room0/prepare/0effb00d621aee65"",
+  ""out"": ""part4/work/living_room_recording2/standard_reruns/replica_room0/slam/a2c8ac70478b7faa"",
+  ""depth_path"": ""part4/work/living_room_recording2/standard_reruns/replica_room0/depth/44df58f005a67118""
+}",5,0.24361824357251927,0.0038059028728565864,0.8224241363342668,0.003972942808184517,0.999,0.0,27.88428912148811,0.604689808386633,trajectories_tum/part4/replica_room0_selected_temporal_keyframes_r5_a2c8ac70478b7faa.tum

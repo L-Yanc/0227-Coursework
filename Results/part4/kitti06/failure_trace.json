@@ -1,0 +1,19 @@
+{
+  "selection_rule": "Learned-depth run with largest scaled ATE exceeding baseline mean; then timestamp with largest positive local scaled-error difference against baseline run nearest baseline mean.",
+  "causality": "Association only; inspect RGB/prediction/map and tracking states before interpreting cause.",
+  "baseline_mean_ate_m": 12.177875313242373,
+  "baseline_sd_m": 1.2235676841508796,
+  "status": "candidate_requires_interpretation",
+  "learned_run": "kitti06_pseudo_rgbd_stride5_r1_2ad0e2198ff8c0c8",
+  "baseline_run": "kitti06_mono_every_r2_7d70bacd1864a53b",
+  "frame_id": 694,
+  "timestamp": 72.11368,
+  "local_scaled_error_difference_m": 41.36645934930032,
+  "exceeds_baseline_sd": true,
+  "scene_hazards": [
+    "blank walls",
+    "mirror",
+    "glass surfaces",
+    "motion blur"
+  ]
+}

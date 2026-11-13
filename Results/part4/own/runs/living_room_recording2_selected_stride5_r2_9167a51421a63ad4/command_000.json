@@ -1,0 +1,15 @@
+{
+  "argv": [
+    "/Users/l_yanc/Desktop/UCL 4/UCL 4.1/0227 Situational Awareness/0227 CW1/COMP0227_26-27/pyslam/.pixi/envs/default/bin/python",
+    "/Users/l_yanc/Desktop/UCL 4/UCL 4.1/0227 Situational Awareness/0227 CW1/part4/slam_worker.py",
+    "--spec",
+    "/Users/l_yanc/Desktop/UCL 4/UCL 4.1/0227 Situational Awareness/0227 CW1/part4/work/living_room_recording2/slam/9167a51421a63ad4/spec.json"
+  ],
+  "cwd": "/Users/l_yanc/Desktop/UCL 4/UCL 4.1/0227 Situational Awareness/0227 CW1/COMP0227_26-27/pyslam",
+  "started_utc": "2026-11-12T23:27:31.020092+00:00",
+  "ended_utc": "2026-11-13T00:18:12.153933+00:00",
+  "elapsed_s": 3041.133841,
+  "exit_code": null,
+  "termination": "Parent interrupted with SIGINT; worker process group terminated by parent cleanup",
+  "recovered_complete_payloads": true
+}

@@ -1,0 +1,19 @@
+{
+  "selection_rule": "Learned-depth run with largest scaled ATE exceeding baseline mean; then timestamp with largest positive local scaled-error difference against baseline run nearest baseline mean.",
+  "causality": "Association only; inspect RGB/prediction/map and tracking states before interpreting cause.",
+  "baseline_mean_ate_m": 0.25762079368190377,
+  "baseline_sd_m": 0.1326934443413934,
+  "status": "candidate_requires_interpretation",
+  "learned_run": "living_room_recording2_selected_stride5_r5_f3be09b3f2184cb6",
+  "baseline_run": "living_room_recording2_mono_every_r3_4e53154a33d22311",
+  "frame_id": 631,
+  "timestamp": 63.111667,
+  "local_scaled_error_difference_m": 2.534859094973046,
+  "exceeds_baseline_sd": true,
+  "scene_hazards": [
+    "blank walls",
+    "mirror",
+    "glass surfaces",
+    "motion blur"
+  ]
+}

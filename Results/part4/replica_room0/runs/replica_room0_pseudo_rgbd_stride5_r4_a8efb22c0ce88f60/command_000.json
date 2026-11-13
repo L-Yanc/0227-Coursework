@@ -1,0 +1,15 @@
+{
+  "argv": [
+    "/Users/l_yanc/Desktop/UCL 4/UCL 4.1/0227 Situational Awareness/0227 CW1/COMP0227_26-27/pyslam/.pixi/envs/default/bin/python",
+    "/Users/l_yanc/Desktop/UCL 4/UCL 4.1/0227 Situational Awareness/0227 CW1/part4/slam_worker.py",
+    "--spec",
+    "/Users/l_yanc/Desktop/UCL 4/UCL 4.1/0227 Situational Awareness/0227 CW1/part4/work/living_room_recording2/standard_reruns/replica_room0/slam/a8efb22c0ce88f60/spec.json"
+  ],
+  "cwd": "/Users/l_yanc/Desktop/UCL 4/UCL 4.1/0227 Situational Awareness/0227 CW1/COMP0227_26-27/pyslam",
+  "started_utc": "2026-11-13T03:01:38.644875+00:00",
+  "exit_code": 0,
+  "elapsed_s": 96.93932400003541,
+  "ended_utc": "2026-11-13T03:03:15.584919+00:00",
+  "successful_payload_recovered": false,
+  "attempt_timeout": false
+}

@@ -1,0 +1,26 @@
+{
+  "num_threads": 1,
+  "dataset_base_path": "data/replica",
+  "dataset_type": "REPLICA_DATASET",
+  "number_of_runs_per_dataset": 1,
+  "sensor_type": "mono",
+  "datasets": [
+    {
+      "name": "room0",
+      "settings_path": "settings/REPLICA.yaml",
+      "groundtruth_file": "auto"
+    }
+  ],
+  "presets": [
+    {
+      "name": "ORB2",
+      "custom_parameters": {
+        "settings": {
+          "FeatureTrackerConfig.name": "ORB2"
+        }
+      }
+    }
+  ],
+  "output_path": "replica_room0_mono",
+  "saved_trajectory_format_type": "kitti"
+}

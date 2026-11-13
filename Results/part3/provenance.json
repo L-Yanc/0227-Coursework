@@ -1,0 +1,592 @@
+{
+  "revision": "94c47e16c8bd5151efb40d27216a4fe8db5a046e",
+  "files": [
+    {
+      "git_path": "iteration2/code/configs/KITTI06_depth.yaml",
+      "repository_path": "configs/part3/KITTI06_depth.yaml",
+      "sha256": "e923d8241fc1095ca3dbe2bd3ded493915a7eb5d157b854e1db8806928f6b3dd",
+      "bytes": 2291,
+      "distribution_status": "present"
+    },
+    {
+      "git_path": "iteration2/code/scripts/part2_sigma.py",
+      "repository_path": "scripts/part3/part2_sigma.py",
+      "sha256": "9fb6bcb306cf8573dee6391b4be955063f0c9e2716362964a2178e53656194e7",
+      "bytes": 4166,
+      "distribution_status": "present"
+    },
+    {
+      "git_path": "iteration2/code/scripts/part2_stability.py",
+      "repository_path": "scripts/part3/part2_stability.py",
+      "sha256": "4dd2c0e3c05579ca6706eeae388b8cf6539f9986458e24db7b7ef5dd8e83fd8b",
+      "bytes": 1236,
+      "distribution_status": "present"
+    },
+    {
+      "git_path": "iteration2/code/scripts/part3_kitti_to_tum.py",
+      "repository_path": "scripts/part3/part3_kitti_to_tum.py",
+      "sha256": "388694b9192e65cf07759ad9b3e225c1d4180557f2e3ceeae9c8588856613f1b",
+      "bytes": 1444,
+      "distribution_status": "present"
+    },
+    {
+      "git_path": "iteration2/code/scripts/part3_lm_time.py",
+      "repository_path": "scripts/part3/part3_lm_time.py",
+      "sha256": "7fea53125b0899251e682088aa56585f1711242c13cdb4d1467607ab790b6922",
+      "bytes": 877,
+      "distribution_status": "present",
+      "current_sha256": "0bd6d9a2038445cb38127ddf74b912f8d61896958db977231faa74f7da81c3da",
+      "local_changes": "Accept quoted paths containing spaces in portable folder lists."
+    },
+    {
+      "git_path": "iteration2/code/scripts/part3_plots.py",
+      "repository_path": "scripts/part3/part3_plots.py",
+      "sha256": "4e8ca3b991b0dffb8e2eb1706dd082a6ad3c6906119dbb829d501ff500d88f72",
+      "bytes": 6120,
+      "distribution_status": "external report tool",
+      "local_preservation": "report_tools/part3_plots.py"
+    },
+    {
+      "git_path": "iteration2/code/scripts/part3_points.py",
+      "repository_path": "scripts/part3/part3_points.py",
+      "sha256": "0c651e3e8c6b06c25ef6823eec21104e630763ca3c8e6a53e528073a8a98002f",
+      "bytes": 3540,
+      "distribution_status": "present"
+    },
+    {
+      "git_path": "iteration2/code/scripts/part3_score.py",
+      "repository_path": "scripts/part3/part3_score.py",
+      "sha256": "e3b1bbd35d1443e327ee15ebe137fa6593a07c7c02e656b062f61f1abfa12820",
+      "bytes": 5493,
+      "distribution_status": "present",
+      "current_sha256": "a7ecf6107659c74fb568aa1b2c3f218b9583210f9c4008bbb76c6622c5cb7f79",
+      "local_changes": "Accept quoted paths containing spaces in portable folder lists."
+    },
+    {
+      "git_path": "iteration2/code/scripts/part3_tum.py",
+      "repository_path": "scripts/part3/part3_tum.py",
+      "sha256": "f43d37b1cf037b5a10677f2744733c1ee8e16bee6e8e1503983f49804bc4ff78",
+      "bytes": 2050,
+      "distribution_status": "present"
+    },
+    {
+      "git_path": "iteration2/code/scripts/patch_init.py",
+      "repository_path": "scripts/part3/patch_init.py",
+      "sha256": "9cb1f5bdafd6e57bea7ffb4122e760812fd57c1a6691ed6c09bda60d81f0ee76",
+      "bytes": 1160,
+      "distribution_status": "archived original; replaced by portable runner",
+      "local_preservation": "submission_archive_20261113/original_part3_scripts/patch_init.py"
+    },
+    {
+      "git_path": "iteration2/code/scripts/patch_mapping.py",
+      "repository_path": "scripts/part3/patch_mapping.py",
+      "sha256": "a8114b059b8ffebf913c0ba9bbdcfdbc55671ac538894e28e0ac84bf5b60bafd",
+      "bytes": 1336,
+      "distribution_status": "archived original; replaced by portable runner",
+      "local_preservation": "submission_archive_20261113/original_part3_scripts/patch_mapping.py"
+    },
+    {
+      "git_path": "iteration2/code/scripts/replica_to_tum.py",
+      "repository_path": "scripts/part3/replica_to_tum.py",
+      "sha256": "533b3958de3732e2ffd34f0075954f53d5851b21e2a54e1c62039ddb01e49c22",
+      "bytes": 5399,
+      "distribution_status": "present"
+    },
+    {
+      "git_path": "iteration2/code/scripts/run_part1_simple.sh",
+      "repository_path": "scripts/part3/run_part1_simple.sh",
+      "sha256": "56c36a9386534ad2e60517c68b217222b5d9e0fe11f9880be408654d446d89f5",
+      "bytes": 1369,
+      "distribution_status": "archived original; replaced by portable runner",
+      "local_preservation": "submission_archive_20261113/original_part3_scripts/run_part1_simple.sh"
+    },
+    {
+      "git_path": "iteration2/code/scripts/run_part2_depth.sh",
+      "repository_path": "scripts/part3/run_part2_depth.sh",
+      "sha256": "a959039812fbc18fd9765ba14fe1a3acc34d40fa31eb15f094310a098acf73aa",
+      "bytes": 911,
+      "distribution_status": "archived original; replaced by portable runner",
+      "local_preservation": "submission_archive_20261113/original_part3_scripts/run_part2_depth.sh"
+    },
+    {
+      "git_path": "iteration2/code/scripts/run_part3.sh",
+      "repository_path": "scripts/part3/run_part3.sh",
+      "sha256": "608828c661b51bbeb92916d01f61211f3de8ace7f916cc1914811ebebd406af2",
+      "bytes": 2056,
+      "distribution_status": "archived original; replaced by portable runner",
+      "local_preservation": "submission_archive_20261113/original_part3_scripts/run_part3.sh"
+    },
+    {
+      "git_path": "iteration2/code/scripts/run_part3_A.sh",
+      "repository_path": "scripts/part3/run_part3_A.sh",
+      "sha256": "b6e06f79f7546b8e4b6a4bf75568dfe1084b17dd17849ce96b33fbb82bdfc17d",
+      "bytes": 1172,
+      "distribution_status": "archived original; replaced by portable runner",
+      "local_preservation": "submission_archive_20261113/original_part3_scripts/run_part3_A.sh"
+    },
+    {
+      "git_path": "iteration2/code/scripts/run_part3_extra.sh",
+      "repository_path": "scripts/part3/run_part3_extra.sh",
+      "sha256": "75dd6ddf23dfce183cc1919e952fc945c771436a138b9f9e976f2ea54b7d65b2",
+      "bytes": 2042,
+      "distribution_status": "archived original; replaced by portable runner",
+      "local_preservation": "submission_archive_20261113/original_part3_scripts/run_part3_extra.sh"
+    },
+    {
+      "git_path": "iteration2/code/scripts/run_part3_rest.sh",
+      "repository_path": "scripts/part3/run_part3_rest.sh",
+      "sha256": "6c71cbb037eb5f41d3672133fa2cef8a038e0f996a444a08d9daefbe7f651547",
+      "bytes": 1982,
+      "distribution_status": "archived original; replaced by portable runner",
+      "local_preservation": "submission_archive_20261113/original_part3_scripts/run_part3_rest.sh"
+    },
+    {
+      "git_path": "iteration2/part3/A_folders.txt",
+      "repository_path": "Results/part3/A_folders.txt",
+      "sha256": "e5f4e9fe95ac948d1fde3706e2984b0b932d44ab9486468af5f5b5e88254147f",
+      "bytes": 80,
+      "distribution_status": "present"
+    },
+    {
+      "git_path": "iteration2/part3/part3_folders.txt",
+      "repository_path": "Results/part3/part3_folders.txt",
+      "sha256": "1deaa2351627b1c18f1969397a1bee2b805cfe4cfc80a8c0382ac9397793315a",
+      "bytes": 1479,
+      "distribution_status": "present"
+    },
+    {
+      "git_path": "iteration2/part3/pointlogs/fr3_B100/points_20261109-171842_797865.csv.gz",
+      "repository_path": "Results/part3/pointlogs/fr3_B100/points_20261109-171842_797865.csv.gz",
+      "sha256": "de230ebec710690d83edc98a3c6fc3b31fcd543669f192a29e8f726aac84664e",
+      "bytes": 1067988,
+      "distribution_status": "present"
+    },
+    {
+      "git_path": "iteration2/part3/pointlogs/fr3_B50/points_20261109-164117_777631.csv.gz",
+      "repository_path": "Results/part3/pointlogs/fr3_B50/points_20261109-164117_777631.csv.gz",
+      "sha256": "990737031cbc1da4a491e88dc07dde5dd83a5c44c7157b7359bbbb05fca1036a",
+      "bytes": 1227573,
+      "distribution_status": "present"
+    },
+    {
+      "git_path": "iteration2/part3/pointlogs/fr3_B80/points_20261109-170136_790940.csv.gz",
+      "repository_path": "Results/part3/pointlogs/fr3_B80/points_20261109-170136_790940.csv.gz",
+      "sha256": "69dc4ead6efcad4456f3a62fd9db0451871a196f80e4378607378cceeea08cf9",
+      "bytes": 1493347,
+      "distribution_status": "present"
+    },
+    {
+      "git_path": "iteration2/part3/pointlogs/fr3_B80E1/points_20261109-173533_804601.csv.gz",
+      "repository_path": "Results/part3/pointlogs/fr3_B80E1/points_20261109-173533_804601.csv.gz",
+      "sha256": "4055010cb7f701dd1c84387d41b5404a9b76e517bf77596c468d8b796a44d979",
+      "bytes": 1357318,
+      "distribution_status": "present"
+    },
+    {
+      "git_path": "iteration2/part3/pointlogs/fr3_B80u10/points_20261109-174954_809729.csv.gz",
+      "repository_path": "Results/part3/pointlogs/fr3_B80u10/points_20261109-174954_809729.csv.gz",
+      "sha256": "7e1481e39bdba70b2b79b0744a2e030f481f7966b6d10b5be6902888bb1e9338",
+      "bytes": 1417926,
+      "distribution_status": "present"
+    },
+    {
+      "git_path": "iteration2/part3/pointlogs/fr3_E1/points_20261109-162532_768982.csv.gz",
+      "repository_path": "Results/part3/pointlogs/fr3_E1/points_20261109-162532_768982.csv.gz",
+      "sha256": "0a24d474de5713ce33daa1b9ea55c44f3f14e634663b9ffd6d6671011c083210",
+      "bytes": 1450328,
+      "distribution_status": "present"
+    },
+    {
+      "git_path": "iteration2/part3/pointlogs/fr3_E1s50/points_20261110-130722_178064.csv.gz",
+      "repository_path": "Results/part3/pointlogs/fr3_E1s50/points_20261110-130722_178064.csv.gz",
+      "sha256": "0b81bf416cacc0d2422280f653824a8fc7c0b9102c30eb64f588c4323876cee7",
+      "bytes": 1408952,
+      "distribution_status": "present"
+    },
+    {
+      "git_path": "iteration2/part3/pointlogs/fr3_E1s80/points_20261110-132152_186612.csv.gz",
+      "repository_path": "Results/part3/pointlogs/fr3_E1s80/points_20261110-132152_186612.csv.gz",
+      "sha256": "c6f6bc7b6d3347559c5446f775d46fcfb4e2a7945eb5f3f00e978aa862fe5f9f",
+      "bytes": 1466986,
+      "distribution_status": "present"
+    },
+    {
+      "git_path": "iteration2/part3/pointlogs/fr3_mono/points_20261109-160033_756742.csv.gz",
+      "repository_path": "Results/part3/pointlogs/fr3_mono/points_20261109-160033_756742.csv.gz",
+      "sha256": "eb3fcd68b9f817a4a5a9a17045bc3d94b583796a2a6cfde29c68ad057ac8b82a",
+      "bytes": 756611,
+      "distribution_status": "present"
+    },
+    {
+      "git_path": "iteration2/part3/pointlogs/fr3_mono/points_20261109-160651_759852.csv.gz",
+      "repository_path": "Results/part3/pointlogs/fr3_mono/points_20261109-160651_759852.csv.gz",
+      "sha256": "355a0cdb1743d871902d1f5916f7b7e5835e18fe357e03b0cb7e485b43b65bf5",
+      "bytes": 2118362,
+      "distribution_status": "present"
+    },
+    {
+      "git_path": "iteration2/part3/pointlogs/fr3_mono/points_20261109-161157_761946.csv.gz",
+      "repository_path": "Results/part3/pointlogs/fr3_mono/points_20261109-161157_761946.csv.gz",
+      "sha256": "326944648d943a52a2a1af30390826c79ad3bcb4973f5ccf59c2b7b4392d157b",
+      "bytes": 1808449,
+      "distribution_status": "present"
+    },
+    {
+      "git_path": "iteration2/part3/pointlogs/fr3_mono/points_20261109-161541_763774.csv.gz",
+      "repository_path": "Results/part3/pointlogs/fr3_mono/points_20261109-161541_763774.csv.gz",
+      "sha256": "a1ec7fb5d1267e473d9657b9d5fc68a32cb3904e0949c202551c0abc118cd2f2",
+      "bytes": 1194534,
+      "distribution_status": "present"
+    },
+    {
+      "git_path": "iteration2/part3/pointlogs/fr3_mono/points_20261109-161853_765193.csv.gz",
+      "repository_path": "Results/part3/pointlogs/fr3_mono/points_20261109-161853_765193.csv.gz",
+      "sha256": "342c000e87880e3f2f4910f498dadec3e81d99548f6f3429eac54175d45ea037",
+      "bytes": 1480276,
+      "distribution_status": "present"
+    },
+    {
+      "git_path": "iteration2/part3/pointlogs/fr3_mono/points_20261109-162136_766717.csv.gz",
+      "repository_path": "Results/part3/pointlogs/fr3_mono/points_20261109-162136_766717.csv.gz",
+      "sha256": "56973ada52a5f340d02da90b9f839daf7ea98e7d71c8eef273c9f2c93328a9d8",
+      "bytes": 1263085,
+      "distribution_status": "present"
+    },
+    {
+      "git_path": "iteration2/part3/pointlogs/fr3_mono_x/points_20261110-124947_168200.csv.gz",
+      "repository_path": "Results/part3/pointlogs/fr3_mono_x/points_20261110-124947_168200.csv.gz",
+      "sha256": "8f795d034ab2e58434fae30cbb91860341518cd0f71c194223d64659549eee75",
+      "bytes": 1972371,
+      "distribution_status": "present"
+    },
+    {
+      "git_path": "iteration2/part3/pointlogs/fr3_mono_x/points_20261110-125448_170790.csv.gz",
+      "repository_path": "Results/part3/pointlogs/fr3_mono_x/points_20261110-125448_170790.csv.gz",
+      "sha256": "1f56561e5da6c5aee716def9c8c7b8ecb8ed8518c6f287297e1ccf3952d6a165",
+      "bytes": 1655046,
+      "distribution_status": "present"
+    },
+    {
+      "git_path": "iteration2/part3/pointlogs/fr3_mono_x/points_20261110-125826_172627.csv.gz",
+      "repository_path": "Results/part3/pointlogs/fr3_mono_x/points_20261110-125826_172627.csv.gz",
+      "sha256": "9d8342e6b9ef7688895b23947561c3f363f648c2665a87578e9da5142829c2b1",
+      "bytes": 1311102,
+      "distribution_status": "present"
+    },
+    {
+      "git_path": "iteration2/part3/pointlogs/fr3_mono_x/points_20261110-130112_174208.csv.gz",
+      "repository_path": "Results/part3/pointlogs/fr3_mono_x/points_20261110-130112_174208.csv.gz",
+      "sha256": "c0390f0b295a5b5d10f5a9d0171844bac7028e4a60b3ed34696c761838f19b71",
+      "bytes": 1286748,
+      "distribution_status": "present"
+    },
+    {
+      "git_path": "iteration2/part3/pointlogs/fr3_mono_x/points_20261110-130355_175676.csv.gz",
+      "repository_path": "Results/part3/pointlogs/fr3_mono_x/points_20261110-130355_175676.csv.gz",
+      "sha256": "7b9464e61aa8d863181a8102d8814a50e02168ba96608e92e17fe19e9464f04b",
+      "bytes": 1353533,
+      "distribution_status": "present"
+    },
+    {
+      "git_path": "iteration2/part3/pointlogs/kitti_B100/points_20261110-015117_52699.csv.gz",
+      "repository_path": "Results/part3/pointlogs/kitti_B100/points_20261110-015117_52699.csv.gz",
+      "sha256": "8a1b13e8dfbc16d65de4ef1d8b510df9cb65e2b379de589e12a5c5176d9cd0ba",
+      "bytes": 993520,
+      "distribution_status": "present"
+    },
+    {
+      "git_path": "iteration2/part3/pointlogs/kitti_B50/points_20261110-012500_39395.csv.gz",
+      "repository_path": "Results/part3/pointlogs/kitti_B50/points_20261110-012500_39395.csv.gz",
+      "sha256": "ce61775d668b768c8ee0b72e84d0adeb4449dd7d907d4299190c4ef90a90a917",
+      "bytes": 1600811,
+      "distribution_status": "present"
+    },
+    {
+      "git_path": "iteration2/part3/pointlogs/kitti_B80/points_20261110-013745_45762.csv.gz",
+      "repository_path": "Results/part3/pointlogs/kitti_B80/points_20261110-013745_45762.csv.gz",
+      "sha256": "e8d763fbfc5ce829fe27eb8997902bbf6dbe3e70f2834a9b32c790b2aee53f83",
+      "bytes": 1166630,
+      "distribution_status": "present"
+    },
+    {
+      "git_path": "iteration2/part3/pointlogs/kitti_B80E1/points_20261110-020309_58496.csv.gz",
+      "repository_path": "Results/part3/pointlogs/kitti_B80E1/points_20261110-020309_58496.csv.gz",
+      "sha256": "4d46739ea6fea85e068b33e61da173ea0a65c25d0fe65bd15df6c5ac27e46dba",
+      "bytes": 1399671,
+      "distribution_status": "present"
+    },
+    {
+      "git_path": "iteration2/part3/pointlogs/kitti_B80u10/points_20261110-021454_68505.csv.gz",
+      "repository_path": "Results/part3/pointlogs/kitti_B80u10/points_20261110-021454_68505.csv.gz",
+      "sha256": "bb8ecf219d159b6ac86335248f506ff9ea38f4cf71fbbece4784fd32544abff0",
+      "bytes": 2515918,
+      "distribution_status": "present"
+    },
+    {
+      "git_path": "iteration2/part3/pointlogs/kitti_E1/points_20261110-011316_33422.csv.gz",
+      "repository_path": "Results/part3/pointlogs/kitti_E1/points_20261110-011316_33422.csv.gz",
+      "sha256": "8ae77274c3ae7505b1c8ae9311f47a1fa4a0ee09043a03aadb1e52b5e9c2a33e",
+      "bytes": 2585394,
+      "distribution_status": "present"
+    },
+    {
+      "git_path": "iteration2/part3/pointlogs/kitti_E1s50/points_20261110-144642_262408.csv.gz",
+      "repository_path": "Results/part3/pointlogs/kitti_E1s50/points_20261110-144642_262408.csv.gz",
+      "sha256": "8eb8a99c4fb72e2f067a2eda195d5093a785a6d41a7373e0c6830c00aeaf2149",
+      "bytes": 1543942,
+      "distribution_status": "present"
+    },
+    {
+      "git_path": "iteration2/part3/pointlogs/kitti_E1s80/points_20261110-150044_270427.csv.gz",
+      "repository_path": "Results/part3/pointlogs/kitti_E1s80/points_20261110-150044_270427.csv.gz",
+      "sha256": "6d351245021c906842aa322fb22d9902a9463e8f33cb8868106525a777379824",
+      "bytes": 2170900,
+      "distribution_status": "present"
+    },
+    {
+      "git_path": "iteration2/part3/pointlogs/kitti_mono/points_20261110-010006_26586.csv.gz",
+      "repository_path": "Results/part3/pointlogs/kitti_mono/points_20261110-010006_26586.csv.gz",
+      "sha256": "eb063b8eb7e3948505fea3219eecbb21425224f12a4741807dab61122c479a9f",
+      "bytes": 2392433,
+      "distribution_status": "present"
+    },
+    {
+      "git_path": "iteration2/part3/pointlogs/kitti_mono/points_20261110-010235_27828.csv.gz",
+      "repository_path": "Results/part3/pointlogs/kitti_mono/points_20261110-010235_27828.csv.gz",
+      "sha256": "d5c6153dde0ecf904bfe329f009f20b73c5f90c6c3c2c859aa2b738b80e581f5",
+      "bytes": 1263611,
+      "distribution_status": "present"
+    },
+    {
+      "git_path": "iteration2/part3/pointlogs/kitti_mono/points_20261110-010615_29401.csv.gz",
+      "repository_path": "Results/part3/pointlogs/kitti_mono/points_20261110-010615_29401.csv.gz",
+      "sha256": "3087c50e234415d89d9c40fb64d477dce268e95ce280958420006ba12dd228ff",
+      "bytes": 2457715,
+      "distribution_status": "present"
+    },
+    {
+      "git_path": "iteration2/part3/pointlogs/kitti_mono/points_20261110-010831_30835.csv.gz",
+      "repository_path": "Results/part3/pointlogs/kitti_mono/points_20261110-010831_30835.csv.gz",
+      "sha256": "0ab7f7807da5f02bd3b4ebe2b7757102b6aa0db24d6c9b19b5276c7ffff78731",
+      "bytes": 2619205,
+      "distribution_status": "present"
+    },
+    {
+      "git_path": "iteration2/part3/pointlogs/kitti_mono/points_20261110-011049_31960.csv.gz",
+      "repository_path": "Results/part3/pointlogs/kitti_mono/points_20261110-011049_31960.csv.gz",
+      "sha256": "59b867b849eddef8301f076461e49f2059d713bbae69cfe82ea90fe1dc24aa14",
+      "bytes": 2621418,
+      "distribution_status": "present"
+    },
+    {
+      "git_path": "iteration2/part3/pointlogs/kitti_mono_x/points_20261110-143349_254770.csv.gz",
+      "repository_path": "Results/part3/pointlogs/kitti_mono_x/points_20261110-143349_254770.csv.gz",
+      "sha256": "1b4398b98b8de105d693eedf7bca44b1ab3b0a34929b88134feb4f5f4bd98a67",
+      "bytes": 2140773,
+      "distribution_status": "present"
+    },
+    {
+      "git_path": "iteration2/part3/pointlogs/kitti_mono_x/points_20261110-143618_255879.csv.gz",
+      "repository_path": "Results/part3/pointlogs/kitti_mono_x/points_20261110-143618_255879.csv.gz",
+      "sha256": "428ae6bbab73f141d3805591186a9817bc0203cb35bdbebbdd7c234d8cfeb193",
+      "bytes": 2285556,
+      "distribution_status": "present"
+    },
+    {
+      "git_path": "iteration2/part3/pointlogs/kitti_mono_x/points_20261110-143836_257663.csv.gz",
+      "repository_path": "Results/part3/pointlogs/kitti_mono_x/points_20261110-143836_257663.csv.gz",
+      "sha256": "0ba32e46d35e267d972867f9892e5c2fc31ea66ff4e35ba38fcd04b15ec3ab9e",
+      "bytes": 2468213,
+      "distribution_status": "present"
+    },
+    {
+      "git_path": "iteration2/part3/pointlogs/kitti_mono_x/points_20261110-144053_258837.csv.gz",
+      "repository_path": "Results/part3/pointlogs/kitti_mono_x/points_20261110-144053_258837.csv.gz",
+      "sha256": "651e70b19be5e8d089d6f1be126dabba7c00026ecea21b55eb5ec2f64a2e6517",
+      "bytes": 2118344,
+      "distribution_status": "present"
+    },
+    {
+      "git_path": "iteration2/part3/pointlogs/kitti_mono_x/points_20261110-144358_260464.csv.gz",
+      "repository_path": "Results/part3/pointlogs/kitti_mono_x/points_20261110-144358_260464.csv.gz",
+      "sha256": "c5e426e608923b00baa16e96a65db78d4606604ef3cdd874cbfc9e275351e330",
+      "bytes": 2067248,
+      "distribution_status": "present"
+    },
+    {
+      "git_path": "iteration2/part3/pointlogs/room0_B100/points_20261109-193035_841516.csv.gz",
+      "repository_path": "Results/part3/pointlogs/room0_B100/points_20261109-193035_841516.csv.gz",
+      "sha256": "e0b6c59c5748ec65f382e4b29cec999da9db1d4a9c6f147ffb7403ecaf1fc91b",
+      "bytes": 1238424,
+      "distribution_status": "present"
+    },
+    {
+      "git_path": "iteration2/part3/pointlogs/room0_B50/points_20261109-184541_828136.csv.gz",
+      "repository_path": "Results/part3/pointlogs/room0_B50/points_20261109-184541_828136.csv.gz",
+      "sha256": "3a129507893e96b82b5fdb72c803de08b463bf26b3f62116963c4282eae1dc64",
+      "bytes": 1242356,
+      "distribution_status": "present"
+    },
+    {
+      "git_path": "iteration2/part3/pointlogs/room0_B80/points_20261109-190853_834917.csv.gz",
+      "repository_path": "Results/part3/pointlogs/room0_B80/points_20261109-190853_834917.csv.gz",
+      "sha256": "ce4814eccc73a4f2a6b115139afb39811c2e037316e1a4b695ba24c439abbbcf",
+      "bytes": 1327043,
+      "distribution_status": "present"
+    },
+    {
+      "git_path": "iteration2/part3/pointlogs/room0_B80E1/points_20261110-003127_17841.csv.gz",
+      "repository_path": "Results/part3/pointlogs/room0_B80E1/points_20261110-003127_17841.csv.gz",
+      "sha256": "a83f77d6f74d200f7cd110dd5c052fc7044273127e5c978842974c503899c5b4",
+      "bytes": 1355867,
+      "distribution_status": "present"
+    },
+    {
+      "git_path": "iteration2/part3/pointlogs/room0_B80u10/points_20261110-004548_22322.csv.gz",
+      "repository_path": "Results/part3/pointlogs/room0_B80u10/points_20261110-004548_22322.csv.gz",
+      "sha256": "b1b060373b47f6953a63df1f236e1a89305fa37c9b0f712295cf450ecc572e80",
+      "bytes": 1401303,
+      "distribution_status": "present"
+    },
+    {
+      "git_path": "iteration2/part3/pointlogs/room0_E1/points_20261109-182529_822209.csv.gz",
+      "repository_path": "Results/part3/pointlogs/room0_E1/points_20261109-182529_822209.csv.gz",
+      "sha256": "9940e2d3fc80e896ace6c10cbf30a0e28e71ac2f424dbf017915550d5fac0393",
+      "bytes": 1755658,
+      "distribution_status": "present"
+    },
+    {
+      "git_path": "iteration2/part3/pointlogs/room0_E1s50/points_20261110-135728_240906.csv.gz",
+      "repository_path": "Results/part3/pointlogs/room0_E1s50/points_20261110-135728_240906.csv.gz",
+      "sha256": "d918da2a0c35f2fd948a022870966257846ff38f948e174b17ee117a6c9398c5",
+      "bytes": 1456786,
+      "distribution_status": "present"
+    },
+    {
+      "git_path": "iteration2/part3/pointlogs/room0_E1s80/points_20261110-141546_248311.csv.gz",
+      "repository_path": "Results/part3/pointlogs/room0_E1s80/points_20261110-141546_248311.csv.gz",
+      "sha256": "8784cad8b702466dad32c8ac234fc2fb2283d435de558be74c928e1d8e712a11",
+      "bytes": 1484237,
+      "distribution_status": "present"
+    },
+    {
+      "git_path": "iteration2/part3/pointlogs/room0_mono/points_20261109-180400_815625.csv.gz",
+      "repository_path": "Results/part3/pointlogs/room0_mono/points_20261109-180400_815625.csv.gz",
+      "sha256": "29d49c6e02fd935f8cb46d7e7f31fe8c0c3f2cbea1f7f3d4c59e5a8b3cf7a212",
+      "bytes": 1787180,
+      "distribution_status": "present"
+    },
+    {
+      "git_path": "iteration2/part3/pointlogs/room0_mono/points_20261109-180738_816656.csv.gz",
+      "repository_path": "Results/part3/pointlogs/room0_mono/points_20261109-180738_816656.csv.gz",
+      "sha256": "759934f0c6c44e93b2ffb7817cc79cc29ca0c5a8ca43956acc435398d2b1d127",
+      "bytes": 1093681,
+      "distribution_status": "present"
+    },
+    {
+      "git_path": "iteration2/part3/pointlogs/room0_mono/points_20261109-181300_817808.csv.gz",
+      "repository_path": "Results/part3/pointlogs/room0_mono/points_20261109-181300_817808.csv.gz",
+      "sha256": "af04ff97fac2ee09967dfd4b211c0b266778f765b1a3a96457fd39197953099e",
+      "bytes": 1399474,
+      "distribution_status": "present"
+    },
+    {
+      "git_path": "iteration2/part3/pointlogs/room0_mono/points_20261109-181659_819058.csv.gz",
+      "repository_path": "Results/part3/pointlogs/room0_mono/points_20261109-181659_819058.csv.gz",
+      "sha256": "d714b6baecf0eecacd00b9510a925eb11007e52754293b6dbe6e2c6ce8858874",
+      "bytes": 1497221,
+      "distribution_status": "present"
+    },
+    {
+      "git_path": "iteration2/part3/pointlogs/room0_mono/points_20261109-182054_820231.csv.gz",
+      "repository_path": "Results/part3/pointlogs/room0_mono/points_20261109-182054_820231.csv.gz",
+      "sha256": "aea6e8fb6a21a5a4992eb7b1e61bab4a314bca755fee7ff3ea430bdfb78d9c44",
+      "bytes": 1533774,
+      "distribution_status": "present"
+    },
+    {
+      "git_path": "iteration2/part3/pointlogs/room0_mono_rest/points_20261110-001357_12829.csv.gz",
+      "repository_path": "Results/part3/pointlogs/room0_mono_rest/points_20261110-001357_12829.csv.gz",
+      "sha256": "de99b42f4c54036fc8a3dcbcd744bfa85eb50bc9fcf3619180f122b76a710dc7",
+      "bytes": 1944331,
+      "distribution_status": "present"
+    },
+    {
+      "git_path": "iteration2/part3/pointlogs/room0_mono_rest/points_20261110-001905_14227.csv.gz",
+      "repository_path": "Results/part3/pointlogs/room0_mono_rest/points_20261110-001905_14227.csv.gz",
+      "sha256": "e5a1ff99d4c67dd48d7fcdff02e84bd611aa1dd0ce4ea8b4a814c554ca92a563",
+      "bytes": 1437070,
+      "distribution_status": "present"
+    },
+    {
+      "git_path": "iteration2/part3/pointlogs/room0_mono_rest/points_20261110-002155_14993.csv.gz",
+      "repository_path": "Results/part3/pointlogs/room0_mono_rest/points_20261110-002155_14993.csv.gz",
+      "sha256": "7a5d4589ab657b5b924be048cdb6799420646f7e3b30937a5127c7961131bd3c",
+      "bytes": 1391523,
+      "distribution_status": "present"
+    },
+    {
+      "git_path": "iteration2/part3/pointlogs/room0_mono_rest/points_20261110-002509_15876.csv.gz",
+      "repository_path": "Results/part3/pointlogs/room0_mono_rest/points_20261110-002509_15876.csv.gz",
+      "sha256": "ed9a79a1e9781ce24922be687b571658241092cab73737c04c6fd6a8b9c74386",
+      "bytes": 1459147,
+      "distribution_status": "present"
+    },
+    {
+      "git_path": "iteration2/part3/pointlogs/room0_mono_rest/points_20261110-002800_16661.csv.gz",
+      "repository_path": "Results/part3/pointlogs/room0_mono_rest/points_20261110-002800_16661.csv.gz",
+      "sha256": "21d0ef837cc231a828f405390c4edf5e799718281d91e6cd14f06732fa752286",
+      "bytes": 1401677,
+      "distribution_status": "present"
+    },
+    {
+      "git_path": "iteration2/part3/pointlogs/room0_mono_x/points_20261110-133631_229129.csv.gz",
+      "repository_path": "Results/part3/pointlogs/room0_mono_x/points_20261110-133631_229129.csv.gz",
+      "sha256": "40aedc0f42715200ac53b6a2a6be7dc56cd7a25a08640992db857124e2511e6e",
+      "bytes": 1926401,
+      "distribution_status": "present"
+    },
+    {
+      "git_path": "iteration2/part3/pointlogs/room0_mono_x/points_20261110-134029_231999.csv.gz",
+      "repository_path": "Results/part3/pointlogs/room0_mono_x/points_20261110-134029_231999.csv.gz",
+      "sha256": "95592075f1132020cddb44af82b95636b8995a89ffb7b2cbf08fb4686e33b9d0",
+      "bytes": 1315031,
+      "distribution_status": "present"
+    },
+    {
+      "git_path": "iteration2/part3/pointlogs/room0_mono_x/points_20261110-134532_234336.csv.gz",
+      "repository_path": "Results/part3/pointlogs/room0_mono_x/points_20261110-134532_234336.csv.gz",
+      "sha256": "865e94c97b8a1311446254e8c8aa1df1177e4aab56126963bd3b94fa6a60f198",
+      "bytes": 1637514,
+      "distribution_status": "present"
+    },
+    {
+      "git_path": "iteration2/part3/pointlogs/room0_mono_x/points_20261110-134943_236760.csv.gz",
+      "repository_path": "Results/part3/pointlogs/room0_mono_x/points_20261110-134943_236760.csv.gz",
+      "sha256": "2548cfea21e44814692bdc2ba9588bca76bdc1b534fcdb879c0d489be148bc50",
+      "bytes": 1330622,
+      "distribution_status": "present"
+    },
+    {
+      "git_path": "iteration2/part3/pointlogs/room0_mono_x/points_20261110-135239_238714.csv.gz",
+      "repository_path": "Results/part3/pointlogs/room0_mono_x/points_20261110-135239_238714.csv.gz",
+      "sha256": "4f370809039f7b0f1332b605bd2719a7c014e84b543077a30e8d7836ceef3f80",
+      "bytes": 1144688,
+      "distribution_status": "present"
+    },
+    {
+      "git_path": "iteration2/part3/runs.csv",
+      "repository_path": "Results/part3/runs.csv",
+      "sha256": "d3390f6e90af6f35e4272ee8317de2df552fdb7bffa6ef9cacdd7c1ba3dc7e34",
+      "bytes": 43630,
+      "distribution_status": "present"
+    },
+    {
+      "git_path": "iteration2/part3/summary.csv",
+      "repository_path": "Results/part3/summary.csv",
+      "sha256": "6d24332a5239b46c5eda69abfaf28d781439130097069087aed68dd9e78c4b7e",
+      "bytes": 14311,
+      "distribution_status": "present"
+    }
+  ]
+}

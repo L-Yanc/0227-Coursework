@@ -1,0 +1,3008 @@
+diff --git a/main_slam.py b/main_slam.py
+--- a/main_slam.py
++++ b/main_slam.py
+@@ -20,6 +20,7 @@
+ 
+ import pyslam  # first: sets the OpenMP thread settings before numpy/torch are imported
+ from pyslam.utilities.native_bundle_check import warn_if_native_modules_outdated
++from scripts.coursework_export_map import export_map_observations, associated_frame_ids
+ 
+ if __name__ == "__main__":
+     warn_if_native_modules_outdated()  # before anything imports the native modules
+@@ -350,6 +351,7 @@
+     eval_ate_correct_scale = is_monocular or (
+         has_groundtruth and need_sim3_alignment(groundtruth)
+     )
++
+ 
+     camera = PinholeCamera(config)
+     if args.verbose:
+@@ -536,6 +538,7 @@
+         # wait for the viewer3D to be ready
+         viewer3D.wait_for_ready()
+ 
++
+     timer_main = TimerFps("Main", is_verbose=False)
+     timer_main.start()
+ 
+@@ -572,6 +575,8 @@
+ 
+     img_id = 0  # 210, 340, 400, 770   # you can start from a desired frame id if needed
+ 
++    tracking_times_ms = []
++
+     try:
+         while not is_viewer_closed:
+ 
+@@ -635,8 +640,10 @@
+                         # mask covers them only partly; --mask-dilation covers part of the rest, and
+                         # what is left is rarely matched, since the left keypoints on them are gone
+                         mask_right = mask if (mask is not None and img_right is not None) else None
++
++                        track_start = time.perf_counter()
+                         slam.track(img, img_right, depth, img_id, timestamp, mask=mask, mask_right=mask_right)  # main SLAM function
+-
++                        tracking_times_ms.append((time.perf_counter() - track_start) * 1000.0)
+                         # the detections of this frame, lifted with its pose and depth (--detections)
+                         if saved_detections and slam.tracking.state == SlamState.OK and slam.tracking.cur_R is not None:
+                             Twc = np.eye(4)
+@@ -867,6 +874,12 @@
+     # compute metrics on the estimated final trajectory
+     try:
+         est_poses, timestamps, ids = slam.get_final_trajectory()
++        # Keep the full source association before GT matching removes poses.
++        # A TUM export must use camera timestamps, including unscored poses.
++        with open(os.path.join(metrics_save_dir, "trajectory_source.json"), "w") as source_file:
++            json.dump({"trajectory_id": [int(i) for i in ids],
++                       "timestamps": [float(t) for t in timestamps],
++                       "trajectory_est": [np.asarray(T).tolist() for T in est_poses]}, source_file)
+         is_final = not dataset.is_ok
+         ape_stats = None
+         if not est_poses:
+@@ -875,10 +888,13 @@
+             assoc_timestamps, assoc_est_poses, assoc_gt_poses = find_poses_associations(
+                 timestamps, est_poses, gt_timestamps, gt_poses
+             )
++            # GT association can remove initial/interior poses. Match its retained
++            # timestamps before exporting frame IDs rather than truncating ids.
++            associated_ids = associated_frame_ids(timestamps, ids, assoc_timestamps)
+             ape_stats, T_gt_est = eval_ate(
+                 poses_est=assoc_est_poses,
+                 poses_gt=assoc_gt_poses,
+-                frame_ids=ids,
++                frame_ids=associated_ids,
+                 curr_frame_id=img_id,
+                 is_final=is_final,
+                 is_monocular=eval_ate_correct_scale,
+@@ -944,6 +960,33 @@
+                     f"ATE rmse with the relative poses as tracked (ORB-SLAM2/3): {ate_rmse_as_tracked:.4f} "
+                     f"(this run's trajectory: {ape_stats.get('rmse'):.4f})"
+                 )
++        # measure how well the map points agree with the true depth. Only reads the map, after the run.
++        if os.environ.get("CW1_SAVE_MAP") == "1":
++            try:
++                import numpy as np
++
++                keyframes = [kf for kf in slam.map.get_keyframes() if not kf.is_bad()]
++                point_index, points, observations = {}, [], []
++                for k, kf in enumerate(keyframes):
++                    for p in kf.get_matched_good_points():
++                        if p is None or p.is_bad():
++                            continue
++                        if p.id not in point_index:
++                            point_index[p.id] = len(points)
++                            points.append(np.asarray(p.pt(), dtype=np.float64).reshape(3))
++                        observations.append((k, point_index[p.id]))
++                np.savez_compressed(
++                    os.path.join(metrics_save_dir, "map_dump.npz"),
++                    kf_img_id=np.array([kf.img_id for kf in keyframes], dtype=np.int64),
++                    kf_timestamp=np.array([kf.timestamp for kf in keyframes], dtype=np.float64),
++                    kf_Tcw=np.array([np.asarray(kf.Tcw(), dtype=np.float64) for kf in keyframes]).reshape(-1, 4, 4),
++                    points=np.array(points, dtype=np.float64).reshape(-1, 3),
++                    observations=np.array(observations, dtype=np.int64).reshape(-1, 2),
++                )
++                Printer.green(f"CW1: saved the map ({len(keyframes)} keyframes, {len(points)} points) to map_dump.npz")
++            except Exception:
++                Printer.red("CW1: could not save the map:")
++                traceback.print_exc()
+ 
+         other_metrics_file_path = os.path.join(metrics_save_dir, "other_metrics_info.txt")
+         with open(other_metrics_file_path, "w") as f:
+@@ -954,6 +997,10 @@
+             # the frames with a pose in the final trajectory: the trajectory errors are over these only
+             f.write(f"num_tracked_frames: {len(est_poses)}\n")
+             f.write(f"percent_tracked: {len(est_poses)/num_total_frames*100:.2f}\n")
++            if tracking_times_ms:
++                f.write(f"mean_tracking_ms: {np.mean(tracking_times_ms):.3f}\n")
++                f.write(f"median_tracking_ms: {np.median(tracking_times_ms):.3f}\n")
++                f.write(f"std_tracking_ms: {np.std(tracking_times_ms):.3f}\n")
+             if ate_rmse_as_tracked is not None:
+                 f.write(f"ate_rmse_relative_poses_as_tracked: {ate_rmse_as_tracked:.6f}\n")
+             f.write(f"playback_max_speed: {playback_throttle.speed_str(playback_throttle.max_speed)}\n")
+@@ -989,6 +1036,12 @@
+ 
+         evaluate_semantic_mapping(slam, dataset, metrics_save_dir)
+ 
++        if has_groundtruth:
++            export_map_observations(
++            slam,
++            os.path.join(metrics_save_dir, "map_observations.csv"),
++        )
++
+     except Exception as e:
+         print("Exception while computing metrics: ", e)
+         print(f"traceback: {traceback.format_exc()}")
+diff --git a/pyslam/depth_estimation/depth_sampling.py b/pyslam/depth_estimation/depth_sampling.py
+--- a/pyslam/depth_estimation/depth_sampling.py
++++ b/pyslam/depth_estimation/depth_sampling.py
+@@ -22,6 +22,8 @@
+ #
+ # main_depth_prediction.py --keypoints METHOD detects ORB keypoints in every frame, as SLAM does, calls
+ # depth_at_keypoints() on the predicted depth map and on the camera's depth map, and compares the two.
++
++import warnings
+ 
+ import numpy as np
+ 
+@@ -52,10 +54,10 @@
+     patch: the size of the window of "median", an odd number of pixels.
+ 
+     Returns a float array of shape (N,): the depth at each keypoint in metres, 0 where no depth can be
+-    read. As supplied, only "nearest" is written: "bilinear" and "median" return None, with a warning,
+-    and the keypoints are then skipped.
++    read.
+     """
+     keypoints = np.asarray(keypoints, dtype=np.float64).reshape(-1, 2)
++    depth = np.asarray(depth, dtype=np.float64)
+     h, w = depth.shape[:2]
+ 
+     if method == "nearest":
+@@ -65,13 +67,58 @@
+         # has no depth it holds 0, and so does the result.
+         u = np.clip(np.rint(keypoints[:, 0]).astype(int), 0, w - 1)
+         v = np.clip(np.rint(keypoints[:, 1]).astype(int), 0, h - 1)
+-        return np.asarray(depth, dtype=np.float64)[v, u]
++        return depth[v, u]
+ 
+-    # TODO (COMP0227 Lab 03, Activity 6): write "bilinear" and "median". As they are, they return None.
++    if method == "bilinear":
++        # The four pixels around (u, v) are (u0, v0), (u0 + 1, v0), (u0, v0 + 1) and (u0 + 1, v0 + 1),
++        # with u0 = floor(u), v0 = floor(v). Their usual weights are the products of (1 - fu or fu) and
++        # (1 - fv or fv), where fu = u - u0 and fv = v - v0 are the fractional parts. A pixel without depth
++        # (0) gets weight 0, and the others are divided by the sum of the weights left, so that they add
++        # to 1. At the last column or row, u0 + 1 is clipped back into the image; its weight is then 0
++        # anyway (fu = 0 there), so it changes nothing.
++        u, v = keypoints[:, 0], keypoints[:, 1]
++        u0 = np.clip(np.floor(u).astype(int), 0, w - 1)
++        v0 = np.clip(np.floor(v).astype(int), 0, h - 1)
++        u1 = np.clip(u0 + 1, 0, w - 1)
++        v1 = np.clip(v0 + 1, 0, h - 1)
++        fu = np.clip(u - u0, 0.0, 1.0)
++        fv = np.clip(v - v0, 0.0, 1.0)
++
++        d = np.stack([depth[v0, u0], depth[v0, u1], depth[v1, u0], depth[v1, u1]], axis=1)  # (N, 4)
++        wt = np.stack([(1 - fu) * (1 - fv), fu * (1 - fv), (1 - fu) * fv, fu * fv], axis=1)  # (N, 4)
++        wt = np.where(d > 0, wt, 0.0)  # pixels without depth do not count
++        total = wt.sum(axis=1)
++        out = np.zeros(len(keypoints))
++        ok = total > 1e-12  # at least one pixel with depth and a weight
++        out[ok] = (wt[ok] * d[ok]).sum(axis=1) / total[ok]
++        return out
++
++    if method == "median":
++        # The window is centred on the pixel the keypoint falls in (as for "nearest"). Padding the map
++        # with zeros (no depth) by half a window on each side cuts the window to the image: the padded
++        # pixels have no depth and are ignored, like any other pixel without depth.
++        if patch < 1 or patch % 2 == 0:
++            raise ValueError(f"patch must be a positive odd number, not {patch}")
++        if len(keypoints) == 0:
++            return np.zeros(0)
++        r = patch // 2
++        uc = np.clip(np.rint(keypoints[:, 0]).astype(int), 0, w - 1)
++        vc = np.clip(np.rint(keypoints[:, 1]).astype(int), 0, h - 1)
++        padded = np.pad(depth, r, mode="constant", constant_values=0.0)
++        offsets = np.arange(-r, r + 1)
++        rows = (vc[:, None] + r + offsets[None, :])[:, :, None]  # (N, patch, 1), in padded coordinates
++        cols = (uc[:, None] + r + offsets[None, :])[:, None, :]  # (N, 1, patch)
++        windows = padded[rows, cols].reshape(len(keypoints), -1)  # (N, patch * patch)
++        windows = np.where(windows > 0, windows, np.nan)  # no depth -> ignored by nanmedian
++        with warnings.catch_warnings():
++            warnings.simplefilter("ignore", category=RuntimeWarning)  # all-NaN window: handled below
++            out = np.nanmedian(windows, axis=1)
++        return np.nan_to_num(out, nan=0.0)
++
+     if method not in _warned:
+         _warned.add(method)
+         Printer.orange(
+-            f'depth_at_keypoints() in pyslam/depth_estimation/depth_sampling.py: the method "{method}" is not '
+-            "written yet (COMP0227 Lab 03, Activity 6), so it returns None"
++            f'depth_at_keypoints() in pyslam/depth_estimation/depth_sampling.py: unknown method "{method}" '
++            f"(one of {kMethods}), so it returns None"
+         )
+     return None
+diff --git a/pyslam/depth_estimation/part4_policy.py b/pyslam/depth_estimation/part4_policy.py
+new file mode 100644
+--- /dev/null
++++ b/pyslam/depth_estimation/part4_policy.py
+@@ -0,0 +1,88 @@
++"""Causal Part 4 extension to Part 3 B insertion; no reference/true-depth input.
++
++The untouched Part 3 variant bypasses this gate. Thresholds are fitted only on
++past development-interval pair discrepancies and frozen on entry to evaluation.
++"""
++import json
++from pathlib import Path
++import numpy as np
++
++class ConsistencyGate:
++    def __init__(self, split_time, min_samples=30, min_relative_threshold=.05,
++                 mad_multiplier=3.):
++        self.split=float(split_time); self.minimum=int(min_samples)
++        self.floor=float(min_relative_threshold); self.multiplier=float(mad_multiplier)
++        self.samples=[]; self.threshold=None
++        self.frozen=False; self.records=[]
++
++    def decide(self,timestamp,discrepancies):
++        values=np.asarray(discrepancies,float); valid=np.isfinite(values)&(values>=0)
++        development=timestamp<=self.split and not self.frozen
++        if development:
++            # Development observes without rejecting; later thresholds are frozen.
++            self.samples.extend(values[valid].tolist())
++            return np.ones(len(values),bool)
++        if not self.frozen:
++            self.frozen=True
++            if len(self.samples)>=self.minimum:
++                a=np.asarray(self.samples); med=np.median(a)
++                self.threshold=max(self.floor,float(med+self.multiplier*1.4826*np.median(abs(a-med))))
++        # Insufficient development evidence means no intervention, explicitly logged.
++        return np.ones(len(values),bool) if self.threshold is None else (~valid | (values<=self.threshold))
++
++    def report(self):
++        return {'development_end_timestamp':self.split,'development_samples':len(self.samples),
++                'frozen':self.frozen,'relative_threshold':self.threshold,
++                'status':'active' if self.threshold is not None else 'insufficient_development_evidence',
++                'protocol':'Pairwise learned 3D discrepancy in the current online map; first interval trains, later interval uses a frozen median+MAD threshold. Missing pair depth passes unchanged.'}
++
++class Runtime:
++    def __init__(self,parameters,frames,policy,out,temporal):
++        self.policy=policy; self.out=Path(out); self.allowed={};self.loaded=set();self.delivered=set();self.rows=[]
++        self.parameters=parameters
++        times=[float(r['timestamp']) for r in frames]
++        opts={k:v for k,v in temporal.items() if k not in ('enabled','development_fraction')}
++        self.gate=ConsistencyGate(min(times)+(max(times)-min(times))*temporal.get('development_fraction',.5),**opts) if temporal.get('enabled') else None
++
++    def before_frame(self,frame,timestamp,fallback):
++        self.allowed[round(timestamp,6)]=self.policy!='stride5' or frame%5==0 or fallback
++
++    def permits(self,timestamp):
++        return self.allowed.get(round(float(timestamp),6),False)
++
++    def record_depth(self,timestamp): self.loaded.add(round(float(timestamp),6))
++
++    def filter_candidates(self,pred,kf_cur,kf,idxs_cur,idxs,d_hat,scale,candidates):
++        if self.gate is None or not np.any(candidates): return candidates
++        t=float(pred.ts_of(kf_cur)); other=pred.depth(pred.ts_of(kf))
++        if other is None or scale<=0: return candidates
++        ids=np.flatnonzero(candidates)
++        z,ok=pred.trusted(other,np.asarray(kf.kps)[np.asarray(idxs)[ids]])
++        uv1=np.asarray(kf_cur.kpsn)[np.asarray(idxs_cur)[ids]]
++        uv2=np.asarray(kf.kpsn)[np.asarray(idxs)[ids]]
++        a=np.c_[uv1,np.ones(len(ids))]*d_hat[ids,None]
++        b=np.c_[uv2,np.ones(len(ids))]*z[:,None]
++        tw1=np.linalg.inv(np.asarray(kf_cur.pose()));tw2=np.linalg.inv(np.asarray(kf.pose()))
++        wa=a@tw1[:3,:3].T+tw1[:3,3]*scale
++        wb=b@tw2[:3,:3].T+tw2[:3,3]*scale
++        discrepancy=np.linalg.norm(wa-wb,axis=1)/np.maximum((d_hat[ids]+z)/2,1e-6)
++        discrepancy[~ok]=np.nan
++        keep=self.gate.decide(t,discrepancy); result=candidates.copy(); result[ids]&=keep
++        for i,j in enumerate(ids):
++            self.rows.append({'timestamp':t,'frame_id':int(kf_cur.img_id),'other_frame_id':int(kf.img_id),
++                              'keypoint_index':int(np.asarray(idxs_cur)[j]),'relative_discrepancy':float(discrepancy[i]) if np.isfinite(discrepancy[i]) else None,
++                              'kept':bool(keep[i]),'development':t<=self.gate.split,'threshold':self.gate.threshold})
++        return result
++
++    def finish(self):
++        result={'policy':self.policy,'unique_depth_requests':len(self.loaded),'requested_timestamps':sorted(self.loaded),
++                'temporal':self.gate.report() if self.gate else {'status':'disabled'},
++                'candidate_checks':len(self.rows),'rejected_candidates':sum(not r['kept'] for r in self.rows),
++                'reference_inputs':False,'map_pose_information':'current online poses only; no final BA map used to make decisions'}
++        self.out.mkdir(parents=True,exist_ok=True)
++        (self.out/'part3_runtime.json').write_text(json.dumps(result,indent=2,allow_nan=False)+'\n')
++        with (self.out/'consistency_decisions.jsonl').open('w') as f:
++            for row in self.rows: f.write(json.dumps(row,allow_nan=False)+'\n')
++        return result
++
++runtime=None
+diff --git a/pyslam/depth_estimation/pred_depth.py b/pyslam/depth_estimation/pred_depth.py
+new file mode 100644
+--- /dev/null
++++ b/pyslam/depth_estimation/pred_depth.py
+@@ -0,0 +1,188 @@
++# predicted depth for mono SLAM (pySLAM drops depth in mono mode) + our CW1_* switches
++# all off unless the CW1_* env vars are set
++import os
++import json
++import threading
++import time
++from collections import deque
++
++import cv2
++import numpy as np
++
++from pyslam.depth_estimation.depth_sampling import depth_at_keypoints
++
++METHOD = os.environ.get("CW1_METHOD", "").upper()  # "", "B", "E1", "B+E1"
++PRED = os.environ.get("CW1_PRED_DEPTH", "")  # path to associations_<name>.txt
++FACTOR = float(os.environ.get("CW1_DEPTH_FACTOR", "0"))  # 5000 tum, 6553.5 replica, 256 kitti
++SIGMA_PCT = float(os.environ.get("CW1_SIGMA_PCT", "100"))  # only trust keypoints below this percentile of sigma_d
++DEPTH_UNTIL = int(os.environ.get("CW1_DEPTH_UNTIL", "0"))  # 0 = always, else only for the first N keyframes
++LOG_DIR = os.environ.get("CW1_LOG_POINTS", "")  # folder for the per-point log (Part 4)
++COS_MAX_PARALLAX = 0.9998  # same as Parameters.kCosMaxParallax: below ~1.15 deg triangulation gives up
++
++_lock = threading.Lock()
++_files = None
++_cache = {}
++part4_initializations = []
++
++
++def use(m):
++    return m.upper() in METHOD.split("+")
++
++
++def ts_of(f):
++    t = f.timestamp
++    return t() if callable(t) else t
++
++
++def allowed(kf):
++    return DEPTH_UNTIL <= 0 or kf.kid < DEPTH_UNTIL
++
++
++def _load_list():
++    global _files
++    if PRED.endswith('.json'):
++        entries=json.load(open(PRED))
++        ordered=sorted(entries,key=lambda e:float(e['timestamp']))
++        _files=(np.array([float(e['timestamp']) for e in ordered]),[e['path'] for e in ordered])
++        return
++    base = os.path.dirname(os.path.abspath(PRED))
++    ts, paths = [], []
++    for line in open(PRED):
++        f = line.split()
++        if len(f) >= 4 and not line.startswith("#"):
++            ts.append(float(f[0]))
++            paths.append(os.path.join(base, f[3]))
++    o = np.argsort(ts)
++    _files = (np.array(ts)[o], [paths[i] for i in o])
++
++
++from pyslam.depth_estimation import part4_policy
++
++def depth(timestamp):
++    """predicted depth (metres, H x W) of the frame at this timestamp, None if there isn't one"""
++    if part4_policy.runtime is not None and not part4_policy.runtime.permits(timestamp):
++        return None
++    if not PRED or FACTOR <= 0:
++        return None
++    with _lock:
++        if _files is None:
++            _load_list()
++        ts, paths = _files
++        i = int(np.argmin(np.abs(ts - timestamp)))
++        if abs(ts[i] - timestamp) > 1e-3:
++            return None
++        if i not in _cache:
++            if len(_cache) > 20:
++                _cache.clear()
++            d = cv2.imread(paths[i], cv2.IMREAD_UNCHANGED)
++            _cache[i] = None if d is None else d.astype(np.float32) / FACTOR
++        if part4_policy.runtime is not None and _cache[i] is not None:
++            part4_policy.runtime.record_depth(timestamp)
++        return _cache[i]
++
++
++def sigma_grad(d):
++    # same sigma_d as part2_sigma.py: depth gradient, worst value in a 5x5 window
++    g = np.hypot(cv2.Sobel(d, cv2.CV_32F, 1, 0, ksize=3), cv2.Sobel(d, cv2.CV_32F, 0, 1, ksize=3)) / 8
++    return cv2.dilate(g, np.ones((5, 5), np.uint8))
++
++
++def _at_keypoints(d, uv):
++    z = depth_at_keypoints(d, uv, "median", 5)
++    g = depth_at_keypoints(sigma_grad(d), uv, "nearest")
++    ok = z > 0
++    if SIGMA_PCT < 100 and ok.any():
++        ok &= g <= np.percentile(g[ok], SIGMA_PCT)
++    return z, g, ok
++
++
++def trusted(d, uv):
++    """learned depth at the keypoints (median 5x5) + mask of the ones we trust (sigma_d under the percentile)"""
++    z, _, ok = _at_keypoints(d, uv)
++    return z, ok
++
++
++# ---- B: learned depth fills the matches triangulation drops for too little parallax ----
++
++_scales = deque(maxlen=7)  # recent metres-per-map-unit estimates
++_kf = {"kid": None}
++_log = None
++
++
++def on():
++    return use("B") or bool(LOG_DIR)
++
++
++def _kf_depth(kf):
++    # net depth, sigma_d and trust mask at every keypoint of kf (once per keyframe)
++    if _kf["kid"] != kf.kid:
++        d = depth(ts_of(kf))
++        _kf.update(kid=kf.kid, z=None)
++        if d is not None:
++            _kf["z"], _kf["g"], _kf["ok"] = _at_keypoints(d, np.asarray(kf.kps))
++    return _kf["z"], _kf.get("g"), _kf.get("ok")
++
++
++def fill_gaps(map, kf_cur, kf, idxs_cur, idxs, pts3d, added, far_points_threshold=None):
++    """B for one keyframe pair: returns the map points it added (and writes the point log)"""
++    if not on() or len(idxs_cur) == 0:
++        return []
++    z_all, g_all, ok_all = _kf_depth(kf_cur)
++    if z_all is None:
++        return []
++    idxs_cur, idxs = np.asarray(idxs_cur), np.asarray(idxs)
++    n = len(idxs_cur)
++    added = np.zeros(n, bool) if added is None else np.asarray(added, bool)
++    d_hat, g, ok = z_all[idxs_cur], g_all[idxs_cur], ok_all[idxs_cur]
++
++    # parallax of each match, as in Map.add_points
++    r1 = np.c_[kf_cur.kpsn[idxs_cur], np.ones(n)] @ np.asarray(kf_cur.Rwc()).T
++    r2 = np.c_[kf.kpsn[idxs], np.ones(n)] @ np.asarray(kf.Rwc()).T
++    cos = np.sum(r1 * r2, 1) / np.linalg.norm(r1, axis=1) / np.linalg.norm(r2, axis=1)
++    low = cos > COS_MAX_PARALLAX
++
++    # map scale from the well triangulated points of this pair: median(net depth / triangulated depth)
++    Tcw = np.asarray(kf_cur.pose())
++    z_tri = (np.asarray(pts3d) @ Tcw[:3, :3].T + Tcw[:3, 3])[:, 2]
++    good = added & ~low & (d_hat > 0) & (z_tri > 0)
++    if good.sum() >= 20:
++        _scales.append(float(np.median(d_hat[good] / z_tri[good])))
++    s = float(np.median(_scales)) if _scales else 0.0  # metres per map unit
++
++    cand = ~added & low & ok & (s > 0) & use("B") & allowed(kf_cur)
++    if part4_policy.runtime is not None:
++        cand = part4_policy.runtime.filter_candidates(__import__(__name__, fromlist=["depth"]), kf_cur, kf, idxs_cur, idxs, d_hat, s, cand)
++    b_added = np.zeros(n, bool)
++    new = []
++    if cand.any():
++        # along the ray of kf_cur at the net's depth, in map units
++        pc = np.c_[kf_cur.kpsn[idxs_cur[cand]], np.ones(cand.sum())] * (d_hat[cand] / s)[:, None]
++        Twc = np.linalg.inv(Tcw)
++        pw = np.ascontiguousarray(pc @ Twc[:3, :3].T + Twc[:3, 3])
++        args = (pw, np.ones(len(pw), bool), kf_cur, kf, idxs_cur[cand], idxs[cand], kf_cur.img)
++        try:  # every check of add_points except the parallax one
++            _, m, new = map.add_points(*args, do_check=True, cos_max_parallax=1.0, far_points_threshold=far_points_threshold)
++        except TypeError:
++            _, m, new = map.add_points(*args, True, 1.0, far_points_threshold)
++        b_added[np.where(cand)[0][np.asarray(m, bool)]] = True
++
++    if LOG_DIR:
++        _write_log(kf_cur, kf, idxs_cur, cos, z_tri, s, d_hat, g, ok, added, low, cand, b_added)
++    return list(new)
++
++
++def _write_log(kf_cur, kf, idxs_cur, cos, z_tri, s, d_hat, g, ok, added, low, cand, b_added):
++    global _log
++    if _log is None:
++        os.makedirs(LOG_DIR, exist_ok=True)
++        _log = open(os.path.join(LOG_DIR, f"points_{time.strftime('%Y%m%d-%H%M%S')}_{os.getpid()}.csv"), "w")
++        _log.write("kf,kf2,t,u,v,parallax_deg,z_tri_units,m_per_unit,z_tri_m,d_hat_m,sigma_grad,trusted,"
++                   "tri_added,low_parallax,b_candidate,b_added\n")
++    uv = np.asarray(kf_cur.kps)[idxs_cur]
++    par = np.degrees(np.arccos(np.clip(cos, -1, 1)))
++    t = ts_of(kf_cur)
++    for i in range(len(idxs_cur)):
++        _log.write(f"{kf_cur.kid},{kf.kid},{t:.6f},{uv[i,0]:.1f},{uv[i,1]:.1f},{par[i]:.4f},{z_tri[i]:.5f},{s:.5f},"
++                   f"{z_tri[i]*s:.4f},{d_hat[i]:.4f},{g[i]:.5f},{int(ok[i])},{int(added[i])},{int(low[i])},"
++                   f"{int(cand[i])},{int(b_added[i])}\n")
++    _log.flush()
+diff --git a/pyslam/evaluation/configs/coursework_replica_mono.json b/pyslam/evaluation/configs/coursework_replica_mono.json
+new file mode 100644
+--- /dev/null
++++ b/pyslam/evaluation/configs/coursework_replica_mono.json
+@@ -0,0 +1,26 @@
++{
++  "num_threads": 1,
++  "dataset_base_path": "data/replica",
++  "dataset_type": "REPLICA_DATASET",
++  "number_of_runs_per_dataset": 1,
++  "sensor_type": "mono",
++  "datasets": [
++    {
++      "name": "room0",
++      "settings_path": "settings/REPLICA.yaml",
++      "groundtruth_file": "auto"
++    }
++  ],
++  "presets": [
++    {
++      "name": "ORB2",
++      "custom_parameters": {
++        "settings": {
++          "FeatureTrackerConfig.name": "ORB2"
++        }
++      }
++    }
++  ],
++  "output_path": "replica_room0_mono",
++  "saved_trajectory_format_type": "kitti"
++}
+diff --git a/pyslam/evaluation/configs/coursework_replica_rgbd.json b/pyslam/evaluation/configs/coursework_replica_rgbd.json
+new file mode 100644
+--- /dev/null
++++ b/pyslam/evaluation/configs/coursework_replica_rgbd.json
+@@ -0,0 +1,26 @@
++{
++  "num_threads": 1,
++  "dataset_base_path": "data/replica",
++  "dataset_type": "REPLICA_DATASET",
++  "number_of_runs_per_dataset": 1,
++  "sensor_type": "rgbd",
++  "datasets": [
++    {
++      "name": "room0",
++      "settings_path": "settings/REPLICA.yaml",
++      "groundtruth_file": "auto"
++    }
++  ],
++  "presets": [
++    {
++      "name": "ORB2",
++      "custom_parameters": {
++        "settings": {
++          "FeatureTrackerConfig.name": "ORB2"
++        }
++      }
++    }
++  ],
++  "output_path": "replica_room0_rgbd",
++  "saved_trajectory_format_type": "kitti"
++}
+diff --git a/pyslam/slam/initializer.py b/pyslam/slam/initializer.py
+--- a/pyslam/slam/initializer.py
++++ b/pyslam/slam/initializer.py
+@@ -444,6 +444,16 @@
+                 # set scene median depth to equal desired_median_depth'
+                 desired_median_depth = Parameters.kInitializerDesiredMedianDepth
+                 depth_scale = desired_median_depth / median_depth
++                from pyslam.depth_estimation import pred_depth
++                if pred_depth.use("E1"):  # E1: first map in the net's metres
++                    d = pred_depth.depth(pred_depth.ts_of(kf_cur))
++                    if d is not None:
++                        z, ok = pred_depth.trusted(d, kf_cur.kps[out.idxs_cur])
++                        if ok.sum() >= 10:
++                            depth_scale = float(np.median(z[ok])) / kf_cur.compute_points_median_depth(out.pts[ok])
++                            desired_median_depth = depth_scale * median_depth
++                            pred_depth.part4_initializations.append({"timestamp":float(pred_depth.ts_of(kf_cur)),"trusted_keypoints":int(ok.sum()),"depth_scale":float(depth_scale)})
++                            print(f"E1: {ok.sum()} keypoints, median learned depth -> scale {depth_scale:.4f}")
+                 print(
+                     f"Initializer: forcing current median depth {median_depth} to {desired_median_depth}, depth_scale: {depth_scale}"
+                 )
+diff --git a/pyslam/slam/local_mapping.py b/pyslam/slam/local_mapping.py
+--- a/pyslam/slam/local_mapping.py
++++ b/pyslam/slam/local_mapping.py
+@@ -52,6 +52,7 @@
+ from pyslam.utilities.logging import Printer, Logging
+ from pyslam.utilities.multi_processing import MultiprocessingManager
+ from pyslam.utilities.geom_triangulation import triangulate_normalized_points
++from pyslam.depth_estimation import pred_depth
+ from pyslam.utilities.data_management import empty_queue
+ 
+ import multiprocessing as mp
+@@ -672,7 +673,7 @@
+                     self.kf_cur.pose(), kf.pose(), self.kf_cur.kpsn[idxs_cur], kf.kpsn[idxs]
+                 )
+ 
+-                new_pts_count, _, list_added_points = self.map.add_points(
++                new_pts_count, added_mask, list_added_points = self.map.add_points(
+                     pts3d,
+                     mask_pts3d,
+                     self.kf_cur,
+@@ -688,6 +689,11 @@
+                 )
+                 total_new_pts += new_pts_count
+                 self.local_mapping_core.add_points(list_added_points)
++                if pred_depth.on():  # B: net depth for the matches with too little parallax
++                    list_b = pred_depth.fill_gaps(self.map, self.kf_cur, kf, idxs_cur, idxs, pts3d,
++                                                  added_mask, self.far_points_threshold)
++                    total_new_pts += len(list_b)
++                    self.local_mapping_core.add_points(list_b)
+         return total_new_pts
+ 
+     def create_new_map_points_parallel(self):
+@@ -773,7 +779,7 @@
+                     self.kf_cur.pose(), kf.pose(), self.kf_cur.kpsn[idxs_cur], kf.kpsn[idxs]
+                 )
+ 
+-                new_pts_count, _, list_added_points = self.map.add_points(
++                new_pts_count, added_mask, list_added_points = self.map.add_points(
+                     pts3d,
+                     mask_pts3d,
+                     self.kf_cur,
+@@ -789,6 +795,11 @@
+                 )
+                 total_new_pts += new_pts_count
+                 self.local_mapping_core.add_points(list_added_points)
++                if pred_depth.on():  # B: net depth for the matches with too little parallax
++                    list_b = pred_depth.fill_gaps(self.map, self.kf_cur, kf, idxs_cur, idxs, pts3d,
++                                                  added_mask, self.far_points_threshold)
++                    total_new_pts += len(list_b)
++                    self.local_mapping_core.add_points(list_b)
+         return total_new_pts
+ 
+     # fuse close map points of local keyframes
+diff --git a/pyslam/slam/tracking.py b/pyslam/slam/tracking.py
+--- a/pyslam/slam/tracking.py
++++ b/pyslam/slam/tracking.py
+@@ -1218,6 +1218,15 @@
+             mask_right=mask_right,
+         )
+         self.f_cur = f_cur
++        # Part 4 sparse-depth playback: an RGB-D frame without a depth image has
++        # monocular observations only. The native Frame constructor leaves these
++        # vectors empty, while RGB-D tracking indexes them for every keypoint.
++        # -1 is the backend's existing "no stereo/depth observation" sentinel.
++        # No depth image is fabricated and no skipped value is treated as valid.
++        if self.sensor_type == SensorType.RGBD and depth is None:
++            num_keypoints = 0 if f_cur.kps is None else len(f_cur.kps)
++            f_cur.depths = np.full(num_keypoints, -1.0, dtype=np.float32)
++            f_cur.kps_ur = np.full(num_keypoints, -1.0, dtype=np.float32)
+         if f_cur_is_blurry:
+             f_cur.is_blurry = True
+             f_cur.laplacian_var = f_cur_laplacian_var
+diff --git a/pyslam/utilities/logging.py b/pyslam/utilities/logging.py
+--- a/pyslam/utilities/logging.py
++++ b/pyslam/utilities/logging.py
+@@ -300,6 +300,18 @@
+     """QueueListener variant that ignores errors raised while the queue/pipe closes."""
+ 
+     verbose = False
++
++    def stop(self):
++        # QueueListener.stop() otherwise joins forever on a blocked consumer.
++        thread = self._thread
++        if thread is not None:
++            try:
++                self.enqueue_sentinel()
++            except (OSError, ValueError):
++                pass
++            thread.join(timeout=2.0)
++            if not thread.is_alive():
++                self._thread = None
+ 
+     def _monitor(self):
+         q = self.queue
+@@ -373,6 +385,9 @@
+ 
+         # Shared log queue
+         self.log_queue = mp.Queue()
++        # Part 4 shutdown: diagnostics must not block interpreter exit if the
++        # consumer has stopped. Numeric experiment outputs are separate files.
++        self.log_queue.cancel_join_thread()
+ 
+         # File handler for the listener
+         self.file_handler = logging.FileHandler(log_file)
+@@ -576,19 +591,11 @@
+                         # The feeder thread should exit after processing all items
+                         try:
+                             # Use timeout to avoid hanging indefinitely
+-                            # timeout parameter was added in Python 3.9+
+-                            if hasattr(self.log_queue, "join_thread"):
+-                                try:
+-                                    # Wait up to 1 second for feeder thread to finish
+-                                    # Shorter timeout to avoid blocking shutdown
+-                                    self.log_queue.join_thread(timeout=1.0)
+-                                except TypeError:
+-                                    # Timeout parameter not supported (Python < 3.9)
+-                                    # Try without timeout - this may block, so we'll cancel if needed
+-                                    self.log_queue.join_thread()
+-                                except Exception:
+-                                    # If join fails, continue to cancel
+-                                    pass
++                            # multiprocessing.Queue.join_thread has no timeout
++                            # argument. Join its feeder with a bounded wait instead.
++                            feeder = getattr(self.log_queue, "_thread", None)
++                            if feeder is not None:
++                                feeder.join(timeout=1.0)
+                         except Exception as join_error:
+                             pass  # Will cancel below
+ 
+diff --git a/scripts/coursework_check_alignment.py b/scripts/coursework_check_alignment.py
+new file mode 100644
+--- /dev/null
++++ b/scripts/coursework_check_alignment.py
+@@ -0,0 +1,82 @@
++import csv
++from pathlib import Path
++
++import cv2
++import numpy as np
++
++DATASETS = [
++    {
++        "name": "TUM RGB-D",
++        "run": Path("results/eval_2026_11_02-18_38_13/ORB2/rgbd_dataset_freiburg3_long_office_household/iteration_0"),
++        "dataset": Path("data/tum/rgbd_dataset_freiburg3_long_office_household"),
++        "factor": 5000.0,
++        "scale": 1.0,
++        "tum": True,
++    },
++    {
++        "name": "Replica RGB-D",
++        "run": Path("results/eval_2026_11_02-17_26_25/ORB2/room0/iteration_0"),
++        "dataset": Path("data/replica/room0"),
++        "factor": 6553.5,
++        "scale": 1.0,
++        "tum": False,
++    },
++]
++
++for cfg in DATASETS:
++    observations = {}
++    with (cfg["run"] / "map_observations.csv").open(newline="") as f:
++        for row in csv.DictReader(f):
++            frame_id = int(row["frame_id"])
++            observations.setdefault(frame_id, []).append(row)
++
++    if cfg["tum"]:
++        with (cfg["dataset"] / "associations.txt").open() as f:
++            depth_files = [
++                cfg["dataset"] / parts[3]
++                for line in f
++                if (parts := line.split()) and not line.startswith("#")
++            ]
++    else:
++        depth_files = sorted((cfg["dataset"] / "results").glob("depth*.png"))
++
++    print(f"\n===== {cfg['name']} =====")
++
++    for offset in (-1, 0, 1):
++        errors = []
++
++        for frame_id, rows in observations.items():
++            index = frame_id + offset
++            if index < 0 or index >= len(depth_files):
++                continue
++
++            depth = cv2.imread(str(depth_files[index]), cv2.IMREAD_UNCHANGED)
++            if depth is None:
++                raise RuntimeError(f"Missing depth: {depth_files[index]}")
++
++            height, width = depth.shape
++
++            for row in rows:
++                u = float(row["u"])
++                v = float(row["v"])
++                map_z = float(row["map_depth"]) * cfg["scale"]
++
++                if not np.isfinite([u, v, map_z]).all():
++                    continue
++
++                x, y = round(u), round(v)
++
++                if not (0 <= x < width and 0 <= y < height):
++                    continue
++
++                reference = float(depth[y, x]) / cfg["factor"]
++
++                if 0.1 <= reference <= 5.0 and map_z > 0:
++                    errors.append(abs(map_z - reference))
++
++        print(
++            f"Offset {offset:+d}: "
++            f"MAE={np.mean(errors):.5f} m, "
++            f"median={np.median(errors):.5f} m, "
++            f"N={len(errors)}"
++        )
+diff --git a/scripts/coursework_export_map.py b/scripts/coursework_export_map.py
+new file mode 100644
+--- /dev/null
++++ b/scripts/coursework_export_map.py
+@@ -0,0 +1,65 @@
++
++import csv
++import numpy as np
++
++
++def associated_frame_ids(timestamps, frame_ids, retained_timestamps):
++    """Keep frame IDs aligned when ground-truth matching removes poses."""
++    timestamps=np.asarray(timestamps,float)
++    retained=np.asarray(retained_timestamps,float)
++    if len(timestamps)!=len(frame_ids) or np.any(np.diff(timestamps)<=0):
++        raise ValueError('Source trajectory IDs/timestamps are inconsistent')
++    indices=np.searchsorted(timestamps,retained)
++    if np.any(indices>=len(timestamps)) or not np.array_equal(timestamps[indices],retained):
++        raise ValueError('Retained timestamp is absent from the source trajectory')
++    return np.asarray(frame_ids)[indices].tolist()
++
++
++def export_map_observations(slam, output_path):
++    """Export map-point depths at their observed keyframe pixels."""
++
++    rows = []
++
++    for point in slam.map.get_points():
++        world_point = np.asarray(point.pt()).reshape(3)
++        point_id = int(point.id)
++
++        for keyframe, idx in point.observations():
++            if keyframe is None or keyframe.kps is None:
++                continue
++
++            idx = int(idx)
++            if idx < 0 or idx >= len(keyframe.kps):
++                continue
++
++            # World coordinates -> camera coordinates
++            Tcw = np.asarray(keyframe.pose())
++            camera_point = (
++                Tcw[:3, :3] @ world_point + Tcw[:3, 3]
++            )
++
++            z = float(camera_point[2])
++            if not np.isfinite(z) or z <= 0:
++                continue
++
++            u, v = keyframe.kps[idx][:2]
++
++            rows.append([
++                int(keyframe.img_id),
++                point_id,
++                float(u),
++                float(v),
++                z,
++            ])
++
++    with open(output_path, "w", newline="") as f:
++        writer = csv.writer(f)
++        writer.writerow([
++            "frame_id", "point_id", "u", "v", "map_depth"
++        ])
++        writer.writerows(rows)
++
++    print(
++        f"Map observations exported: {len(rows)} "
++        f"to {output_path}"
++    )
+diff --git a/scripts/coursework_map_depth.py b/scripts/coursework_map_depth.py
+new file mode 100644
+--- /dev/null
++++ b/scripts/coursework_map_depth.py
+@@ -0,0 +1,76 @@
++#!/usr/bin/env python3
++"""Score SLAM map-point observation depths against corresponding reference camera depths.
++
++Input CSV (one row per genuine map-point observation):
++    frame_id,map_z_units,reference_depth_m
++
++Here map_z_units is the 3D map point's Z coordinate in the observing camera frame,
++in the units of the SLAM map. reference_depth_m is the reference depth at that
++observation's image pixel, already decoded into metres. Use --scale equal to the
++trajectory's Sim(3) fitted scale for monocular runs, or 1 for RGB-D runs.
++
++This script only scores observations. It does NOT export map observations from pySLAM.
++"""
++import argparse
++import csv
++import json
++from collections import defaultdict
++from pathlib import Path
++import numpy as np
++
++
++def main():
++    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
++    ap.add_argument('observations_csv', help='CSV with frame_id,map_z_units,reference_depth_m')
++    ap.add_argument('--scale', type=float, default=1.0, help='Apply fitted trajectory scale to SLAM map depths')
++    ap.add_argument('--min-depth', type=float, default=0.1)
++    ap.add_argument('--max-depth', type=float, default=5.0, help='Evaluation range (m); declare this in report')
++    ap.add_argument('--output', help='Optional JSON result path')
++    args = ap.parse_args()
++    if args.scale <= 0 or args.min_depth <= 0 or args.max_depth <= args.min_depth:
++        ap.error('Require scale > 0 and 0 < min-depth < max-depth')
++    by_frame = defaultdict(list)
++    total = 0
++    with open(args.observations_csv, newline='') as f:
++        rd = csv.DictReader(f)
++        required = {'frame_id', 'map_z_units', 'reference_depth_m'}
++        if not required.issubset(rd.fieldnames or []):
++            ap.error('Missing CSV columns: ' + ', '.join(sorted(required - set(rd.fieldnames or []))))
++        for row in rd:
++            total += 1
++            try:
++                zmap = float(row['map_z_units']) * args.scale
++                zref = float(row['reference_depth_m'])
++            except (ValueError, TypeError):
++                continue
++            if not (np.isfinite(zmap) and np.isfinite(zref)):
++                continue
++            if zmap <= 0 or not (args.min_depth <= zref <= args.max_depth):
++                continue
++            by_frame[row['frame_id']].append((zmap, zref))
++    pairs = np.asarray([p for points in by_frame.values() for p in points])
++    if pairs.size == 0:
++        raise SystemExit('No valid map/depth observations in selected reference depth range')
++    zmap, zref = pairs.T
++    dif = zmap - zref
++    stats = {
++        'input_observations': total,
++        'valid_observations': len(dif),
++        'valid_fraction': len(dif) / total if total else 0.0,
++        'frames_with_valid_observations': len(by_frame),
++        'min_reference_depth_m': args.min_depth,
++        'max_reference_depth_m': args.max_depth,
++        'applied_map_scale': args.scale,
++        'mae_m': float(np.mean(np.abs(dif))),
++        'rmse_m': float(np.sqrt(np.mean(dif ** 2))),
++        'median_absolute_error_m': float(np.median(np.abs(dif))),
++        'absrel': float(np.mean(np.abs(dif) / zref)),
++        'median_frame_mae_m': float(np.median([np.mean(np.abs(np.asarray(p)[:,0] - np.asarray(p)[:,1])) for p in by_frame.values()])),
++    }
++    print(json.dumps(stats, indent=2))
++    if args.output:
++        Path(args.output).write_text(json.dumps(stats, indent=2) + '\n')
++
++
++if __name__ == '__main__':
++    main()
+diff --git a/scripts/coursework_replica_reference.py b/scripts/coursework_replica_reference.py
+new file mode 100644
+--- /dev/null
++++ b/scripts/coursework_replica_reference.py
+@@ -0,0 +1,97 @@
++
++"""Convert Replica map observations to the map-depth scorer's input format."""
++
++import argparse
++import csv
++from collections import defaultdict
++from pathlib import Path
++
++import cv2
++import numpy as np
++
++DEPTH_FACTOR = 6553.5
++
++
++def main():
++    parser = argparse.ArgumentParser()
++    parser.add_argument("observations_csv", type=Path)
++    parser.add_argument("--replica", type=Path, default=Path("data/replica/room0"))
++    parser.add_argument("--output", type=Path, required=True)
++    args = parser.parse_args()
++
++    grouped = defaultdict(list)
++    with args.observations_csv.open(newline="") as f:
++        reader = csv.DictReader(f)
++        required = {"frame_id", "point_id", "u", "v", "map_depth"}
++        if not required.issubset(reader.fieldnames or []):
++            raise ValueError(f"Missing columns: {required - set(reader.fieldnames or [])}")
++
++        for row in reader:
++            grouped[int(row["frame_id"])].append(row)
++
++    image_files = sorted((args.replica / "results").glob("frame*.jpg"))
++    depth_files = sorted((args.replica / "results").glob("depth*.png"))
++    if not image_files or len(image_files) != len(depth_files):
++        raise ValueError("RGB/depth image count mismatch or missing images")
++
++    frame_ids = sorted(grouped)
++    print("Observed frame ID range:", frame_ids[0], "to", frame_ids[-1])
++    print("Available image indices: 0 to", len(depth_files) - 1)
++
++    # The exporter uses pySLAM frame IDs. We require these to match
++    # Replica's zero-based image indices rather than silently shifting them.
++    if frame_ids[0] < 0 or frame_ids[-1] >= len(depth_files):
++        raise ValueError(
++            "Frame IDs do not match zero-based Replica image indices. "
++            "Verify frame-to-image mapping before scoring."
++        )
++
++    written = 0
++    skipped = 0
++    args.output.parent.mkdir(parents=True, exist_ok=True)
++
++    with args.output.open("w", newline="") as f:
++        writer = csv.writer(f)
++        writer.writerow(["frame_id", "map_z_units", "reference_depth_m"])
++
++        for frame_id in frame_ids:
++            depth_path = args.replica / "results" / f"depth{frame_id:06d}.png"
++            depth = cv2.imread(str(depth_path), cv2.IMREAD_UNCHANGED)
++
++            if depth is None or depth.ndim != 2:
++                raise ValueError(f"Cannot read depth image: {depth_path}")
++            if depth.dtype != np.uint16:
++                raise ValueError(f"Unexpected depth dtype: {depth.dtype}")
++
++            height, width = depth.shape
++
++            for row in grouped[frame_id]:
++                u = float(row["u"])
++                v = float(row["v"])
++                z = float(row["map_depth"])
++
++                if not np.isfinite([u, v, z]).all() or z <= 0:
++                    skipped += 1
++                    continue
++
++                x, y = int(round(u)), int(round(v))
++                if not (0 <= x < width and 0 <= y < height):
++                    skipped += 1
++                    continue
++
++                raw = int(depth[y, x])
++                if raw == 0:
++                    skipped += 1
++                    continue
++
++                reference_depth_m = raw / DEPTH_FACTOR
++                writer.writerow([frame_id, z, reference_depth_m])
++                written += 1
++
++    print(f"Valid comparisons: {written}")
++    print(f"Skipped observations: {skipped}")
++    print(f"Saved: {args.output}")
++
++
++if __name__ == "__main__":
++    main()
+diff --git a/scripts/coursework_rpe.py b/scripts/coursework_rpe.py
+new file mode 100644
+--- /dev/null
++++ b/scripts/coursework_rpe.py
+@@ -0,0 +1,121 @@
++#!/usr/bin/env python3
++"""Fixed-time translational RPE on pySLAM trajectory_final.json.
++
++Examples:
++  python scripts/coursework_rpe.py path/to/plot/trajectory_final.json --timestamps data/videos/kitti06/times.txt
++  python scripts/coursework_rpe.py path/to/plot/trajectory_final.json --timestamps data/tum/SEQUENCE/associations.txt
++
++For TUM, each association row begins with the timestamp of the RGB frame.
++For KITTI, times.txt contains one timestamp per frame.
++"""
++import argparse
++import bisect
++import copy
++import json
++from pathlib import Path
++import numpy as np
++from evo.core.trajectory import PosePath3D
++
++
++def load_timestamps(path):
++    timestamps = []
++    for raw in Path(path).read_text().splitlines():
++        line = raw.strip()
++        if not line or line.startswith('#'):
++            continue
++        timestamps.append(float(line.split()[0]))
++    if not timestamps:
++        raise ValueError(f'No timestamps in {path}')
++    if any(b <= a for a, b in zip(timestamps, timestamps[1:])):
++        raise ValueError('Timestamps must be strictly increasing and in frame order')
++    return np.array(timestamps, dtype=float)
++
++
++def evaluate(json_path, timestamps_path, delta_s, tolerance_s, scale_align, require_contiguous):
++    data = json.loads(Path(json_path).read_text())
++    ids = np.asarray(data['trajectory_id'], dtype=int)
++    if len(set(ids.tolist())) != len(ids):
++        raise ValueError('Duplicate frame IDs in trajectory JSON')
++    if len(ids) < 3:
++        raise ValueError('Too few matched poses')
++    frame_times = load_timestamps(timestamps_path)
++    if ids.min() < 0 or ids.max() >= len(frame_times):
++        raise ValueError(f'Frame ID range {ids.min()}..{ids.max()} exceeds timestamps (n={len(frame_times)}); check sequence ordering')
++    if not np.all(np.diff(ids) > 0):
++        raise ValueError('Frame IDs must be in increasing order')
++
++    gt = PosePath3D(poses_se3=[np.asarray(T, dtype=float) for T in data['trajectory_gt']])
++    est = PosePath3D(poses_se3=[np.asarray(T, dtype=float) for T in data['trajectory_est']])
++    if len(ids) != len(gt.poses_se3) or len(ids) != len(est.poses_se3):
++        raise ValueError('Pose count mismatch')
++    est = copy.deepcopy(est)
++    _, _, fitted_scale = est.align(gt, correct_scale=scale_align)
++
++    # Pair by genuine camera timestamps, not by adjacent *saved* poses.
++    times = frame_times[ids]
++    index_by_id = {int(fid): idx for idx, fid in enumerate(ids)}
++    errors = []
++    actual_deltas = []
++    skipped_gap = skipped_tolerance = 0
++    for idx, i in enumerate(ids):
++        target = times[idx] + delta_s
++        loc = bisect.bisect_left(times, target, lo=idx + 1)
++        candidates = [k for k in (loc - 1, loc) if idx < k < len(ids)]
++        if not candidates:
++            continue
++        jdx = min(candidates, key=lambda k: abs(times[k] - target))
++        dt = float(times[jdx] - times[idx])
++        if abs(dt - delta_s) > tolerance_s:
++            skipped_tolerance += 1
++            continue
++        j = int(ids[jdx])
++        if require_contiguous and j - int(i) != jdx - idx:
++            skipped_gap += 1
++            continue
++        # T_i^-1 T_j gives motion relative to camera i.
++        rel_gt = np.linalg.inv(gt.poses_se3[idx]) @ gt.poses_se3[jdx]
++        rel_est = np.linalg.inv(est.poses_se3[idx]) @ est.poses_se3[jdx]
++        err_T = np.linalg.inv(rel_gt) @ rel_est
++        errors.append(float(np.linalg.norm(err_T[:3, 3])))
++        actual_deltas.append(dt)
++    if not errors:
++        raise ValueError('No valid RPE pairs; check timestamps, delta and tolerance')
++    err = np.asarray(errors)
++    return dict(
++        rpe_rmse_m=float(np.sqrt(np.mean(err**2))),
++        rpe_median_m=float(np.median(err)),
++        rpe_mean_m=float(np.mean(err)),
++        valid_pairs=len(errors),
++        skipped_due_to_tracking_gaps=skipped_gap,
++        skipped_due_to_time_tolerance=skipped_tolerance,
++        delta_target_s=delta_s,
++        delta_actual_median_s=float(np.median(actual_deltas)),
++        delta_actual_min_s=float(np.min(actual_deltas)),
++        delta_actual_max_s=float(np.max(actual_deltas)),
++        scale_alignment='similarity' if scale_align else 'rigid',
++        fitted_scale=float(fitted_scale),
++        matched_pose_count=len(ids),
++    )
++
++
++def main():
++    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
++    ap.add_argument('trajectory_json')
++    ap.add_argument('--timestamps', required=True, help='KITTI times.txt or TUM associations.txt; one row per input frame')
++    ap.add_argument('--delta-seconds', type=float, default=1.0)
++    ap.add_argument('--tolerance-seconds', type=float, default=0.06, help='Maximum difference from target interval')
++    ap.add_argument('--no-scale-align', action='store_true', help='Use rigid SE(3) alignment instead of scale-correcting Sim(3)')
++    ap.add_argument('--allow-gaps', action='store_true', help='Include endpoints even when intermediate frame poses are missing')
++    ap.add_argument('--json-output', help='Optional summary JSON output path')
++    args = ap.parse_args()
++    if args.delta_seconds <= 0 or args.tolerance_seconds < 0:
++        ap.error('delta-seconds must be > 0 and tolerance-seconds must be >= 0')
++    result = evaluate(args.trajectory_json, args.timestamps, args.delta_seconds,
++                      args.tolerance_seconds, not args.no_scale_align, not args.allow_gaps)
++    print(json.dumps(result, indent=2))
++    if args.json_output:
++        Path(args.json_output).write_text(json.dumps(result, indent=2) + '\n')
++
++
++if __name__ == '__main__':
++    main()
+diff --git a/scripts/coursework_tum_reference.py b/scripts/coursework_tum_reference.py
+new file mode 100644
+--- /dev/null
++++ b/scripts/coursework_tum_reference.py
+@@ -0,0 +1,77 @@
++import argparse
++import csv
++from collections import defaultdict
++from pathlib import Path
++
++import cv2
++import numpy as np
++
++parser = argparse.ArgumentParser()
++parser.add_argument("observations_csv", type=Path)
++parser.add_argument("--tum", type=Path, required=True)
++parser.add_argument("--output", type=Path, required=True)
++args = parser.parse_args()
++
++associations = []
++with (args.tum / "associations.txt").open() as f:
++    for line in f:
++        line = line.strip()
++        if not line or line.startswith("#"):
++            continue
++        parts = line.split()
++        if len(parts) < 4:
++            raise ValueError(f"Unexpected association: {line}")
++        associations.append(parts[3])
++
++grouped = defaultdict(list)
++with args.observations_csv.open(newline="") as f:
++    for row in csv.DictReader(f):
++        grouped[int(row["frame_id"])].append(row)
++
++if not grouped:
++    raise ValueError("No map observations found")
++
++if min(grouped) < 0 or max(grouped) >= len(associations):
++    raise ValueError("Frame IDs outside association index range")
++
++args.output.parent.mkdir(parents=True, exist_ok=True)
++valid = skipped = 0
++
++with args.output.open("w", newline="") as f:
++    writer = csv.writer(f)
++    writer.writerow(["frame_id", "map_z_units", "reference_depth_m"])
++
++    for frame_id, rows in sorted(grouped.items()):
++        depth_path = args.tum / associations[frame_id]
++        depth = cv2.imread(str(depth_path), cv2.IMREAD_UNCHANGED)
++
++        if depth is None or depth.ndim != 2 or depth.dtype != np.uint16:
++            raise ValueError(f"Invalid depth image: {depth_path}")
++
++        height, width = depth.shape
++
++        for row in rows:
++            u = float(row["u"])
++            v = float(row["v"])
++            z = float(row["map_depth"])
++
++            if not np.isfinite([u, v, z]).all() or z <= 0:
++                skipped += 1
++                continue
++
++            x, y = round(u), round(v)
++            if not (0 <= x < width and 0 <= y < height):
++                skipped += 1
++                continue
++
++            raw_depth = int(depth[y, x])
++            if raw_depth == 0:
++                skipped += 1
++                continue
++
++            writer.writerow([frame_id, z, raw_depth / 5000.0])
++            valid += 1
++
++print(f"Reference comparisons: {valid}")
++print(f"Skipped observations: {skipped}")
++print(f"Saved: {args.output}")
+diff --git a/scripts/part2_depth_errors.py b/scripts/part2_depth_errors.py
+new file mode 100644
+--- /dev/null
++++ b/scripts/part2_depth_errors.py
+@@ -0,0 +1,323 @@
++#!/usr/bin/env python3
++"""COMP0227 CW1 Part 2: where does the predicted depth go wrong?
++
++Compares the depth maps written by `depth-prediction --save NAME` with the sequence's own
++depth images, pixel by pixel, and breaks the error down by
++  - true depth (bins in metres),
++  - depth edges (pixels near a jump in the true depth) vs flat surfaces,
++  - image region (outer border vs centre).
++Every breakdown is given twice:
++  raw    = the network's depth as it comes (metric),
++  scaled = after one scale per frame, s = median(true / predicted).
++The per-frame scale uses ground truth, so it is a DIAGNOSTIC (how much error is just scale),
++never part of a method.
++
++Works on a sequence in TUM layout (associations.txt), also while a --save run is still going.
++
++Example:
++  pixi run -e depth-cpu python scripts/part2_depth_errors.py \
++      --seq data/tum/rgbd_dataset_freiburg3_long_office_household --name dav2b \
++      --factor 5000 --step 5 --out results/part2/tum_dav2b
++Replica (once in TUM layout): --factor 6553.5
++"""
++import argparse
++import csv
++import json
++import os
++import sys
++
++import cv2
++import numpy as np
++import matplotlib
++
++matplotlib.use("Agg")
++import matplotlib.pyplot as plt  # noqa: E402
++
++DEPTH_BINS = [0.0, 1.0, 2.0, 3.0, 4.0, 6.0, 100.0]
++
++
++# ---------------------------------------------------------------- frames
++def read_assoc(path):
++    """Rows of an associations file: [t_rgb, rgb_path, t_depth, depth_path]."""
++    rows = []
++    with open(path) as f:
++        for line in f:
++            if line.startswith("#"):
++                continue
++            p = line.split()
++            if len(p) >= 4:
++                rows.append(p[:4])
++    return rows
++
++
++def stem(p):
++    return os.path.splitext(os.path.basename(p))[0]
++
++
++def pair_frames(seq, name):
++    """[(index, rgb_rel, true_depth_rel, pred_depth_rel)] for every frame with a saved map."""
++    gt_rows = read_assoc(os.path.join(seq, "associations.txt"))
++    pred_assoc = os.path.join(seq, f"associations_{name}.txt")
++    pairs = []
++    if os.path.exists(pred_assoc):  # the run has finished: use its own list
++        pred_by_rgb = {r[1]: r[3] for r in read_assoc(pred_assoc)}
++        for i, r in enumerate(gt_rows):
++            p = pred_by_rgb.get(r[1])
++            if p and os.path.exists(os.path.join(seq, p)):
++                pairs.append((i, r[1], r[3], p))
++    else:  # still running: match the saved maps by file name
++        pred_dir = os.path.join(seq, f"depth_{name}")
++        saved = {stem(f): f for f in os.listdir(pred_dir) if f.endswith(".png")}
++        for i, r in enumerate(gt_rows):
++            for key in (stem(r[1]), stem(r[3]), r[0], r[2], f"{i:06d}", str(i)):
++                if key in saved:
++                    pairs.append((i, r[1], r[3], os.path.join(f"depth_{name}", saved[key])))
++                    break
++        if not pairs and saved:
++            print("Could not match saved maps to frames. Example saved names:",
++                  sorted(saved)[:3], "example rgb:", gt_rows[0][1], file=sys.stderr)
++    return pairs
++
++
++def load_depth(path, factor):
++    d = cv2.imread(path, cv2.IMREAD_ANYDEPTH)
++    if d is None:
++        raise FileNotFoundError(path)
++    return d.astype(np.float32) / factor
++
++
++# ---------------------------------------------------------------- masks
++def depth_edges(gt, valid, rel_jump, dilate):
++    """Pixels within `dilate` px of a jump of more than rel_jump (relative) in the true depth."""
++    dx = np.zeros_like(gt)
++    dy = np.zeros_like(gt)
++    okx = np.zeros_like(valid)
++    oky = np.zeros_like(valid)
++    dx[:, :-1] = np.abs(gt[:, 1:] - gt[:, :-1])
++    dy[:-1, :] = np.abs(gt[1:, :] - gt[:-1, :])
++    okx[:, :-1] = valid[:, 1:] & valid[:, :-1]
++    oky[:-1, :] = valid[1:, :] & valid[:-1, :]
++    jump = np.maximum(np.where(okx, dx, 0), np.where(oky, dy, 0)) / np.maximum(gt, 1e-3)
++    edges = (jump > rel_jump).astype(np.uint8)
++    k = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (2 * dilate + 1, 2 * dilate + 1))
++    return cv2.dilate(edges, k) > 0
++
++
++def border_mask(h, w, frac):
++    m = np.zeros((h, w), bool)
++    bh, bw = int(round(h * frac)), int(round(w * frac))
++    m[:bh, :] = m[-bh:, :] = True
++    m[:, :bw] = m[:, -bw:] = True
++    return m
++
++
++# ---------------------------------------------------------------- accumulation
++class Acc:
++    """Running sums, so no pixel arrays are kept across frames."""
++
++    def __init__(self):
++        self.n = 0
++        self.absrel = self.abs = self.sq = 0.0
++        self.d125 = 0
++
++    def add(self, pred, gt):
++        if pred.size == 0:
++            return
++        err = pred - gt
++        self.n += pred.size
++        self.absrel += float(np.sum(np.abs(err) / gt))
++        self.abs += float(np.sum(np.abs(err)))
++        self.sq += float(np.sum(err * err))
++        self.d125 += int(np.sum(np.maximum(pred / gt, gt / pred) < 1.25))
++
++    def row(self):
++        n = max(self.n, 1)
++        return {"pixels": self.n, "absrel": self.absrel / n, "mae_m": self.abs / n,
++                "rmse_m": (self.sq / n) ** 0.5, "delta125": self.d125 / n}
++
++
++def frame_absrel(pred, gt):
++    return float(np.mean(np.abs(pred - gt) / gt)) if gt.size else float("nan")
++
++
++# ---------------------------------------------------------------- figures
++def plot_example(seq, pair, a, title, path):
++    i, rgb_rel, gt_rel, pred_rel = pair
++    rgb = cv2.cvtColor(cv2.imread(os.path.join(seq, rgb_rel)), cv2.COLOR_BGR2RGB)
++    gt = load_depth(os.path.join(seq, gt_rel), a.factor)
++    pred = load_depth(os.path.join(seq, pred_rel), a.pred_factor or a.factor)
++    if pred.shape != gt.shape:
++        pred = cv2.resize(pred, (gt.shape[1], gt.shape[0]), interpolation=cv2.INTER_NEAREST)
++    valid = (gt > a.min_depth) & (gt < a.max_depth) & (pred > 0) & np.isfinite(pred)
++    s = float(np.median(gt[valid] / pred[valid])) if valid.any() else 1.0
++    err = np.full(gt.shape, np.nan, np.float32)
++    err[valid] = np.abs(pred[valid] * s - gt[valid]) / gt[valid]
++    vmax = float(np.percentile(gt[valid], 98)) if valid.any() else 5.0
++    fig, ax = plt.subplots(1, 4, figsize=(16, 3.6))
++    ax[0].imshow(rgb); ax[0].set_title(f"RGB (frame {i})")
++    ax[1].imshow(np.where(valid, gt, np.nan), vmin=0, vmax=vmax, cmap="viridis"); ax[1].set_title("true depth")
++    ax[2].imshow(pred * s, vmin=0, vmax=vmax, cmap="viridis"); ax[2].set_title(f"predicted x {s:.2f}")
++    im = ax[3].imshow(err, vmin=0, vmax=0.5, cmap="magma"); ax[3].set_title("|rel. error| after scale")
++    fig.colorbar(im, ax=ax[3], fraction=0.046)
++    for x in ax:
++        x.axis("off")
++    fig.suptitle(title)
++    fig.tight_layout()
++    fig.savefig(path, dpi=110)
++    plt.close(fig)
++
++
++def plot_breakdowns(rows, path):
++    groups = [("depth", "true depth (m)"), ("edge", "depth edges"), ("region", "image region")]
++    fig, ax = plt.subplots(1, 3, figsize=(15, 3.8))
++    for k, (g, label) in enumerate(groups):
++        labels = [r["label"] for r in rows if r["group"] == g and r["mode"] == "raw"]
++        raw = [r["absrel"] for r in rows if r["group"] == g and r["mode"] == "raw"]
++        sc = [r["absrel"] for r in rows if r["group"] == g and r["mode"] == "scaled"]
++        x = np.arange(len(labels))
++        ax[k].bar(x - 0.2, raw, 0.4, label="raw (metric)", color="0.6")
++        ax[k].bar(x + 0.2, sc, 0.4, label="scale removed", color="tab:blue")
++        ax[k].set_xticks(x)
++        ax[k].set_xticklabels(labels)
++        ax[k].set_xlabel(label)
++        ax[k].set_ylabel("AbsRel")
++    ax[0].legend()
++    fig.tight_layout()
++    fig.savefig(path, dpi=110)
++    plt.close(fig)
++
++
++def plot_over_time(per_frame, path):
++    idx = [r["frame"] for r in per_frame]
++    fig, ax = plt.subplots(2, 1, figsize=(12, 5), sharex=True)
++    ax[0].plot(idx, [r["absrel_raw"] for r in per_frame], color="0.6", label="raw (metric)")
++    ax[0].plot(idx, [r["absrel_scaled"] for r in per_frame], color="tab:blue", label="scale removed")
++    ax[0].set_ylabel("AbsRel per frame")
++    ax[0].legend()
++    ax[1].plot(idx, [r["scale"] for r in per_frame], color="tab:blue")
++    ax[1].axhline(1.0, color="0.3", lw=0.8)
++    ax[1].set_ylabel("scale true/pred")
++    ax[1].set_xlabel("frame index")
++    fig.tight_layout()
++    fig.savefig(path, dpi=110)
++    plt.close(fig)
++
++
++# ---------------------------------------------------------------- main
++def main():
++    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
++    ap.add_argument("--seq", required=True, help="sequence folder in TUM layout")
++    ap.add_argument("--name", required=True, help="the NAME given to depth-prediction --save")
++    ap.add_argument("--factor", type=float, default=5000.0, help="true depth PNG units per metre (TUM 5000, Replica 6553.5)")
++    ap.add_argument("--pred-factor", type=float, default=None, help="predicted PNG units per metre (default: same as --factor)")
++    ap.add_argument("--step", type=int, default=5, help="use every Nth saved frame")
++    ap.add_argument("--min-depth", type=float, default=0.1)
++    ap.add_argument("--max-depth", type=float, default=10.0)
++    ap.add_argument("--edge-jump", type=float, default=0.05, help="relative depth jump between neighbours that counts as an edge")
++    ap.add_argument("--edge-width", type=int, default=3, help="pixels either side of an edge")
++    ap.add_argument("--border", type=float, default=0.1, help="fraction of width/height counted as border")
++    ap.add_argument("--out", required=True, help="output folder")
++    a = ap.parse_args()
++
++    pairs = pair_frames(a.seq, a.name)[:: a.step]
++    if not pairs:
++        sys.exit("No predicted maps matched. Check --seq and --name.")
++    os.makedirs(a.out, exist_ok=True)
++    pf = a.pred_factor or a.factor
++
++    acc = {}
++
++    def add(mode, group, label, pred, gt):
++        acc.setdefault((mode, group, label), Acc()).add(pred, gt)
++
++    per_frame = []
++    warned = False
++    for n, pair in enumerate(pairs):
++        i, rgb_rel, gt_rel, pred_rel = pair
++        gt = load_depth(os.path.join(a.seq, gt_rel), a.factor)
++        pred = load_depth(os.path.join(a.seq, pred_rel), pf)
++        if pred.shape != gt.shape:
++            if not warned:
++                print(f"note: predicted {pred.shape} != true {gt.shape}; resizing (nearest)")
++                warned = True
++            pred = cv2.resize(pred, (gt.shape[1], gt.shape[0]), interpolation=cv2.INTER_NEAREST)
++        valid = (gt > a.min_depth) & (gt < a.max_depth) & (pred > 0) & np.isfinite(pred)
++        if valid.sum() < 100:
++            continue
++        s = float(np.median(gt[valid] / pred[valid]))
++        edges = depth_edges(gt, valid, a.edge_jump, a.edge_width)
++        border = border_mask(*gt.shape, a.border)
++        for mode, p in (("raw", pred), ("scaled", pred * s)):
++            add(mode, "all", "all", p[valid], gt[valid])
++            for lo, hi in zip(DEPTH_BINS[:-1], DEPTH_BINS[1:]):
++                m = valid & (gt >= lo) & (gt < hi)
++                lab = f"{lo:g}-{hi:g}" if hi < 100 else f">{lo:g}"
++                add(mode, "depth", lab, p[m], gt[m])
++            add(mode, "edge", "edge", p[valid & edges], gt[valid & edges])
++            add(mode, "edge", "flat", p[valid & ~edges], gt[valid & ~edges])
++            add(mode, "region", "centre", p[valid & ~border], gt[valid & ~border])
++            add(mode, "region", "border", p[valid & border], gt[valid & border])
++        per_frame.append({"frame": i, "rgb": rgb_rel, "valid_frac": float(valid.mean()), "scale": s,
++                          "absrel_raw": frame_absrel(pred[valid], gt[valid]),
++                          "absrel_scaled": frame_absrel(pred[valid] * s, gt[valid]),
++                          "edge_frac": float((valid & edges).sum() / valid.sum())})
++        if (n + 1) % 50 == 0:
++            print(f"  {n + 1}/{len(pairs)} frames")
++
++    if not per_frame:
++        sys.exit("No frame had enough valid pixels.")
++
++    # tables
++    order = {"all": 0, "depth": 1, "edge": 2, "region": 3}
++    rows = [{"mode": m, "group": g, "label": l, **v.row()} for (m, g, l), v in acc.items() if v.n > 0]
++    rows.sort(key=lambda r: (r["mode"], order[r["group"]]))
++    with open(os.path.join(a.out, "breakdown.csv"), "w", newline="") as f:
++        w = csv.DictWriter(f, fieldnames=list(rows[0]))
++        w.writeheader()
++        w.writerows(rows)
++    with open(os.path.join(a.out, "per_frame.csv"), "w", newline="") as f:
++        w = csv.DictWriter(f, fieldnames=list(per_frame[0]))
++        w.writeheader()
++        w.writerows(per_frame)
++
++    scales = np.array([r["scale"] for r in per_frame])
++    summary = {
++        "sequence": a.seq, "name": a.name, "frames_scored": len(per_frame), "step": a.step,
++        "valid_pixels_mean_frac": float(np.mean([r["valid_frac"] for r in per_frame])),
++        "scale_median": float(np.median(scales)),
++        "scale_p10_p90": [float(np.percentile(scales, 10)), float(np.percentile(scales, 90))],
++        "settings": {k: v for k, v in vars(a).items()},
++    }
++    for r in rows:
++        if r["group"] == "all":
++            summary[f"{r['mode']}_all"] = {k: r[k] for k in ("absrel", "mae_m", "rmse_m", "delta125")}
++    with open(os.path.join(a.out, "summary.json"), "w") as f:
++        json.dump(summary, f, indent=2)
++
++    # figures
++    plot_breakdowns(rows, os.path.join(a.out, "breakdown.png"))
++    plot_over_time(per_frame, os.path.join(a.out, "over_time.png"))
++    ranked = sorted(per_frame, key=lambda r: r["absrel_scaled"])
++    by_idx = {p[0]: p for p in pairs}
++    for tag, r in (("typical", ranked[len(ranked) // 2]), ("worst", ranked[-1])):
++        plot_example(a.seq, by_idx[r["frame"]], a,
++                     f"{tag} frame: AbsRel raw {r['absrel_raw']:.2f}, scale removed {r['absrel_scaled']:.2f}",
++                     os.path.join(a.out, f"example_{tag}.png"))
++
++    # printout
++    print(f"\n{len(per_frame)} frames scored (--step {a.step}); "
++          f"valid pixels {summary['valid_pixels_mean_frac']:.0%} per frame")
++    print(f"per-frame scale true/pred: median {summary['scale_median']:.2f} "
++          f"(10-90%: {summary['scale_p10_p90'][0]:.2f}-{summary['scale_p10_p90'][1]:.2f})")
++    if not 0.3 < summary["scale_median"] < 3:
++        print("WARNING: scale far from 1 - check --factor / --pred-factor")
++    print(f"\n{'mode':7} {'group':7} {'label':7} {'AbsRel':>7} {'MAE m':>7} {'RMSE m':>7} {'d<1.25':>7} {'pixels':>11}")
++    for r in rows:
++        print(f"{r['mode']:7} {r['group']:7} {r['label']:7} {r['absrel']:7.3f} {r['mae_m']:7.3f} "
++              f"{r['rmse_m']:7.3f} {r['delta125']:7.3f} {r['pixels']:11d}")
++    print(f"\nwritten to {a.out}: breakdown.csv, per_frame.csv, summary.json, "
++          "breakdown.png, over_time.png, example_typical.png, example_worst.png")
++
++
++if __name__ == "__main__":
++    main()
+diff --git a/scripts/part2_depth_stability.py b/scripts/part2_depth_stability.py
+new file mode 100644
+--- /dev/null
++++ b/scripts/part2_depth_stability.py
+@@ -0,0 +1,292 @@
++#!/usr/bin/env python3
++"""COMP0227 CW1 Part 2: does the predicted depth of a static surface stay the same between frames?
++
++Comparing the same PIXEL in two frames is wrong: the camera moves, so that pixel sees a different
++surface. Instead, for frames i and j = i + gap, this script finds the SAME surface point in both:
++  1. a pixel p of frame i with true depth is back-projected to 3D with the true depth,
++  2. moved into frame j with the ground-truth camera poses, and projected to pixel p' of frame j,
++  3. kept only if frame j's true depth at p' agrees (same surface visible: not occluded, not moved).
++Then the PREDICTED depth is tested for consistency on those correspondences:
++  frame i's prediction at p, back-projected and moved into frame j, gives the depth z_exp that
++  frame j should predict at p' if the network were consistent. The ratio r = pred_j(p') / z_exp is 1
++  for a perfectly consistent network.
++Reported for each gap:
++  - scale jump      median(r) per pair: the whole map getting nearer/farther between frames,
++  - flicker         |r / median(r) - 1|: the local change left after removing the scale jump,
++  - change          |r - 1|: both together,
++  - GT floor        the same test on the true depth: sensor noise and pose error, the best possible,
++  - naive           the same-pixel difference, for pred and for true depth, to show it measures
++                    camera motion (true depth changes as much), not flicker.
++Ground truth (depth and poses) only FINDS the correspondences; this is an analysis, not a method.
++
++Example (TUM, after depth-prediction --save dav2b):
++  pixi run -e depth-cpu python scripts/part2_depth_stability.py \
++      --seq data/tum/rgbd_dataset_freiburg3_long_office_household --name dav2b \
++      --settings settings/TUM3.yaml --factor 5000 --out results/part2/tum_dav2b_stability
++"""
++import argparse
++import csv
++import json
++import os
++import sys
++
++import cv2
++import numpy as np
++import matplotlib
++
++matplotlib.use("Agg")
++import matplotlib.pyplot as plt  # noqa: E402
++
++
++# ---------------------------------------------------------------- inputs
++def read_list(path, ncols):
++    rows = []
++    with open(path) as f:
++        for line in f:
++            if line.startswith("#"):
++                continue
++            p = line.split()
++            if len(p) >= ncols:
++                rows.append(p)
++    return rows
++
++
++def read_intrinsics(a):
++    if a.fx:
++        return a.fx, a.fy or a.fx, a.cx, a.cy
++    # pySLAM settings are OpenCV-style YAML with keys such as `Camera.fx: 535.4`; read them as text,
++    # which works whatever the YAML dialect.
++    import re
++
++    text = open(a.settings).read()
++    for pre in ("Camera.", "Camera1."):
++        vals = []
++        for k in ("fx", "fy", "cx", "cy"):
++            m = re.search(rf"^\s*{re.escape(pre + k)}\s*:\s*([-+0-9.eE]+)", text, re.M)
++            vals.append(float(m.group(1)) if m else None)
++        if None not in vals:
++            return tuple(vals)
++    sys.exit(f"No Camera.fx/fy/cx/cy in {a.settings}: pass --fx --fy --cx --cy instead")
++
++
++def quat_to_R(qx, qy, qz, qw):
++    n = np.sqrt(qx * qx + qy * qy + qz * qz + qw * qw)
++    x, y, z, w = qx / n, qy / n, qz / n, qw / n
++    return np.array([[1 - 2 * (y * y + z * z), 2 * (x * y - z * w), 2 * (x * z + y * w)],
++                     [2 * (x * y + z * w), 1 - 2 * (x * x + z * z), 2 * (y * z - x * w)],
++                     [2 * (x * z - y * w), 2 * (y * z + x * w), 1 - 2 * (x * x + y * y)]])
++
++
++def load_poses(path):
++    """Ground truth as (times, list of 4x4 T_wc): `timestamp tx ty tz qx qy qz qw` per line."""
++    rows = read_list(path, 8)
++    times = np.array([float(r[0]) for r in rows])
++    T = []
++    for r in rows:
++        tx, ty, tz, qx, qy, qz, qw = map(float, r[1:8])
++        M = np.eye(4)
++        M[:3, :3] = quat_to_R(qx, qy, qz, qw)
++        M[:3, 3] = (tx, ty, tz)
++        T.append(M)
++    return times, T
++
++
++def frames_with_poses(seq, name, gt_file, max_dt):
++    """[(t, rgb, true_depth, pred_depth, T_wc)] in sequence order, for frames with a pose."""
++    assoc = read_list(os.path.join(seq, "associations.txt"), 4)
++    pred_path = os.path.join(seq, f"associations_{name}.txt")
++    if not os.path.exists(pred_path):
++        sys.exit(f"{pred_path} not found: run depth-prediction --save {name} on the whole sequence first")
++    pred = {r[1]: r[3] for r in read_list(pred_path, 4)}
++    times, T = load_poses(os.path.join(seq, gt_file))
++    out = []
++    for r in assoc:
++        t = float(r[0])
++        k = int(np.argmin(np.abs(times - t)))
++        if abs(times[k] - t) <= max_dt and r[1] in pred:
++            out.append((t, r[1], r[3], pred[r[1]], T[k]))
++    return out
++
++
++def load_depth(path, factor):
++    d = cv2.imread(path, cv2.IMREAD_ANYDEPTH)
++    if d is None:
++        raise FileNotFoundError(path)
++    return d.astype(np.float64) / factor
++
++
++# ---------------------------------------------------------------- one pair
++def pair_ratios(Di, Dj, Pi, Pj, T_ji, K, stride, a):
++    """Correspondences of frame i in frame j and the ratios. Returns a dict, or None if too few."""
++    h, w = Di.shape
++    fx, fy, cx, cy = K
++    v, u = np.mgrid[stride // 2:h:stride, stride // 2:w:stride]
++    u, v = u.ravel(), v.ravel()
++    di, pi = Di[v, u], Pi[v, u]
++    ok = (di > a.min_depth) & (di < a.max_depth) & (pi > 0)
++    u, v, di, pi = u[ok], v[ok], di[ok], pi[ok]
++    if len(u) < 50:
++        return None
++    rays = np.stack([(u - cx) / fx, (v - cy) / fy, np.ones_like(u, dtype=np.float64)])  # z = 1
++    R, t = T_ji[:3, :3], T_ji[:3, 3:4]
++    Xj = R @ (rays * di) + t  # the true surface point in frame j
++    zj = Xj[2]
++    front = zj > a.min_depth
++    uj = np.rint(fx * Xj[0] / np.where(front, zj, 1) + cx).astype(int)
++    vj = np.rint(fy * Xj[1] / np.where(front, zj, 1) + cy).astype(int)
++    inside = front & (uj >= 0) & (uj < w) & (vj >= 0) & (vj < h)
++    ujc, vjc = np.clip(uj, 0, w - 1), np.clip(vj, 0, h - 1)
++    dj, pj = Dj[vjc, ujc], Pj[vjc, ujc]
++    same = inside & (dj > 0) & (np.abs(dj - zj) < a.occlusion * zj) & (pj > 0)
++    if same.sum() < 50:
++        return None
++    s = same
++    Yj = R @ (rays[:, s] * pi[s]) + t  # frame i's PREDICTED point, moved into frame j
++    z_exp = Yj[2]
++    keep = z_exp > a.min_depth
++    r = pj[s][keep] / z_exp[keep]
++    r_gt = dj[s][keep] / zj[s][keep]
++    # naive same-pixel change (what NOT to do), on the same pixels of frame i
++    pij, dij = Pj[v[s][keep], u[s][keep]], Dj[v[s][keep], u[s][keep]]
++    naive_ok = (pij > 0) & (dij > 0)
++    return {"r": r, "r_gt": r_gt, "depth": zj[s][keep],
++            "naive_pred": np.abs(pij[naive_ok] / pi[s][keep][naive_ok] - 1),
++            "naive_gt": np.abs(dij[naive_ok] / di[s][keep][naive_ok] - 1),
++            "overlap": float(same.mean())}
++
++
++# ---------------------------------------------------------------- main
++def main():
++    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
++    ap.add_argument("--seq", required=True, help="sequence folder in TUM layout")
++    ap.add_argument("--name", required=True, help="the NAME given to depth-prediction --save")
++    ap.add_argument("--settings", help="camera settings file (Camera.fx, fy, cx, cy)")
++    ap.add_argument("--fx", type=float)
++    ap.add_argument("--fy", type=float)
++    ap.add_argument("--cx", type=float)
++    ap.add_argument("--cy", type=float)
++    ap.add_argument("--factor", type=float, default=5000.0, help="depth PNG units per metre (TUM 5000, Replica 6553.5)")
++    ap.add_argument("--pred-factor", type=float, help="predicted PNG units per metre (default: --factor)")
++    ap.add_argument("--groundtruth", default="groundtruth.txt")
++    ap.add_argument("--gaps", type=int, nargs="+", default=[1, 10], help="frame gaps to test")
++    ap.add_argument("--step", type=int, default=10, help="start a pair every Nth frame")
++    ap.add_argument("--stride", type=int, default=4, help="test every Nth pixel in each direction")
++    ap.add_argument("--occlusion", type=float, default=0.05, help="max relative true-depth mismatch for the same surface")
++    ap.add_argument("--min-depth", type=float, default=0.1)
++    ap.add_argument("--max-depth", type=float, default=10.0)
++    ap.add_argument("--max-dt", type=float, default=0.02, help="max time between a frame and its pose (s)")
++    ap.add_argument("--out", required=True)
++    a = ap.parse_args()
++    if not a.fx and not a.settings:
++        sys.exit("pass --settings, or --fx --fy --cx --cy")
++
++    K = read_intrinsics(a)
++    frames = frames_with_poses(a.seq, a.name, a.groundtruth, a.max_dt)
++    if len(frames) < max(a.gaps) + 2:
++        sys.exit(f"only {len(frames)} frames with a pose and a predicted map")
++    pf = a.pred_factor or a.factor
++    os.makedirs(a.out, exist_ok=True)
++    print(f"{len(frames)} frames with pose and prediction; intrinsics fx={K[0]:.1f} fy={K[1]:.1f} cx={K[2]:.1f} cy={K[3]:.1f}")
++
++    cache = {}
++
++    def get(i):
++        if i not in cache:
++            if len(cache) > 64:
++                cache.clear()
++            t, rgb, dpath, ppath, T = frames[i]
++            cache[i] = (load_depth(os.path.join(a.seq, dpath), a.factor),
++                        load_depth(os.path.join(a.seq, ppath), pf), T)
++        return cache[i]
++
++    rng = np.random.default_rng(0)
++    pair_rows, pooled, summary = [], {}, {"sequence": a.seq, "name": a.name, "settings": vars(a), "gaps": {}}
++    for gap in a.gaps:
++        pooled[gap] = {"change": [], "flicker": [], "gt": []}
++        for i in range(0, len(frames) - gap, a.step):
++            j = i + gap
++            Di, Pi, Ti = get(i)
++            Dj, Pj, Tj = get(j)
++            if Pi.shape != Di.shape:
++                Pi = cv2.resize(Pi, (Di.shape[1], Di.shape[0]), interpolation=cv2.INTER_NEAREST)
++                Pj = cv2.resize(Pj, (Dj.shape[1], Dj.shape[0]), interpolation=cv2.INTER_NEAREST)
++            res = pair_ratios(Di, Dj, Pi, Pj, np.linalg.inv(Tj) @ Ti, K, a.stride, a)
++            if res is None:
++                continue
++            r = res["r"]
++            jump = float(np.median(r))
++            change, flicker, gt = np.abs(r - 1), np.abs(r / jump - 1), np.abs(res["r_gt"] - 1)
++            moved = float(np.linalg.norm((np.linalg.inv(Tj) @ Ti)[:3, 3]))
++            pair_rows.append({
++                "gap": gap, "frame_i": i, "frame_j": j, "time_i": frames[i][0], "camera_moved_m": moved,
++                "points": len(r), "overlap": res["overlap"], "scale_jump": jump,
++                "change_median": float(np.median(change)), "flicker_median": float(np.median(flicker)),
++                "flicker_p90": float(np.percentile(flicker, 90)), "gt_floor_median": float(np.median(gt)),
++                "naive_pred_median": float(np.median(res["naive_pred"])) if len(res["naive_pred"]) else float("nan"),
++                "naive_gt_median": float(np.median(res["naive_gt"])) if len(res["naive_gt"]) else float("nan")})
++            take = rng.choice(len(r), size=min(2000, len(r)), replace=False)
++            pooled[gap]["change"].append(change[take])
++            pooled[gap]["flicker"].append(flicker[take])
++            pooled[gap]["gt"].append(gt[take])
++        rows = [p for p in pair_rows if p["gap"] == gap]
++        if not rows:
++            print(f"gap {gap}: no pair had enough correspondences")
++            continue
++        ch, fl, g = (np.concatenate(pooled[gap][k]) for k in ("change", "flicker", "gt"))
++        jumps = np.array([p["scale_jump"] for p in rows])
++        summary["gaps"][str(gap)] = {
++            "pairs": len(rows), "points_per_pair": float(np.mean([p["points"] for p in rows])),
++            "camera_moved_m_median": float(np.median([p["camera_moved_m"] for p in rows])),
++            "change_median": float(np.median(ch)), "change_p90": float(np.percentile(ch, 90)),
++            "flicker_median": float(np.median(fl)), "flicker_p90": float(np.percentile(fl, 90)),
++            "scale_jump_abs_median": float(np.median(np.abs(jumps - 1))),
++            "scale_jump_p10_p90": [float(np.percentile(jumps, 10)), float(np.percentile(jumps, 90))],
++            "gt_floor_median": float(np.median(g)), "gt_floor_p90": float(np.percentile(g, 90)),
++            "naive_pred_median": float(np.nanmedian([p["naive_pred_median"] for p in rows])),
++            "naive_gt_median": float(np.nanmedian([p["naive_gt_median"] for p in rows]))}
++
++    if not pair_rows:
++        sys.exit("no pair had enough correspondences: check --factor, --settings and the poses")
++    with open(os.path.join(a.out, "pairs.csv"), "w", newline="") as f:
++        wr = csv.DictWriter(f, fieldnames=list(pair_rows[0]))
++        wr.writeheader()
++        wr.writerows(pair_rows)
++    with open(os.path.join(a.out, "summary.json"), "w") as f:
++        json.dump(summary, f, indent=2)
++
++    # figures: distributions per gap, and the scale jump along the sequence
++    gaps = [g for g in a.gaps if str(g) in summary["gaps"]]
++    fig, ax = plt.subplots(1, len(gaps) + 1, figsize=(5 * (len(gaps) + 1), 3.8))
++    bins = np.linspace(0, 0.3, 61)
++    for k, gap in enumerate(gaps):
++        for key, lab, col in (("gt", "true depth (noise floor)", "0.6"), ("flicker", "predicted, scale jump removed", "tab:blue"),
++                              ("change", "predicted, as it comes", "tab:orange")):
++            ax[k].hist(np.concatenate(pooled[gap][key]), bins=bins, histtype="step", density=True, label=lab, color=col)
++        ax[k].set_xlabel(f"|relative depth change|, gap {gap} frames")
++        ax[k].set_ylabel("density")
++    ax[0].legend(fontsize=8)
++    for gap in gaps:
++        rows = [p for p in pair_rows if p["gap"] == gap]
++        ax[-1].plot([p["frame_i"] for p in rows], [p["scale_jump"] for p in rows], lw=0.8, label=f"gap {gap}")
++    ax[-1].axhline(1, color="0.3", lw=0.8)
++    ax[-1].set_xlabel("frame index")
++    ax[-1].set_ylabel("scale jump (median ratio)")
++    ax[-1].legend(fontsize=8)
++    fig.tight_layout()
++    fig.savefig(os.path.join(a.out, "stability.png"), dpi=110)
++    plt.close(fig)
++
++    print(f"\n{'gap':>4} {'pairs':>5} {'moved m':>8} {'change':>7} {'flicker':>8} {'fl. p90':>8} "
++          f"{'|jump|':>7} {'jump 10-90%':>13} {'GT floor':>9} {'naive pred':>11} {'naive GT':>9}")
++    for gap in gaps:
++        s = summary["gaps"][str(gap)]
++        print(f"{gap:4d} {s['pairs']:5d} {s['camera_moved_m_median']:8.3f} {s['change_median']:7.3f} "
++              f"{s['flicker_median']:8.3f} {s['flicker_p90']:8.3f} {s['scale_jump_abs_median']:7.3f} "
++              f"{s['scale_jump_p10_p90'][0]:6.3f}-{s['scale_jump_p10_p90'][1]:.3f} {s['gt_floor_median']:9.3f} "
++              f"{s['naive_pred_median']:11.3f} {s['naive_gt_median']:9.3f}")
++    print("(all medians of |relative change|; 0.02 = 2%)")
++    print(f"\nwritten to {a.out}: pairs.csv, summary.json, stability.png")
++
++
++if __name__ == "__main__":
++    main()
+diff --git a/scripts/part2_keypoint_uncertainty.py b/scripts/part2_keypoint_uncertainty.py
+new file mode 100644
+--- /dev/null
++++ b/scripts/part2_keypoint_uncertainty.py
+@@ -0,0 +1,311 @@
++#!/usr/bin/env python3
++"""COMP0227 CW1 Part 2: a depth, an uncertainty and a validity flag for every SLAM keypoint.
++
++At run time SLAM has only the predicted depth map, so the uncertainty uses only features computed
++from it at each ORB keypoint:
++  log d, (log d)^2   the predicted depth (step 5a: error is lowest at 1-3 m, higher nearer and farther),
++  log spread         (max - min) / d of the predicted depth in a small window: large at depth edges,
++                     where step 5a found the error doubles,
++  border             1 if the keypoint is in the outer band of the image (5a: border is worse).
++Model (fitted once, on the FIRST half of a sequence, against the true depth):
++  local relative error  sigma_local = exp(w . features + c)
++      w: least squares of log(|e| + 0.005) on the features; c: chosen so that 68% of the training
++      keypoints have |e| <= sigma_local (the one-sigma coverage of a Gaussian),
++      e = relative error after removing each frame's scale (the scale is a separate problem);
++  scale term            sigma_scale = half the 16-84% spread of the per-frame scale (training half),
++                        what is left if ONE scale is used for the whole map (--scale-sigma to set it,
++                        e.g. 0.03 for a per-keyframe scale, step 5b);
++  total                 sigma_rel = sqrt(sigma_local^2 + sigma_scale^2),  sigma_m = sigma_rel * d,
++                        and in map units sigma_map = sigma_m / s  (metres = s x map units);
++  valid                 min_depth < d < max_depth and sigma_rel <= --max-sigma.
++Validated on the SECOND half: does the error grow with sigma (rank correlation, bins), is the
++coverage right, and does dropping the least certain keypoints cut the error?
++Ground truth only fits and checks the model; deploying it needs only the predicted map.
++
++Example (TUM):
++  pixi run -e depth-cpu python scripts/part2_keypoint_uncertainty.py \
++      --seq data/tum/rgbd_dataset_freiburg3_long_office_household --name dav2b \
++      --factor 5000 --step 5 --out results/part2/tum_dav2b_uncertainty
++For Part 3 (no ground truth needed):
++  from part2_keypoint_uncertainty import load_model, depth_sigma_at_keypoints
++  model = load_model("results/part2/tum_dav2b_uncertainty/model.json")
++  d_m, sigma_m, valid, sigma_rel = depth_sigma_at_keypoints(pred_depth_m, keypoints_uv, model)
++"""
++import argparse
++import json
++import os
++import sys
++
++import cv2
++import numpy as np
++
++FEATURE_NAMES = ["constant", "log d", "(log d)^2", "log spread", "border"]
++
++
++# ---------------------------------------------------------------- the deployable part
++def bilinear(depth, kps):
++    """Bilinear depth at (u, v), ignoring pixels without depth (as depth_sampling.py 'bilinear')."""
++    h, w = depth.shape
++    u, v = kps[:, 0], kps[:, 1]
++    u0 = np.clip(np.floor(u).astype(int), 0, w - 1)
++    v0 = np.clip(np.floor(v).astype(int), 0, h - 1)
++    u1, v1 = np.clip(u0 + 1, 0, w - 1), np.clip(v0 + 1, 0, h - 1)
++    fu, fv = np.clip(u - u0, 0, 1), np.clip(v - v0, 0, 1)
++    d = np.stack([depth[v0, u0], depth[v0, u1], depth[v1, u0], depth[v1, u1]], 1)
++    wt = np.stack([(1 - fu) * (1 - fv), fu * (1 - fv), (1 - fu) * fv, fu * fv], 1)
++    wt = np.where(d > 0, wt, 0.0)
++    tot = wt.sum(1)
++    out = np.zeros(len(kps))
++    ok = tot > 1e-12
++    out[ok] = (wt[ok] * d[ok]).sum(1) / tot[ok]
++    return out
++
++
++def local_spread(pred, window):
++    """(max - min) / depth of the predicted depth in a window x window neighbourhood, per pixel."""
++    k = np.ones((window, window), np.uint8)
++    p = pred.astype(np.float32)
++    return (cv2.dilate(p, k) - cv2.erode(p, k)) / np.maximum(p, 1e-3)
++
++
++def features(d, spread, kps, shape, border_frac):
++    h, w = shape
++    u, v = kps[:, 0], kps[:, 1]
++    dist = np.minimum.reduce([u, v, w - 1 - u, h - 1 - v])
++    ld = np.log(np.maximum(d, 1e-3))
++    return np.stack([np.ones_like(ld), ld, ld ** 2, np.log(spread + 0.005),
++                     (dist < border_frac * min(w, h)).astype(float)], 1)
++
++
++def load_model(path):
++    with open(path) as f:
++        return json.load(f)
++
++
++def depth_sigma_at_keypoints(pred, kps, model):
++    """pred: predicted depth (H, W) in metres; kps: (N, 2) array of (u, v).
++    Returns depth_m, sigma_m, valid, sigma_rel, each of shape (N,)."""
++    kps = np.asarray(kps, dtype=np.float64).reshape(-1, 2)
++    d = bilinear(np.asarray(pred, dtype=np.float64), kps)
++    spread_map = local_spread(pred, model["window"])
++    h, w = pred.shape
++    ui = np.clip(np.rint(kps[:, 0]).astype(int), 0, w - 1)
++    vi = np.clip(np.rint(kps[:, 1]).astype(int), 0, h - 1)
++    X = features(d, spread_map[vi, ui], kps, pred.shape, model["border_frac"])
++    s_local = np.exp(X @ np.array(model["weights"]) + model["calibration"])
++    s_rel = np.sqrt(s_local ** 2 + model["scale_sigma"] ** 2)
++    valid = (d > model["min_depth"]) & (d < model["max_depth"]) & (s_rel <= model["max_sigma"])
++    return d, s_rel * d, valid, s_rel
++
++
++# ---------------------------------------------------------------- data
++def read_list(path):
++    rows = []
++    with open(path) as f:
++        for line in f:
++            if not line.startswith("#") and len(line.split()) >= 4:
++                rows.append(line.split()[:4])
++    return rows
++
++
++def load_depth(path, factor):
++    d = cv2.imread(path, cv2.IMREAD_ANYDEPTH)
++    if d is None:
++        raise FileNotFoundError(path)
++    return d.astype(np.float64) / factor
++
++
++def collect(a):
++    """Per keypoint of every --step-th frame: features, predicted and true depth, frame scale."""
++    gt_rows = read_list(os.path.join(a.seq, "associations.txt"))
++    pp = os.path.join(a.seq, f"associations_{a.name}.txt")
++    if not os.path.exists(pp):
++        sys.exit(f"{pp} not found: run depth-prediction --save {a.name} on the whole sequence first")
++    pred_of = {r[1]: r[3] for r in read_list(pp)}
++    orb = cv2.ORB_create(nfeatures=a.nfeatures, scaleFactor=1.2, nlevels=8)
++    pf = a.pred_factor or a.factor
++    out = {k: [] for k in ("frame", "time", "u", "v", "d", "gt", "X", "s_frame")}
++    rows = [(i, r) for i, r in enumerate(gt_rows) if r[1] in pred_of][:: a.step]
++    for n, (i, r) in enumerate(rows):
++        img = cv2.imread(os.path.join(a.seq, r[1]), cv2.IMREAD_GRAYSCALE)
++        gt = load_depth(os.path.join(a.seq, r[3]), a.factor)
++        pred = load_depth(os.path.join(a.seq, pred_of[r[1]]), pf)
++        if pred.shape != gt.shape:
++            pred = cv2.resize(pred, (gt.shape[1], gt.shape[0]), interpolation=cv2.INTER_NEAREST)
++        ok = (gt > a.min_depth) & (gt < a.max_depth) & (pred > 0)
++        if ok.sum() < 100 or img is None:
++            continue
++        s_frame = float(np.median(gt[ok] / pred[ok]))  # oracle, only to separate scale from local error
++        kp = orb.detect(img, None)
++        if not kp:
++            continue
++        kps = np.array([k.pt for k in kp], dtype=np.float64)
++        d = bilinear(pred, kps)
++        g = bilinear(np.where((gt > a.min_depth) & (gt < a.max_depth), gt, 0.0), kps)
++        sp = local_spread(pred, a.window)
++        ui = np.clip(np.rint(kps[:, 0]).astype(int), 0, gt.shape[1] - 1)
++        vi = np.clip(np.rint(kps[:, 1]).astype(int), 0, gt.shape[0] - 1)
++        X = features(d, sp[vi, ui], kps, gt.shape, a.border)
++        m = len(kps)
++        out["frame"].append(np.full(m, i))
++        out["time"].append(np.full(m, float(r[0])))
++        out["u"].append(kps[:, 0])
++        out["v"].append(kps[:, 1])
++        out["d"].append(d)
++        out["gt"].append(g)
++        out["X"].append(X)
++        out["s_frame"].append(np.full(m, s_frame))
++        if (n + 1) % 100 == 0:
++            print(f"  {n + 1}/{len(rows)} frames")
++    if not out["d"]:
++        sys.exit("no frames with keypoints and depth")
++    return {k: (np.concatenate(v) if k != "X" else np.vstack(v)) for k, v in out.items()}
++
++
++# ---------------------------------------------------------------- checks
++def ranks(x):
++    r = np.empty(len(x))
++    r[np.argsort(x, kind="stable")] = np.arange(len(x))
++    return r
++
++
++def evaluate(sig, err, rng):
++    """How well sigma (relative) describes |relative error|."""
++    res = {"keypoints": int(len(err)),
++           "spearman": float(np.corrcoef(ranks(sig), ranks(err))[0, 1]),
++           "within_1sigma": float(np.mean(err <= sig)), "within_2sigma": float(np.mean(err <= 2 * sig)),
++           "absrel_all": float(np.mean(err))}
++    for frac in (0.1, 0.2, 0.5):
++        k = int(round(len(err) * (1 - frac)))
++        res[f"absrel_drop{int(frac * 100)}_by_sigma"] = float(np.mean(err[np.argsort(sig)][:k]))
++        res[f"absrel_drop{int(frac * 100)}_oracle"] = float(np.mean(np.sort(err)[:k]))
++        res[f"absrel_drop{int(frac * 100)}_random"] = float(np.mean(err[rng.permutation(len(err))[:k]]))
++    edges = np.quantile(sig, np.linspace(0, 1, 6))
++    b = np.clip(np.searchsorted(edges, sig, side="right") - 1, 0, 4)
++    res["bins"] = [{"sigma_median": float(np.median(sig[b == k])), "error_median": float(np.median(err[b == k])),
++                    "error_p68": float(np.quantile(err[b == k], 0.68)), "n": int(np.sum(b == k))} for k in range(5)]
++    return res
++
++
++def plot(results, path):
++    import matplotlib
++    matplotlib.use("Agg")
++    import matplotlib.pyplot as plt
++    fig, ax = plt.subplots(1, 2, figsize=(11, 4))
++    for key, lab, col in (("local", "local (frame scale removed)", "tab:blue"), ("total", "total (one scale for the map)", "tab:orange")):
++        bins = results[key]["bins"]
++        ax[0].plot([b["sigma_median"] for b in bins], [b["error_p68"] for b in bins], "o-", color=col, label=lab)
++    lim = max(max(b["sigma_median"], b["error_p68"]) for k in ("local", "total") for b in results[k]["bins"]) * 1.1
++    ax[0].plot([0, lim], [0, lim], color="0.5", lw=0.8, ls="--", label="ideal")
++    ax[0].set_xlabel("predicted sigma (relative), bin median")
++    ax[0].set_ylabel("68th percentile of actual |error|")
++    ax[0].set_title("calibration, held-out half")
++    ax[0].legend(fontsize=8)
++    r = results["local"]
++    fr = [0, 10, 20, 50]
++    for key, lab, col in (("by_sigma", "drop least certain", "tab:blue"), ("oracle", "drop worst (oracle)", "0.3"), ("random", "drop at random", "0.7")):
++        ax[1].plot(fr, [r["absrel_all"]] + [r[f"absrel_drop{f}_{key}"] for f in fr[1:]], "o-", color=col, label=lab)
++    ax[1].set_xlabel("% of keypoints dropped")
++    ax[1].set_ylabel("AbsRel of the rest (frame scale removed)")
++    ax[1].set_title("does sigma pick the bad keypoints?")
++    ax[1].legend(fontsize=8)
++    fig.tight_layout()
++    fig.savefig(path, dpi=110)
++    plt.close(fig)
++
++
++# ---------------------------------------------------------------- main
++def main():
++    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
++    ap.add_argument("--seq", required=True)
++    ap.add_argument("--name", required=True)
++    ap.add_argument("--factor", type=float, default=5000.0, help="depth PNG units per metre (TUM 5000, Replica 6553.5)")
++    ap.add_argument("--pred-factor", type=float)
++    ap.add_argument("--step", type=int, default=5)
++    ap.add_argument("--nfeatures", type=int, default=1000, help="ORB keypoints per frame")
++    ap.add_argument("--window", type=int, default=5, help="window of the depth spread (odd)")
++    ap.add_argument("--border", type=float, default=0.1, help="border band, fraction of the shorter side")
++    ap.add_argument("--min-depth", type=float, default=0.1)
++    ap.add_argument("--max-depth", type=float, default=10.0)
++    ap.add_argument("--max-sigma", type=float, default=0.3, help="keypoints with sigma_rel above this are invalid")
++    ap.add_argument("--scale-sigma", type=float, help="relative scale uncertainty (default: from the training half)")
++    ap.add_argument("--model", help="use this model.json instead of fitting (e.g. TUM's model on Replica)")
++    ap.add_argument("--features", default="logd,logd2,spread,border",
++                    help="features to fit (the constant is always used), from logd, logd2, spread, border; "
++                         "e.g. 'spread,border' for a model to use on another camera or scene (KITTI)")
++    ap.add_argument("--out", required=True)
++    a = ap.parse_args()
++    os.makedirs(a.out, exist_ok=True)
++    rng = np.random.default_rng(0)
++
++    D = collect(a)
++    has_gt = (D["gt"] > 0) & (D["d"] > 0)
++    frames = np.unique(D["frame"])
++    train = np.isin(D["frame"], frames[: len(frames) // 2])
++    e_local = np.abs(D["d"] * D["s_frame"] / np.where(D["gt"] > 0, D["gt"], 1) - 1)
++    fs_train = np.array([D["s_frame"][D["frame"] == f][0] for f in frames[: len(frames) // 2]])
++    s_global = float(np.median(fs_train))
++    e_total = np.abs(D["d"] * s_global / np.where(D["gt"] > 0, D["gt"], 1) - 1)
++
++    if a.model:
++        model = load_model(a.model)
++        print(f"model from {a.model} (not refitted)")
++    else:
++        fit = train & has_gt
++        names = {"logd": 1, "logd2": 2, "spread": 3, "border": 4}
++        bad = [f for f in a.features.split(",") if f and f not in names]
++        if bad:
++            sys.exit(f"unknown --features {bad}; choose from {list(names)}")
++        cols = [0] + sorted(names[f] for f in a.features.split(",") if f)
++        X, y = D["X"][fit], np.log(e_local[fit] + 0.005)
++        w = np.zeros(X.shape[1])
++        w[cols] = np.linalg.lstsq(X[:, cols], y, rcond=None)[0]  # unused features keep weight 0
++        c = float(np.log(np.quantile(e_local[fit] / np.exp(X @ w), 0.6827)))
++        q16, q84 = np.quantile(fs_train / s_global, [0.16, 0.84])
++        scale_sigma = a.scale_sigma if a.scale_sigma is not None else float((q84 - q16) / 2)
++        model = {"weights": w.tolist(), "feature_names": FEATURE_NAMES, "features_fitted": a.features, "calibration": c,
++                 "scale_sigma": scale_sigma, "window": a.window, "border_frac": a.border,
++                 "min_depth": a.min_depth, "max_depth": a.max_depth, "max_sigma": a.max_sigma,
++                 "fitted_on": {"sequence": a.seq, "name": a.name, "frames": int(len(frames) // 2),
++                               "keypoints": int(fit.sum()), "s_global_oracle": s_global},
++                 "units": "sigma_m = sigma_rel * depth_m; in map units divide by s (metres = s x map units)"}
++        with open(os.path.join(a.out, "model.json"), "w") as f:
++            json.dump(model, f, indent=2)
++
++    s_local = np.exp(D["X"] @ np.array(model["weights"]) + model["calibration"])
++    s_rel = np.sqrt(s_local ** 2 + model["scale_sigma"] ** 2)
++    valid = (D["d"] > model["min_depth"]) & (D["d"] < model["max_depth"]) & (s_rel <= model["max_sigma"])
++    test = (~train if not a.model else np.ones_like(train)) & has_gt
++    results = {"local": evaluate(s_local[test], e_local[test], rng),
++               "total": evaluate(s_rel[test], e_total[test], rng),
++               "valid_fraction": float(valid[D["d"] > 0].mean()),
++               "absrel_local_valid": float(e_local[test & valid].mean()),
++               "absrel_local_invalid": float(e_local[test & ~valid].mean()) if (test & ~valid).any() else None,
++               "keypoints_with_gt_fraction": float(has_gt.mean())}
++    with open(os.path.join(a.out, "validation.json"), "w") as f:
++        json.dump(results, f, indent=2)
++    np.savez_compressed(os.path.join(a.out, "keypoints.npz"), frame=D["frame"], time=D["time"], u=D["u"], v=D["v"],
++                        depth_m=D["d"], sigma_m=s_rel * D["d"], sigma_rel=s_rel, valid=valid, gt_m=D["gt"])
++    plot(results, os.path.join(a.out, "uncertainty.png"))
++
++    print(f"\n{len(frames)} frames, {len(D['d'])} keypoints ({has_gt.mean():.0%} with true depth); "
++          f"{'fit on first half, checked on second' if not a.model else 'checked on all frames'}")
++    print("sigma_local = exp(" + " ".join(f"{wi:+.3f}*[{n}]" for wi, n in zip(model["weights"], FEATURE_NAMES))
++          + f" {model['calibration']:+.3f});  scale term {model['scale_sigma']:.3f}")
++    for key, lab in (("local", "local, frame scale removed"), ("total", "total, one scale for the map")):
++        r = results[key]
++        print(f"\n[{lab}]  keypoints {r['keypoints']}, rank corr(sigma, |err|) {r['spearman']:.2f}, "
++              f"within 1 sigma {r['within_1sigma']:.0%} (target 68%), within 2 sigma {r['within_2sigma']:.0%}")
++        print(f"  AbsRel all {r['absrel_all']:.3f}; drop 20% by sigma {r['absrel_drop20_by_sigma']:.3f} "
++              f"(oracle {r['absrel_drop20_oracle']:.3f}, random {r['absrel_drop20_random']:.3f}); "
++              f"drop 50% by sigma {r['absrel_drop50_by_sigma']:.3f}")
++        print("  sigma bins (median sigma -> median |err|, 68% |err|): " + ", ".join(
++            f"{b['sigma_median']:.3f}->{b['error_median']:.3f}/{b['error_p68']:.3f}" for b in r["bins"]))
++    inv = results["absrel_local_invalid"]
++    print(f"\nvalid (sigma_rel <= {model['max_sigma']}): {results['valid_fraction']:.0%} of keypoints; "
++          f"local AbsRel valid {results['absrel_local_valid']:.3f}, invalid {inv if inv is None else round(inv, 3)}")
++    print(f"written to {a.out}: model.json, validation.json, keypoints.npz, uncertainty.png")
++
++
++if __name__ == "__main__":
++    main()
+diff --git a/scripts/part2_kitti_examples.py b/scripts/part2_kitti_examples.py
+new file mode 100644
+--- /dev/null
++++ b/scripts/part2_kitti_examples.py
+@@ -0,0 +1,133 @@
++#!/usr/bin/env python3
++"""COMP0227 CW1 Part 2: what can be said about the predicted depth on KITTI 06, which has no true depth.
++
++Two outputs, from the saved predicted maps only (depth-prediction --save NAME on data/kitti06_tum):
++  examples.png   for a few frames: the image, the predicted depth (log colour scale) and the relative
++                 depth spread in a small window (where step 5a found the error doubles: depth edges)
++  per_frame.csv  and along_sequence.png, for every --step-th frame: median, 5th and 95th percentile
++                 of the predicted depth, the share of pixels at the network's far limit (sky, distant
++                 road: no depth can be checked there), and the share of 'edge' pixels (spread > 0.1)
++Plausibility checks that need no true depth: the road should get deeper towards the top of the image,
++the sky should sit at the far limit, and the median depth should change smoothly along the drive.
++
++Example:
++  pixi run -e depth-cpu python scripts/part2_kitti_examples.py --seq data/kitti06_tum --name dav2b \
++      --pred-factor 256 --out results/part2/kitti_dav2b_examples
++"""
++import argparse
++import csv
++import os
++import sys
++
++import cv2
++import numpy as np
++import matplotlib
++
++matplotlib.use("Agg")
++import matplotlib.pyplot as plt  # noqa: E402
++from matplotlib.colors import LogNorm  # noqa: E402
++
++
++def read_list(path, ncols):
++    out = []
++    with open(path) as f:
++        for line in f:
++            if not line.startswith("#") and len(line.split()) >= ncols:
++                out.append(line.split())
++    return out
++
++
++def spread(pred, window):
++    k = np.ones((window, window), np.uint8)
++    p = pred.astype(np.float32)
++    return (cv2.dilate(p, k) - cv2.erode(p, k)) / np.maximum(p, 1e-3)
++
++
++def main():
++    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
++    ap.add_argument("--seq", required=True)
++    ap.add_argument("--name", required=True)
++    ap.add_argument("--pred-factor", type=float, default=256.0)
++    ap.add_argument("--frames", type=int, nargs="+", default=[0, 275, 550, 825, 1100])
++    ap.add_argument("--step", type=int, default=5)
++    ap.add_argument("--far", type=float, default=75.0, help="depth (m) counted as the network's far limit")
++    ap.add_argument("--window", type=int, default=5)
++    ap.add_argument("--out", required=True)
++    a = ap.parse_args()
++    os.makedirs(a.out, exist_ok=True)
++
++    rows = read_list(os.path.join(a.seq, f"associations_{a.name}.txt"), 4)
++    if not rows:
++        sys.exit("no predicted maps listed")
++
++    def load(i):
++        t, rgb, _, dp = rows[i]
++        img = cv2.cvtColor(cv2.imread(os.path.join(a.seq, rgb)), cv2.COLOR_BGR2RGB)
++        d = cv2.imread(os.path.join(a.seq, dp), cv2.IMREAD_ANYDEPTH).astype(np.float64) / a.pred_factor
++        return float(t), img, d
++
++    frames = [i for i in a.frames if i < len(rows)]
++    fig, ax = plt.subplots(len(frames), 3, figsize=(17, 1.75 * len(frames) + 0.6), squeeze=False)
++    for r, i in enumerate(frames):
++        t, img, d = load(i)
++        sp = spread(d, a.window)
++        ax[r, 0].imshow(img)
++        ax[r, 0].set_ylabel(f"frame {i}", fontsize=9)
++        im1 = ax[r, 1].imshow(np.clip(d, 1, 100), norm=LogNorm(vmin=3, vmax=100), cmap="magma_r")
++        im2 = ax[r, 2].imshow(np.clip(sp, 0, 0.5), vmin=0, vmax=0.5, cmap="viridis")
++        for c in range(3):
++            ax[r, c].set_xticks([])
++            ax[r, c].set_yticks([])
++        ax[r, 1].set_title(f"predicted depth, median {np.median(d):.1f} m", fontsize=9)
++        ax[r, 2].set_title(f"relative spread ({a.window}x{a.window}): {np.mean(sp > 0.1):.0%} > 0.1", fontsize=9)
++    fig.colorbar(im1, ax=ax[:, 1], fraction=0.02, label="m (log)")
++    fig.colorbar(im2, ax=ax[:, 2], fraction=0.02, label="relative spread")
++    fig.savefig(os.path.join(a.out, "examples.png"), dpi=110, bbox_inches="tight")
++    plt.close(fig)
++
++    stats = []
++    for i in range(0, len(rows), a.step):
++        t, _, d = load(i)
++        sp = spread(d, a.window)
++        h = d.shape[0]
++        stats.append({"frame": i, "time": t, "median_m": float(np.median(d)), "p5_m": float(np.percentile(d, 5)),
++                      "p95_m": float(np.percentile(d, 95)), "far_fraction": float(np.mean(d >= a.far)),
++                      "edge_fraction": float(np.mean(sp > 0.1)),
++                      "bottom_row_median_m": float(np.median(d[int(0.9 * h):])),
++                      "mid_row_median_m": float(np.median(d[int(0.45 * h):int(0.55 * h)]))})
++    with open(os.path.join(a.out, "per_frame.csv"), "w", newline="") as f:
++        w = csv.DictWriter(f, fieldnames=list(stats[0]))
++        w.writeheader()
++        w.writerows(stats)
++
++    x = [s["frame"] for s in stats]
++    fig, ax = plt.subplots(2, 1, figsize=(11, 5), sharex=True)
++    ax[0].fill_between(x, [s["p5_m"] for s in stats], [s["p95_m"] for s in stats], color="tab:blue", alpha=0.2, label="5-95%")
++    ax[0].plot(x, [s["median_m"] for s in stats], color="tab:blue", label="median")
++    ax[0].plot(x, [s["bottom_row_median_m"] for s in stats], color="0.4", lw=0.8, label="bottom 10% of image (road)")
++    ax[0].set_ylabel("predicted depth (m)")
++    ax[0].legend(fontsize=8)
++    ax[1].plot(x, [s["far_fraction"] for s in stats], color="tab:red", label=f"at far limit (>= {a.far:g} m)")
++    ax[1].plot(x, [s["edge_fraction"] for s in stats], color="tab:green", label="edge pixels (spread > 0.1)")
++    ax[1].set_ylabel("share of pixels")
++    ax[1].set_xlabel("frame (img_id)")
++    ax[1].legend(fontsize=8)
++    fig.tight_layout()
++    fig.savefig(os.path.join(a.out, "along_sequence.png"), dpi=110)
++    plt.close(fig)
++
++    med = np.array([s["median_m"] for s in stats])
++    jumps = np.abs(np.diff(np.log(med)))
++    print(f"{len(stats)} frames (every {a.step}th of {len(rows)})")
++    print(f"  median depth: {np.median(med):.1f} m (5-95% over frames {np.percentile(med, 5):.1f}-{np.percentile(med, 95):.1f} m)")
++    print(f"  bottom 10% of image (road just ahead): median {np.median([s['bottom_row_median_m'] for s in stats]):.1f} m; "
++          f"middle rows: {np.median([s['mid_row_median_m'] for s in stats]):.1f} m")
++    print(f"  pixels at the far limit (>= {a.far:g} m): {np.mean([s['far_fraction'] for s in stats]):.1%}; "
++          f"edge pixels: {np.mean([s['edge_fraction'] for s in stats]):.1%}")
++    print(f"  frame-to-frame change of the median depth (every {a.step}th frame): median {np.median(jumps):.1%}, "
++          f"95th percentile {np.percentile(jumps, 95):.1%}")
++    print(f"written to {a.out}: examples.png, along_sequence.png, per_frame.csv")
++
++
++if __name__ == "__main__":
++    main()
+diff --git a/scripts/part2_kitti_to_tum.py b/scripts/part2_kitti_to_tum.py
+new file mode 100644
+--- /dev/null
++++ b/scripts/part2_kitti_to_tum.py
+@@ -0,0 +1,74 @@
++#!/usr/bin/env python3
++"""COMP0227 CW1 Part 2: put the bundled KITTI 06 video in the TUM layout (monocular), so that
++depth-prediction --tum (--save) can run on it.
++
++Writes a NEW folder (default data/kitti06_tum); the video and its files are not changed:
++  rgb/000000.png ...   every frame of the video, decoded in order with OpenCV (as pySLAM's video
++                       reader does) and saved losslessly, so frame i is img_id i of the baseline
++  rgb.txt              `timestamp rgb/000000.png`, timestamps from times.txt
++  groundtruth.txt      `timestamp tx ty tz qx qy qz qw`: the first 8 columns of the video's
++                       groundtruth.txt (its 9th column, a scale, is dropped)
++There is no depth.txt: KITTI 06 has no reference depth in this coursework.
++
++Example:
++  pixi run -e depth-cpu python scripts/part2_kitti_to_tum.py --src data/videos/kitti06 --out data/kitti06_tum
++"""
++import argparse
++import os
++import sys
++
++import cv2
++import numpy as np
++
++
++def main():
++    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
++    ap.add_argument("--src", default="data/videos/kitti06", help="folder with video_color.mp4, times.txt, groundtruth.txt")
++    ap.add_argument("--video", default="video_color.mp4", help="the video the baseline used")
++    ap.add_argument("--out", default="data/kitti06_tum")
++    ap.add_argument("--force", action="store_true", help="write into an existing folder")
++    a = ap.parse_args()
++
++    times = [float(l.split()[0]) for l in open(os.path.join(a.src, "times.txt")) if l.strip() and not l.startswith("#")]
++    gt = [l.split() for l in open(os.path.join(a.src, "groundtruth.txt")) if l.strip() and not l.startswith("#")]
++    if len(gt) != len(times):
++        sys.exit(f"{len(times)} timestamps but {len(gt)} ground-truth poses")
++    worst = max(abs(float(g[0]) - t) for g, t in zip(gt, times))
++    if worst > 1e-4:
++        sys.exit(f"ground-truth timestamps differ from times.txt by up to {worst:.2e} s")
++    if os.path.exists(a.out) and not a.force:
++        sys.exit(f"{a.out} already exists (use --force to write into it)")
++    os.makedirs(os.path.join(a.out, "rgb"), exist_ok=True)
++
++    cap = cv2.VideoCapture(os.path.join(a.src, a.video))
++    if not cap.isOpened():
++        sys.exit(f"cannot open {os.path.join(a.src, a.video)}")
++    n, shape = 0, None
++    while True:
++        ok, img = cap.read()
++        if not ok:
++            break
++        if shape is None:
++            shape = img.shape
++        if n >= len(times):
++            sys.exit(f"the video has more frames than the {len(times)} timestamps")
++        if not cv2.imwrite(os.path.join(a.out, "rgb", f"{n:06d}.png"), img):
++            sys.exit(f"could not write frame {n} (disk full?)")
++        n += 1
++        if n % 200 == 0:
++            print(f"  {n}/{len(times)} frames")
++    cap.release()
++    if n != len(times):
++        sys.exit(f"the video has {n} frames but times.txt has {len(times)}")
++
++    with open(os.path.join(a.out, "rgb.txt"), "w") as f:
++        f.write("# timestamp filename\n")
++        f.writelines(f"{times[i]:.9f} rgb/{i:06d}.png\n" for i in range(n))
++    with open(os.path.join(a.out, "groundtruth.txt"), "w") as f:
++        f.write("# timestamp tx ty tz qx qy qz qw\n")
++        f.writelines(" ".join(g[:8]) + "\n" for g in gt)
++    print(f"{n} frames ({shape[1]}x{shape[0]}), {times[-1] - times[0]:.1f} s: wrote {a.out}/rgb/, rgb.txt, groundtruth.txt")
++
++
++if __name__ == "__main__":
++    main()
+diff --git a/scripts/part2_map_scale.py b/scripts/part2_map_scale.py
+new file mode 100644
+--- /dev/null
++++ b/scripts/part2_map_scale.py
+@@ -0,0 +1,406 @@
++#!/usr/bin/env python3
++"""COMP0227 CW1 Part 2: bring the predicted depth to the scale of a monocular SLAM map.
++
++A monocular map is in arbitrary units: metres = s x map units. This script estimates s from the
++predicted depth WITHOUT ground truth, and then checks the estimate with ground truth.
++
++Input: one or more monocular runs that exported map_observations.csv (frame_id = img_id, u, v,
++map_depth = camera Z of the map point in map units; Part 1 patch) and plot/trajectory_final.json,
++and the predicted depth maps of the same sequence (depth-prediction --save NAME, TUM layout).
++The sequence may have true depth (associations.txt: TUM, Replica) or not (rgb.txt only: KITTI).
++
++For every keyframe k: read the predicted depth d at each observed (u, v) (bilinear), with the
++Part 2 uncertainty model (part2_keypoint_uncertainty.py) giving sigma and valid; the ratio
++r = d / map_depth is the keyframe's scale seen by one point. Robust per-keyframe scale s_k:
++weighted median of r (weights 1/sigma_local^2) over valid points, after dropping points more than
++3 robust standard deviations from the median in log r. Deployable estimates:
++  global      the median of s_k over all keyframes (one scale for the map),
++  causal      the median of s_k over the last --window keyframes up to k (what SLAM could do online),
++  keyframe    s_k itself.
++Checks (ground truth is used ONLY here):
++  oracle      the run's Sim(3) trajectory scale (coursework_rpe.json fitted_scale),
++  traj_k      the LOCAL true scale at keyframe k: true / estimated camera path length over
++              +-(--traj-window) frames around it, from the ground-truth trajectory; its spread
++              over k is SLAM's own scale drift (works without true depth, e.g. on KITTI),
++  gt_k        (true depth only) the per-keyframe median with the TRUE depth instead of the
++              prediction: the map's true scale at keyframe k,
++  bias        global / true scale: the network's metric bias as seen through the map,
++  vs distance the network bias in bins of metric distance (map depth x traj_k),
++  map depth   (true depth only) AbsRel and MAE of map_depth x S against the true depth
++              (0.1-5 m, as Part 1) for S = oracle, global, causal, keyframe, gt_k.
++Note: map_observations.csv is the FINAL map (after bundle adjustment and loop closure), so the
++causal estimate is an approximation of what SLAM would see online.
++
++Examples:
++  # TUM (5 Part 1 mono runs)
++  pixi run -e depth-cpu python scripts/part2_map_scale.py \\
++      --seq data/tum/rgbd_dataset_freiburg3_long_office_household --name dav2b --factor 5000 \\
++      --model results/part2/tum_dav2b_uncertainty/model.json \\
++      --runs teammate_part1/results/*/ORB2/rgbd_dataset_freiburg3_long_office_household/iteration_* \\
++      --out results/part2/tum_dav2b_scale
++  # KITTI (no true depth; predicted maps saved with factor 256)
++  pixi run -e depth-cpu python scripts/part2_map_scale.py --seq data/kitti06_tum --name dav2b \\
++      --pred-factor 256 --model results/part2/kitti_sigma_model/model.json --max-depth 100 \\
++      --runs results/eval_2026_11_08-15_01_39/ORB2/video_color.mp4/iteration_* --out results/part2/kitti_dav2b_scale
++"""
++import argparse
++import csv
++import json
++import os
++import sys
++from collections import defaultdict
++
++import cv2
++import numpy as np
++
++sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
++from part2_keypoint_uncertainty import bilinear, depth_sigma_at_keypoints, load_model  # noqa: E402
++
++DIST_BINS = [0, 1, 2, 3, 5, 10, 20, 40, 80, 1e9]
++
++
++def read_list(path, ncols):
++    rows = []
++    with open(path) as f:
++        for line in f:
++            if not line.startswith("#") and len(line.split()) >= ncols:
++                rows.append(line.split())
++    return rows
++
++
++def load_depth(path, factor):
++    d = cv2.imread(path, cv2.IMREAD_ANYDEPTH)
++    if d is None:
++        raise FileNotFoundError(path)
++    return d.astype(np.float64) / factor
++
++
++def wmedian(x, w):
++    o = np.argsort(x)
++    x, w = x[o], w[o]
++    c = np.cumsum(w)
++    return float(x[np.searchsorted(c, 0.5 * c[-1])])
++
++
++def robust_scale(r, w):
++    """Weighted median of r after rejecting outliers in log r. Returns (scale, points kept)."""
++    lr = np.log(r)
++    m = wmedian(lr, w)
++    mad = 1.4826 * np.median(np.abs(lr - m))
++    keep = np.abs(lr - m) <= 3 * max(mad, 1e-3)
++    return float(np.exp(wmedian(lr[keep], w[keep]))), int(keep.sum())
++
++
++def load_trajectory(run):
++    p = os.path.join(run, "plot", "trajectory_final.json")
++    if not os.path.exists(p):
++        return None
++    d = json.load(open(p))
++    ids = np.asarray(d["trajectory_id"], int)
++    E = np.array([np.asarray(T)[:3, 3] for T in d["trajectory_est"]])
++    G = np.array([np.asarray(T)[:3, 3] for T in d["trajectory_gt"]])
++    return ids, E, G
++
++
++def oracle_scale(run, traj):
++    p = os.path.join(run, "coursework_rpe.json")
++    if os.path.exists(p):
++        return float(json.load(open(p))["fitted_scale"])
++    if traj is None:
++        sys.exit(f"{run}: no coursework_rpe.json and no plot/trajectory_final.json")
++    _, E, G = traj  # Umeyama similarity of the estimated to the true camera positions
++    Ec, Gc = E - E.mean(0), G - G.mean(0)
++    U, S, Vt = np.linalg.svd(Gc.T @ Ec / len(E))
++    D = np.diag([1, 1, np.sign(np.linalg.det(U @ Vt))])
++    return float(np.trace(np.diag(S) @ D) / (Ec ** 2).sum(1).mean())
++
++
++def local_traj_scale(traj, img_id, half, min_chord):
++    """True / estimated straight-line camera displacement between the poses half before and half after
++    img_id (metres per map unit). A chord, not the summed path: summing many small steps lets
++    trajectory jitter inflate the length when the camera moves slowly (TUM). NaN when the true
++    displacement is shorter than min_chord metres (e.g. the camera mostly rotates)."""
++    if traj is None:
++        return np.nan
++    ids, E, G = traj
++    i = int(np.searchsorted(ids, img_id))
++    if i >= len(ids) or ids[i] != img_id:
++        i = int(np.argmin(np.abs(ids - img_id)))
++    lo, hi = max(0, i - half), min(len(ids) - 1, i + half)
++    lg = np.linalg.norm(G[hi] - G[lo])
++    le = np.linalg.norm(E[hi] - E[lo])
++    return float(lg / le) if le > 1e-9 and lg >= min_chord else np.nan
++
++
++def errors(z, gt, S):
++    zm = z * S
++    return float(np.mean(np.abs(zm - gt) / gt)), float(np.mean(np.abs(zm - gt)))
++
++
++def rel_err(S, ref):
++    ok = np.isfinite(S) & np.isfinite(ref)
++    return float(np.median(np.abs(S[ok] / ref[ok] - 1))) if ok.any() else np.nan
++
++
++def analyse_run(run, frames, has_gt, a, model):
++    obs = defaultdict(list)
++    with open(os.path.join(run, "map_observations.csv")) as f:
++        for r in csv.DictReader(f):
++            obs[int(r["frame_id"])].append((float(r["u"]), float(r["v"]), float(r["map_depth"]), int(r["point_id"])))
++    traj = load_trajectory(run)
++    kf_rows, pts = [], []  # pts: (k index, z, d, gt, valid, point id)
++    for img_id in sorted(obs):
++        if img_id >= len(frames):
++            sys.exit(f"{run}: frame_id {img_id} beyond the {len(frames)} frames of {a.seq}")
++        gt_path, pred_path = frames[img_id]
++        o = np.array(obs[img_id])
++        kps, z, pid = o[:, :2], o[:, 2], o[:, 3]
++        pred = load_depth(os.path.join(a.seq, pred_path), a.pred_factor or a.factor)
++        g = np.zeros(len(z))
++        if has_gt:
++            gt_img = load_depth(os.path.join(a.seq, gt_path), a.factor)
++            if pred.shape != gt_img.shape:
++                pred = cv2.resize(pred, (gt_img.shape[1], gt_img.shape[0]), interpolation=cv2.INTER_NEAREST)
++            g = bilinear(np.where((gt_img > a.min_depth) & (gt_img < a.max_depth), gt_img, 0.0), kps)
++        if model:
++            d, _, valid, s_rel = depth_sigma_at_keypoints(pred, kps, model)
++            s_loc = np.sqrt(np.maximum(s_rel ** 2 - model["scale_sigma"] ** 2, 1e-6))
++            w = 1.0 / s_loc ** 2
++        else:
++            d = bilinear(pred, kps)
++            valid, w = (d > a.min_depth) & (d < a.max_depth), np.ones(len(d))
++        ok = valid & (d > 0) & (z > 0)
++        row = {"img_id": img_id, "points": len(z), "used": 0, "s_k": np.nan, "s_k_unweighted": np.nan,
++               "gt_k": np.nan, "traj_k": local_traj_scale(traj, img_id, a.traj_window, a.min_chord)}
++        if ok.sum() >= a.min_points:
++            row["s_k"], row["used"] = robust_scale(d[ok] / z[ok], w[ok])
++            pos = (d > 0) & (z > 0)
++            row["s_k_unweighted"] = robust_scale(d[pos] / z[pos], np.ones(int(pos.sum())))[0]
++        okg = (g > 0) & (z > 0)
++        if okg.sum() >= a.min_points:
++            row["gt_k"] = robust_scale(g[okg] / z[okg], np.ones(int(okg.sum())))[0]
++        k = len(kf_rows)
++        kf_rows.append(row)
++        pts.append(np.stack([np.full(len(z), k), z, d, g, ok, pid], 1))
++    P = np.vstack(pts)
++    s_k = np.array([r["s_k"] for r in kf_rows])
++    gt_k = np.array([r["gt_k"] for r in kf_rows])
++    traj_k = np.array([r["traj_k"] for r in kf_rows])
++    good = np.isfinite(s_k)
++    s_global = float(np.median(s_k[good]))
++    s_global_unw = float(np.nanmedian([r["s_k_unweighted"] for r in kf_rows]))
++    causal = np.full(len(kf_rows), np.nan)
++    for k in range(len(kf_rows)):
++        past = s_k[max(0, k - a.window + 1): k + 1]
++        if np.isfinite(past).any():
++            causal[k] = np.nanmedian(past)
++    for k, r in enumerate(kf_rows):
++        r["s_causal"] = causal[k]
++    S = oracle_scale(run, traj)
++
++    res = {"run": run, "keyframes": len(kf_rows), "keyframes_scaled": int(good.sum()),
++           "points_used_per_keyframe": float(np.mean([r["used"] for r in kf_rows])),
++           "oracle": S, "global": s_global, "global_unweighted": s_global_unw,
++           "global_err_pct": 100 * (s_global / S - 1), "global_unweighted_err_pct": 100 * (s_global_unw / S - 1)}
++    # same-point stability: one static 3D map point seen from several keyframes should get the same
++    # predicted/map ratio. change = |r / median_point(r) - 1|; flicker = the same after dividing each r
++    # by its keyframe's s_k (removes whole-frame scale jumps). Includes SLAM map error, so an upper bound.
++    ki = P[:, 0].astype(int)
++    okp = (P[:, 4] > 0) & np.isfinite(s_k[ki])
++    r_all = P[okp, 2] / P[okp, 1]
++    r_fl = r_all / s_k[ki][okp]
++    pid = P[okp, 5].astype(np.int64)
++    order = np.argsort(pid, kind="stable")
++    pid, r_all, r_fl = pid[order], r_all[order], r_fl[order]
++    starts = np.flatnonzero(np.r_[True, pid[1:] != pid[:-1]])
++    counts = np.diff(np.r_[starts, len(pid)])
++    ch, fl = [], []
++    for s0, c in zip(starts, counts):
++        if c >= 3:
++            ra, rf = r_all[s0:s0 + c], r_fl[s0:s0 + c]
++            ch.append(np.median(np.abs(ra / np.median(ra) - 1)))
++            fl.append(np.median(np.abs(rf / np.median(rf) - 1)))
++    if ch:
++        res.update({"same_point_points": len(ch), "same_point_obs_median": float(np.median(counts[counts >= 3])),
++                    "same_point_change": float(np.median(ch)), "same_point_flicker": float(np.median(fl))})
++    # SLAM drift and the estimates against the LOCAL true scale (ground-truth trajectory)
++    if np.isfinite(traj_k).sum() >= 5:
++        res.update({
++            "traj_drift_p10_p90": [float(np.nanpercentile(traj_k / S, 10)), float(np.nanpercentile(traj_k / S, 90))],
++            "network_bias_traj": s_global / float(np.nanmedian(traj_k)),
++            "vs_local_oracle_const": rel_err(np.full(len(traj_k), S), traj_k),
++            "vs_local_global": rel_err(np.full(len(traj_k), s_global), traj_k),
++            "vs_local_causal": rel_err(causal, traj_k), "vs_local_keyframe": rel_err(s_k, traj_k)})
++        # the network bias by metric distance: with true depth, d / true depth at the same pixel;
++        # without, d / (map depth x local true scale)
++        ki = P[:, 0].astype(int)
++        if has_gt:
++            okd = (P[:, 4] > 0) & (P[:, 3] > 0)
++            dist = P[okd, 3]
++            res["bias_by_distance_reference"] = "true depth"
++        else:
++            okd = (P[:, 4] > 0) & np.isfinite(traj_k[ki])
++            dist = P[okd, 1] * traj_k[ki][okd]
++            res["bias_by_distance_reference"] = "map depth x local true scale (GT trajectory)"
++        ratio = P[okd, 2] / dist
++        res["bias_by_distance"] = []
++        for lo, hi in zip(DIST_BINS[:-1], DIST_BINS[1:]):
++            m = (dist >= lo) & (dist < hi)
++            if m.sum() >= 50:
++                res["bias_by_distance"].append({"from_m": lo, "to_m": hi if hi < 1e8 else None, "points": int(m.sum()),
++                                                "median_ratio": float(np.median(ratio[m]))})
++    if has_gt and np.isfinite(gt_k).any():
++        gt_global = float(np.nanmedian(gt_k))
++        ki = P[:, 0].astype(int)
++        z, g = P[:, 1], P[:, 3]
++        ev = (g >= 0.1) & (g <= 5.0) & np.isfinite(causal[ki]) & np.isfinite(s_k[ki]) & np.isfinite(gt_k[ki])
++        res.update({"gt_global": gt_global, "gt_global_vs_oracle_pct": 100 * (gt_global / S - 1),
++                    "network_bias": s_global / gt_global,
++                    "gt_drift_p10_p90": [float(np.nanpercentile(gt_k / gt_global, 10)), float(np.nanpercentile(gt_k / gt_global, 90))],
++                    "eval_points": int(ev.sum())})
++        for name, scale in (("oracle", np.full(ev.sum(), S)), ("global", np.full(ev.sum(), s_global)),
++                            ("causal", causal[ki][ev]), ("keyframe", s_k[ki][ev]), ("gt_keyframe", gt_k[ki][ev])):
++            res[f"absrel_{name}"], res[f"mae_m_{name}"] = errors(z[ev], g[ev], scale)
++    return res, kf_rows
++
++
++def plot_keyframes(kf, res, path):
++    import matplotlib
++    matplotlib.use("Agg")
++    import matplotlib.pyplot as plt
++    x = [r["img_id"] for r in kf]
++    fig, ax = plt.subplots(figsize=(11, 3.8))
++    ax.plot(x, [r["s_k"] for r in kf], ".", color="tab:blue", ms=4, alpha=0.6, label="per keyframe, predicted depth")
++    ax.plot(x, [r["s_causal"] for r in kf], "-", color="tab:blue", lw=1.5, label="causal running median")
++    if np.isfinite([r["gt_k"] for r in kf]).any():
++        ax.plot(x, [r["gt_k"] for r in kf], "-", color="0.4", lw=1, label="per keyframe, true depth")
++    if np.isfinite([r["traj_k"] for r in kf]).any():
++        ax.plot(x, [r["traj_k"] for r in kf], "-", color="tab:green", lw=1, label="local true scale (GT trajectory)")
++    ax.axhline(res["oracle"], color="tab:red", lw=1, ls="--", label=f"oracle (GT trajectory) {res['oracle']:.2f}")
++    ax.axhline(res["global"], color="tab:blue", lw=1, ls=":", label=f"global {res['global']:.2f}")
++    ax.set_xlabel("image index (img_id)")
++    ax.set_ylabel("scale (metres per map unit)")
++    ax.legend(fontsize=8, ncol=2)
++    fig.tight_layout()
++    fig.savefig(path, dpi=110)
++    plt.close(fig)
++
++
++def main():
++    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
++    ap.add_argument("--seq", required=True)
++    ap.add_argument("--name", required=True)
++    ap.add_argument("--factor", type=float, default=5000.0, help="true depth PNG units per metre (TUM 5000, Replica 6553.5)")
++    ap.add_argument("--pred-factor", type=float, help="predicted PNG units per metre (default --factor; KITTI 256)")
++    ap.add_argument("--model", help="model.json of part2_keypoint_uncertainty.py (sigma weights and valid flag)")
++    ap.add_argument("--runs", nargs="+", required=True, help="run folders with map_observations.csv")
++    ap.add_argument("--window", type=int, default=10, help="keyframes in the causal running median")
++    ap.add_argument("--traj-window", type=int, default=50, help="poses either side for the local true scale")
++    ap.add_argument("--min-chord", type=float, default=0.2,
++                    help="minimum true camera displacement (m) over the window for a local true scale")
++    ap.add_argument("--min-points", type=int, default=20)
++    ap.add_argument("--min-depth", type=float, default=0.1)
++    ap.add_argument("--max-depth", type=float, default=10.0, help="depth range used (KITTI: 100)")
++    ap.add_argument("--out", required=True)
++    a = ap.parse_args()
++    os.makedirs(a.out, exist_ok=True)
++
++    pp = os.path.join(a.seq, f"associations_{a.name}.txt")
++    if not os.path.exists(pp):
++        sys.exit(f"{pp} not found: run depth-prediction --save {a.name} on the whole sequence first")
++    pred_of = {r[1]: r[3] for r in read_list(pp, 4)}
++    assoc = os.path.join(a.seq, "associations.txt")
++    has_gt = os.path.exists(assoc)
++    if has_gt:
++        rows = read_list(assoc, 4)
++        frames = [(r[3], pred_of.get(r[1])) for r in rows]
++    else:  # monocular sequence (KITTI): no true depth
++        rows = read_list(os.path.join(a.seq, "rgb.txt"), 2)
++        frames = [(None, pred_of.get(r[1])) for r in rows]
++    if any(p is None for _, p in frames):
++        sys.exit(f"{sum(p is None for _, p in frames)} of {len(frames)} frames have no predicted map: incomplete --save run")
++    model = load_model(a.model) if a.model else None
++    print(f"{len(frames)} frames, {'with' if has_gt else 'WITHOUT'} true depth")
++
++    runs = sorted(r for r in a.runs if os.path.exists(os.path.join(r, "map_observations.csv")))
++    if not runs:
++        sys.exit("no run folder with map_observations.csv")
++    results = []
++    for i, run in enumerate(runs):
++        res, kf = analyse_run(run, frames, has_gt, a, model)
++        results.append(res)
++        with open(os.path.join(a.out, f"keyframes_run{i}.csv"), "w", newline="") as f:
++            w = csv.DictWriter(f, fieldnames=list(kf[0]))
++            w.writeheader()
++            w.writerows(kf)
++        line = (f"run {i}: {res['keyframes']} keyframes, oracle {res['oracle']:.3f}, global {res['global']:.3f} "
++                f"({res['global_err_pct']:+.1f}%)")
++        if "network_bias" in res:
++            line += f", true-depth scale {res['gt_global']:.3f} ({res['gt_global_vs_oracle_pct']:+.1f}% vs oracle)"
++        if "traj_drift_p10_p90" in res:
++            line += f", SLAM drift 10-90% {res['traj_drift_p10_p90'][0]:.2f}-{res['traj_drift_p10_p90'][1]:.2f}"
++        print(line)
++        if i == 0:
++            plot_keyframes(kf, res, os.path.join(a.out, "scale_run0.png"))
++
++    with open(os.path.join(a.out, "runs.csv"), "w", newline="") as f:
++        flat = [{k: (json.dumps(v) if isinstance(v, list) else v) for k, v in r.items()} for r in results]
++        keys = list(dict.fromkeys(k for r in flat for k in r))
++        w = csv.DictWriter(f, fieldnames=keys)
++        w.writeheader()
++        w.writerows(flat)
++
++    def ms(key):
++        v = np.array([r[key] for r in results if key in r], float)
++        if not len(v):
++            return None
++        return {"mean": float(v.mean()), "sd": float(v.std(ddof=1)) if len(v) > 1 else 0.0}
++
++    keys = ["oracle", "global", "global_err_pct", "global_unweighted_err_pct", "gt_global_vs_oracle_pct", "network_bias",
++            "network_bias_traj", "same_point_change", "same_point_flicker", "vs_local_oracle_const", "vs_local_global", "vs_local_causal", "vs_local_keyframe",
++            "absrel_oracle", "absrel_global", "absrel_causal", "absrel_keyframe", "absrel_gt_keyframe",
++            "mae_m_oracle", "mae_m_global", "mae_m_causal", "mae_m_keyframe", "mae_m_gt_keyframe"]
++    summary = {"sequence": a.seq, "name": a.name, "runs": len(results), "has_true_depth": has_gt, "window": a.window,
++               "traj_window": a.traj_window, "model": a.model, **{k: ms(k) for k in keys if ms(k)}}
++    pooled = defaultdict(list)
++    for r in results:
++        for b in r.get("bias_by_distance", []):
++            pooled[(b["from_m"], b["to_m"])].append(b["median_ratio"])
++    summary["bias_by_distance"] = [{"from_m": lo, "to_m": hi, "median_ratio_mean": float(np.mean(v)), "runs": len(v)}
++                                   for (lo, hi), v in sorted(pooled.items())]
++    with open(os.path.join(a.out, "summary.json"), "w") as f:
++        json.dump(summary, f, indent=2)
++
++    f = lambda k, p=3: f"{summary[k]['mean']:.{p}f} +- {summary[k]['sd']:.{p}f}"  # noqa: E731
++    print(f"\n{len(results)} runs (mean +- SD over runs)")
++    print(f"  oracle scale (GT trajectory)       {f('oracle')}")
++    print(f"  global scale from predicted depth  {f('global')}   error {f('global_err_pct', 1)} %  "
++          f"(unweighted: {f('global_unweighted_err_pct', 1)} %)")
++    if "network_bias" in summary:
++        print(f"  true-depth scale vs oracle         {f('gt_global_vs_oracle_pct', 1)} %   (map vs trajectory consistency)")
++        print(f"  network metric bias (true depth)   x{f('network_bias')}")
++    if "network_bias_traj" in summary:
++        print(f"  network metric bias (trajectory)   x{f('network_bias_traj')}")
++        print(f"  median |scale / local true scale - 1| (local true scale: GT / estimated displacement over "
++              f"+-{a.traj_window} poses, >= {a.min_chord:g} m):")
++        for k, lab in (("vs_local_oracle_const", "oracle constant (SLAM drift alone)"), ("vs_local_global", "global (deployable)"),
++                       ("vs_local_causal", f"causal {a.window}-keyframe (deployable)"), ("vs_local_keyframe", "per keyframe (deployable)")):
++            print(f"    {lab:38s} {f(k)}")
++    if "same_point_change" in summary:
++        print(f"  same 3D point across keyframes: change {f('same_point_change')}, after removing each keyframe's "
++              f"scale {f('same_point_flicker')}   (median |r/median - 1|; includes SLAM map error)")
++    if summary["bias_by_distance"]:
++        print(f"  network bias by metric distance (predicted / {results[0].get('bias_by_distance_reference', '')}):")
++        print("    " + ", ".join(f"{b['from_m']:g}-{b['to_m']:g} m: x{b['median_ratio_mean']:.2f}" if b["to_m"] else
++                                 f">{b['from_m']:g} m: x{b['median_ratio_mean']:.2f}" for b in summary["bias_by_distance"]))
++    if "absrel_oracle" in summary:
++        print("  map depth (true 0.1-5 m), scaled by:   AbsRel          MAE m")
++        for n, lab in (("oracle", "oracle (GT trajectory)"), ("global", "global (pred, deployable)"),
++                       ("causal", f"causal {a.window}-keyframe (deployable)"), ("keyframe", "per keyframe (deployable)"),
++                       ("gt_keyframe", "true depth per keyframe (best case)")):
++            print(f"    {lab:38s} {f('absrel_' + n)}   {f('mae_m_' + n)}")
++    print(f"\nwritten to {a.out}: runs.csv, keyframes_run*.csv, summary.json, scale_run0.png")
++
++
++if __name__ == "__main__":
++    main()
+diff --git a/scripts/part2_replica_to_tum.py b/scripts/part2_replica_to_tum.py
+new file mode 100644
+--- /dev/null
++++ b/scripts/part2_replica_to_tum.py
+@@ -0,0 +1,97 @@
++#!/usr/bin/env python3
++"""COMP0227 CW1 Part 2: write the TUM-layout lists for Replica room0 (NICE-SLAM version), so that
++depth-prediction --tum (--save, --load, --keypoints) and the part2_*.py scripts can read it.
++
++Writes ONLY small text files into the sequence folder; the images are not copied or changed:
++  rgb.txt, depth.txt     `timestamp results/frame000000.jpg` / `timestamp results/depth000000.png`
++  associations.txt       `timestamp rgb timestamp depth` (frame i <-> depth i, same index)
++  groundtruth.txt        `timestamp tx ty tz qx qy qz qw`, from traj.txt
++Timestamps are i / fps (default 25 Hz, the same as the team's Replica times.txt), so frame i here is
++img_id i of the baseline. traj.txt holds one camera-to-world 4x4 matrix per line (16 numbers, row
++by row), in the OpenCV camera convention (x right, y down, z forward), the same as TUM's ground truth.
++
++Example:
++  pixi run -e depth-cpu python scripts/part2_replica_to_tum.py --seq data/replica/room0
++"""
++import argparse
++import glob
++import os
++import sys
++
++import numpy as np
++
++
++def rot_to_quat(R):
++    """Rotation matrix -> (qx, qy, qz, qw), unit length, qw >= 0."""
++    t = np.trace(R)
++    if t > 0:
++        s = 2.0 * np.sqrt(t + 1.0)
++        q = [(R[2, 1] - R[1, 2]) / s, (R[0, 2] - R[2, 0]) / s, (R[1, 0] - R[0, 1]) / s, 0.25 * s]
++    elif R[0, 0] > R[1, 1] and R[0, 0] > R[2, 2]:
++        s = 2.0 * np.sqrt(1.0 + R[0, 0] - R[1, 1] - R[2, 2])
++        q = [0.25 * s, (R[0, 1] + R[1, 0]) / s, (R[0, 2] + R[2, 0]) / s, (R[2, 1] - R[1, 2]) / s]
++    elif R[1, 1] > R[2, 2]:
++        s = 2.0 * np.sqrt(1.0 + R[1, 1] - R[0, 0] - R[2, 2])
++        q = [(R[0, 1] + R[1, 0]) / s, 0.25 * s, (R[1, 2] + R[2, 1]) / s, (R[0, 2] - R[2, 0]) / s]
++    else:
++        s = 2.0 * np.sqrt(1.0 + R[2, 2] - R[0, 0] - R[1, 1])
++        q = [(R[0, 2] + R[2, 0]) / s, (R[1, 2] + R[2, 1]) / s, 0.25 * s, (R[1, 0] - R[0, 1]) / s]
++    q = np.array(q)
++    q /= np.linalg.norm(q)
++    return q if q[3] >= 0 else -q
++
++
++def main():
++    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
++    ap.add_argument("--seq", required=True, help="the room0 folder (results/ and traj.txt)")
++    ap.add_argument("--fps", type=float, default=25.0)
++    ap.add_argument("--force", action="store_true", help="overwrite existing lists")
++    a = ap.parse_args()
++
++    rgb = sorted(glob.glob(os.path.join(a.seq, "results", "frame*.jpg")))
++    dep = sorted(glob.glob(os.path.join(a.seq, "results", "depth*.png")))
++    traj = np.loadtxt(os.path.join(a.seq, "traj.txt"))
++    if traj.ndim == 1:
++        traj = traj[None]
++    n = len(rgb)
++    if not n or len(dep) != n or len(traj) != n or traj.shape[1] != 16:
++        sys.exit(f"mismatch: {n} rgb, {len(dep)} depth, {len(traj)} poses with {traj.shape[1]} numbers each")
++    for i, (r, d) in enumerate(zip(rgb, dep)):  # frame i must pair with depth i
++        if os.path.basename(r)[5:11] != f"{i:06d}" or os.path.basename(d)[5:11] != f"{i:06d}":
++            sys.exit(f"unexpected file names at index {i}: {r}, {d}")
++
++    out = {k: os.path.join(a.seq, k) for k in ("rgb.txt", "depth.txt", "associations.txt", "groundtruth.txt")}
++    existing = [p for p in out.values() if os.path.exists(p)]
++    if existing and not a.force:
++        sys.exit(f"already there (use --force to overwrite): {', '.join(existing)}")
++
++    worst = 0.0
++    lines = {k: [] for k in out}
++    for i in range(n):
++        t = f"{i / a.fps:.6f}"
++        rr, dd = os.path.relpath(rgb[i], a.seq), os.path.relpath(dep[i], a.seq)
++        T = traj[i].reshape(4, 4)
++        R = T[:3, :3]
++        worst = max(worst, float(np.abs(R @ R.T - np.eye(3)).max()))
++        q = rot_to_quat(R)
++        lines["rgb.txt"].append(f"{t} {rr}")
++        lines["depth.txt"].append(f"{t} {dd}")
++        lines["associations.txt"].append(f"{t} {rr} {t} {dd}")
++        lines["groundtruth.txt"].append(f"{t} " + " ".join(f"{x:.9f}" for x in (*T[:3, 3], *q)))
++    if worst > 1e-4:
++        sys.exit(f"traj.txt rotations are not orthonormal (error {worst:.1e}): not camera-to-world 4x4 rows?")
++
++    heads = {"rgb.txt": "# timestamp filename", "depth.txt": "# timestamp filename",
++             "associations.txt": "", "groundtruth.txt": "# timestamp tx ty tz qx qy qz qw (camera-to-world)"}
++    for k, p in out.items():
++        with open(p, "w") as f:
++            if heads[k]:
++                f.write(heads[k] + "\n")
++            f.write("\n".join(lines[k]) + "\n")
++    print(f"{n} frames at {a.fps:g} Hz ({n / a.fps:.1f} s): wrote " + ", ".join(out))
++    print("first:", lines["associations.txt"][0])
++    print("pose: ", lines["groundtruth.txt"][0])
++
++
++if __name__ == "__main__":
++    main()
+diff --git a/settings/KITTI04-12_depth.yaml b/settings/KITTI04-12_depth.yaml
+new file mode 100644
+--- /dev/null
++++ b/settings/KITTI04-12_depth.yaml
+@@ -0,0 +1,65 @@
++#--------------------------------------------------------------------------------------------
++# Viewer Parameters
++#--------------------------------------------------------------------------------------------
++# Viewer.on: 1 is ON, 0 is OFF
++Viewer.on: 1
++
++Viewer.KeyFrameSize: 0.6
++Viewer.KeyFrameLineWidth: 2
++Viewer.GraphLineWidth: 1
++Viewer.PointSize: 2
++Viewer.CameraSize: 0.7
++Viewer.CameraLineWidth: 3
++Viewer.ViewpointX: 0
++Viewer.ViewpointY: -100
++Viewer.ViewpointZ: -0.1
++Viewer.ViewpointF: 2000
++
++#--------------------------------------------------------------------------------------------
++# Camera Parameters. Adjust them!
++#--------------------------------------------------------------------------------------------
++
++# Camera calibration and distortion parameters (OpenCV)
++Camera.fx: 707.0912
++Camera.fy: 707.0912
++Camera.cx: 601.8873
++Camera.cy: 183.1104
++
++Camera.k1: 0.0
++Camera.k2: 0.0
++Camera.p1: 0.0
++Camera.p2: 0.0
++
++Camera.width: 1226
++Camera.height: 370
++
++# Camera frames per second
++Camera.fps: 10.0
++
++# stereo baseline times fx
++Camera.bf: 379.8145
++
++# Color order of the images (0: BGR, 1: RGB. It is ignored if images are grayscale)
++Camera.RGB: 1
++
++# Close/Far threshold. Baseline times.
++ThDepth: 40
++
++#--------------------------------------------------------------------------------------------
++# Features extraction
++#--------------------------------------------------------------------------------------------
++
++FeatureTrackerConfig.nFeatures: 2000
++
++#--------------------------------------------------------------------------------------------
++# Matching (Data Association)
++#--------------------------------------------------------------------------------------------
++
++#Matching.farPointsThreshold: 20.0    # meters (to exclude far points from matching when we have an outdoor scene)
++
++#--------------------------------------------------------------------------------------------
++# Keyframe generation
++#--------------------------------------------------------------------------------------------
++# KeyFrame.useFovCentersBasedGeneration: 1  # compute 3D fov centers of camera frames by using median depth and use their distances to control keyframe generation
++# KeyFrame.maxFovCentersDistance: 0.1       # max distance between fov centers in order to generate a keyframe
++DepthMapFactor: 256.0

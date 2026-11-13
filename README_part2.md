@@ -1,7 +1,8 @@
 # COMP0227 CW1 — Part 2: Depth from One Image and Feature Points
 
 Every command behind the Part 2 numbers and figures, in the order they were run.
-pySLAM at `302cf18` (`comp0227-2026-lab04`) with `part1_changes.patch` and `part2_changes.patch` applied.
+pySLAM at `302cf18` (`comp0227-2026-lab04`) with the single integrated
+`patches/coursework_changes.patch` applied. The original separate patches are archived.
 Run from the pySLAM root. CPU environments throughout (`-e depth-cpu` for the network and analysis,
 `-e default-cpu` for SLAM, C++ core: `PYSLAM_USE_CPP=true`).
 
@@ -169,11 +170,3 @@ pixi run -e default-cpu python scripts/coursework_rpe.py $RUN/plot/trajectory_fi
 | Map scale, drift, same-point stability, bias by distance | 7 | `results/part2/{tum,replica,kitti}_dav2b_scale/` |
 | Pseudo-RGB-D loader check | 8 | `results/eval_2026_11_08-{20_55_31,21_02_30,21_09_49,21_15_57}/` |
 
-## Making the patch
-
-```bash
-git add -N scripts/part2_*.py settings/KITTI04-12_depth.yaml
-git diff 302cf18 -- pyslam/depth_estimation/depth_sampling.py scripts/part2_*.py \
-  settings/KITTI04-12_depth.yaml > part2_changes.patch
-git reset -q scripts/part2_*.py settings/KITTI04-12_depth.yaml
-```

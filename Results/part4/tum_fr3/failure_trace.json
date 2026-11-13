@@ -1,0 +1,19 @@
+{
+  "selection_rule": "Learned-depth run with largest scaled ATE exceeding baseline mean; then timestamp with largest positive local scaled-error difference against baseline run nearest baseline mean.",
+  "causality": "Association only; inspect RGB/prediction/map and tracking states before interpreting cause.",
+  "baseline_mean_ate_m": 0.03763430500061666,
+  "baseline_sd_m": 0.015406018009147879,
+  "status": "candidate_requires_interpretation",
+  "learned_run": "tum_fr3_selected_stride5_r3_5ac422bc23b91fa6",
+  "baseline_run": "tum_fr3_mono_every_r4_3877a11ad9d5f10c",
+  "frame_id": 1198,
+  "timestamp": 1341848022.454164,
+  "local_scaled_error_difference_m": 2.5709525171235974,
+  "exceeds_baseline_sd": true,
+  "scene_hazards": [
+    "blank walls",
+    "mirror",
+    "glass surfaces",
+    "motion blur"
+  ]
+}

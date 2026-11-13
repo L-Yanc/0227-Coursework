@@ -1,0 +1,28 @@
+{
+  "points": 33687,
+  "observations": 203151,
+  "map_scale": 1.0,
+  "scale_source": "method metric map units (E1 initialisation confirmed when selected)",
+  "reference_depth_available": true,
+  "temporal_world_discrepancy": {
+    "n": 26676,
+    "median": 0.04200111218733241,
+    "mad": 0.021568421641107276
+  },
+  "threshold_development_end_s": 1341848024.292898,
+  "diagnostic_threshold_m": 0.13479808919271996,
+  "threshold_development_points": 15511,
+  "threshold_heldout_points": 1975,
+  "threshold_protocol": "First fraction of input time; fixed learned-point references need >=3 development observations; threshold and rejection use per-point medians. New held-out points without development observations are unavailable.",
+  "heldout_rejection_fraction": 0.42025316455696204,
+  "policy_applied_to_part3": false,
+  "online_policy_report": null,
+  "limitations": [
+    "Final BA map poses include future information; thresholds above are offline diagnostics, not a causal online policy",
+    "World-space learned-point discrepancy includes map/pose error; raw camera depths were not treated as network flicker",
+    "Repeated observations aggregated per persistent point; compare spread across runs",
+    "Pseudo-RGB-D map points can originate from learned depth; their agreement is not independent validation of triangulation. Point creation provenance is unavailable.",
+    "Phone disagreement alone cannot establish which depth source is correct"
+  ],
+  "parallax_definition": "Maximum angle over distinct observing camera-to-same-map-point world rays; no self-pairs"
+}

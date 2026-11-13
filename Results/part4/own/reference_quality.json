@@ -1,0 +1,22 @@
+{
+  "reference_type": "approximate shared-image triangulation; not ground truth",
+  "components": [
+    789
+  ],
+  "main_component": "text_0",
+  "registered_frames": 789,
+  "input_frames": 805,
+  "registered_fraction": 0.9801242236024845,
+  "temporal_start_s": 0.0,
+  "temporal_end_s": 80.415,
+  "max_gap_s": 1.5,
+  "median_track_length": 12.0,
+  "median_reprojection_error_px": 0.7345403574950464,
+  "intrinsics_fixed": true,
+  "passes_registered_fraction": true,
+  "limitations": [
+    "Shared images and triangulation bias",
+    "Mirrors, glass, blank walls, blur and low parallax may harm reconstruction",
+    "A known distance fixes global scale only; does not validate the complete trajectory"
+  ]
+}

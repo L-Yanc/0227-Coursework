@@ -1,0 +1,17 @@
+{
+  "model": {
+    "model": "DEPTH_ANYTHING_V2",
+    "size": "base",
+    "scene": "indoor",
+    "png_factor": 5000.0,
+    "device": "mps",
+    "input_size": 518
+  },
+  "weights_sha256": "9dc9e274c5eff55c6daf27b660c0ced0eca4e8593a6da90cdcb04d2b4d3f3fa2",
+  "units": "raw float32 optical depth metres; PNG = metres * factor once",
+  "frames": 805,
+  "elapsed_s": 183.6916082079988,
+  "device": "mps",
+  "mean_inference_ms": 196.35630124255795,
+  "cache": "raw model predictions reused by all compared methods; warm/cold first frame retained"
+}

@@ -1,0 +1,19 @@
+.DS_Store
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.pixi/
+.venv/
+external/
+work/
+part4/work/
+part4/input/
+datasets/
+cache/
+release/
+/Part 4 Results/
+*.pth
+*.pt
+*.MOV
+*.mov
+*.mp4

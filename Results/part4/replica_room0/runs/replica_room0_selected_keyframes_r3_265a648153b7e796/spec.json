@@ -1,0 +1,38 @@
+{
+  "method": "selected",
+  "policy": "keyframes",
+  "run_number": 3,
+  "features": "ORB2",
+  "backend": "cpp",
+  "playback_speed": 1.5,
+  "max_frames": null,
+  "selected": {
+    "module": "part4/part3_adapter.py",
+    "sensor": "mono",
+    "parameters": {
+      "method": "B+E1",
+      "sigma_pct": 80,
+      "depth_until": 0
+    },
+    "insertion_location": "E1: Initializer initial map scale; B: LocalMapping low-parallax point insertion",
+    "persistent_constraint": false,
+    "conflict_policy": "Keep triangulated points; B fills only rejected low-parallax matches passing existing map checks",
+    "metric_scale_semantics": "E1 initialises in network metres; B estimates recent metres per map unit from triangulated correspondences; subsequent optimisation can change points and scale",
+    "random_seed_support": "upstream backend has no validated deterministic seed; five independent processes",
+    "source_revision": "94c47e1",
+    "source_patch": "0227 Coursework/patches/part3_changes.patch",
+    "selection_rationale": "B80E1 is the combined Part 3 method, chosen before own-sequence scoring to exercise both scale initialisation and low-parallax depth insertion. It has lower median KITTI Sim3 ATE than mono in the uploaded batch; no universal best configuration is claimed. Own DAV2 base indoor differs from any unverified teammate model size."
+  },
+  "temporal": {
+    "enabled": false,
+    "development_fraction": 0.5,
+    "min_samples": 30,
+    "min_relative_threshold": 0.05,
+    "mad_multiplier": 3.0
+  },
+  "png_factor": 6553.5,
+  "environment": "indoor",
+  "prepare": "part4/work/living_room_recording2/standard_reruns/replica_room0/prepare/0effb00d621aee65",
+  "out": "part4/work/living_room_recording2/standard_reruns/replica_room0/slam/265a648153b7e796",
+  "depth_path": "part4/work/living_room_recording2/standard_reruns/replica_room0/depth/44df58f005a67118"
+}

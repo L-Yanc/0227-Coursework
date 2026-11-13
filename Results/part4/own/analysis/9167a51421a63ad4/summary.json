@@ -1,0 +1,88 @@
+{
+  "points": 8577,
+  "observations": 53758,
+  "map_scale": 1.0,
+  "scale_source": "method metric map units (E1 initialisation confirmed when selected)",
+  "reference_depth_available": false,
+  "temporal_world_discrepancy": {
+    "n": 8556,
+    "median": 0.06350288124251172,
+    "mad": 0.028434526294436147
+  },
+  "threshold_development_end_s": 40.2075,
+  "diagnostic_threshold_m": 0.17945053930428573,
+  "threshold_development_points": 5858,
+  "threshold_heldout_points": 2149,
+  "threshold_protocol": "First fraction of input time; fixed learned-point references need >=3 development observations; threshold and rejection use per-point medians. New held-out points without development observations are unavailable.",
+  "heldout_rejection_fraction": 0.5230339692880409,
+  "policy_applied_to_part3": false,
+  "online_policy_report": {
+    "policy": "stride5",
+    "unique_depth_requests": 41,
+    "requested_timestamps": [
+      2.5,
+      3.0,
+      4.0,
+      4.501667,
+      5.001667,
+      6.501667,
+      9.001667,
+      11.001667,
+      15.503333,
+      16.003333,
+      17.503333,
+      19.503333,
+      20.003333,
+      26.005,
+      29.005,
+      29.505,
+      30.005,
+      30.505,
+      31.005,
+      32.506667,
+      33.006667,
+      34.006667,
+      34.506667,
+      35.006667,
+      36.506667,
+      37.506667,
+      40.508333,
+      41.008333,
+      45.008333,
+      47.508333,
+      49.008333,
+      53.51,
+      54.01,
+      55.01,
+      55.51,
+      68.013333,
+      70.513333,
+      72.513333,
+      75.013333,
+      77.515,
+      79.515
+    ],
+    "temporal": {
+      "status": "disabled"
+    },
+    "candidate_checks": 0,
+    "rejected_candidates": 0,
+    "reference_inputs": false,
+    "map_pose_information": "current online poses only; no final BA map used to make decisions",
+    "initialization_events": [
+      {
+        "timestamp": 2.5,
+        "trusted_keypoints": 814,
+        "depth_scale": 0.05483882221852206
+      }
+    ]
+  },
+  "limitations": [
+    "Final BA map poses include future information; thresholds above are offline diagnostics, not a causal online policy",
+    "World-space learned-point discrepancy includes map/pose error; raw camera depths were not treated as network flicker",
+    "Repeated observations aggregated per persistent point; compare spread across runs",
+    "Pseudo-RGB-D map points can originate from learned depth; their agreement is not independent validation of triangulation. Point creation provenance is unavailable.",
+    "Phone disagreement alone cannot establish which depth source is correct"
+  ],
+  "parallax_definition": "Maximum angle over distinct observing camera-to-same-map-point world rays; no self-pairs"
+}

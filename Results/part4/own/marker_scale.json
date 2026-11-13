@@ -1,0 +1,405 @@
+{
+  "metres_per_reference_unit": 0.590028642202069,
+  "fit_uses_check_markers": false,
+  "markers": {
+    "wall_100": {
+      "reconstructed_distance": 1.7033071415807886,
+      "measured_distance_m": 1.005,
+      "uncertainty_m": 0.005,
+      "role": "scale",
+      "endpoints": {
+        "a": {
+          "point": [
+            4.398562166788849,
+            -0.08543262090117784,
+            0.9407673624414772
+          ],
+          "ray_angle_deg": 2.55289355298736,
+          "residual_px": [
+            0.9678857215891968,
+            0.5176621516007401,
+            1.137660779505737,
+            1.9201146295466622,
+            0.5035614236065438,
+            0.40051709620890996,
+            1.859175862235581,
+            0.6544800943336856,
+            0.5389512353000963,
+            1.9276976191683872,
+            1.193462497587103
+          ],
+          "positive_depth": [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "inliers": [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "hypotheses_tested": 165,
+          "fit": "deterministic order-invariant sampling and robust reprojection refinement",
+          "covariance_for_1px_noise": [
+            [
+              0.010043428336043278,
+              -0.0007854166170271604,
+              0.0070220740248205455
+            ],
+            [
+              -0.00078541661702716,
+              6.680238637478822e-05,
+              -0.0005495371740881868
+            ],
+            [
+              0.007022074024820545,
+              -0.000549537174088187,
+              0.004918866855889598
+            ]
+          ],
+          "uncertainty_limit": "Conditional on fixed reference poses; adjacent-frame and pose/calibration errors are not independent",
+          "views": [
+            "000039.png",
+            "000040.png",
+            "000050.png",
+            "000059.png",
+            "000074.png",
+            "000075.png",
+            "000094.png",
+            "000747.png",
+            "000748.png",
+            "000757.png",
+            "000769.png"
+          ]
+        },
+        "b": {
+          "point": [
+            4.24049184040691,
+            0.09216984845069992,
+            -0.7458642966227474
+          ],
+          "ray_angle_deg": 3.1670319664547737,
+          "residual_px": [
+            1.701890997553381,
+            1.6519016535113462,
+            0.28519534388139856,
+            1.9397102069797865,
+            1.2336037897738317,
+            1.7986400939807017,
+            2.19595966203245,
+            0.695123419576806,
+            0.8993046166992013,
+            2.0150884199455166,
+            2.315929776971995
+          ],
+          "positive_depth": [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "inliers": [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "hypotheses_tested": 165,
+          "fit": "deterministic order-invariant sampling and robust reprojection refinement",
+          "covariance_for_1px_noise": [
+            [
+              0.007826554738052972,
+              -0.0003927412553444796,
+              0.0034176138968958223
+            ],
+            [
+              -0.00039274125534447966,
+              2.565050869064278e-05,
+              -0.00017172271576890557
+            ],
+            [
+              0.0034176138968958236,
+              -0.0001717227157689056,
+              0.0014987455081888535
+            ]
+          ],
+          "uncertainty_limit": "Conditional on fixed reference poses; adjacent-frame and pose/calibration errors are not independent",
+          "views": [
+            "000039.png",
+            "000040.png",
+            "000050.png",
+            "000059.png",
+            "000074.png",
+            "000075.png",
+            "000094.png",
+            "000747.png",
+            "000748.png",
+            "000757.png",
+            "000769.png"
+          ]
+        }
+      },
+      "annotation_distance_sd_units": 0.08728653279359588,
+      "estimated_distance_m": 1.005,
+      "distance_error_m": 0.0
+    },
+    "wall_50": {
+      "reconstructed_distance": 0.9149853832961269,
+      "measured_distance_m": 0.5,
+      "uncertainty_m": 0.005,
+      "role": "check",
+      "endpoints": {
+        "a": {
+          "point": [
+            -2.1643975585413053,
+            -0.8944693309067997,
+            5.867665236992833
+          ],
+          "ray_angle_deg": 19.154857373806284,
+          "residual_px": [
+            1.1740799889129219,
+            1.2468087685739975,
+            2.831840678531471,
+            2.0920593193568133,
+            0.7159292109334743,
+            0.8866292346187779,
+            0.934859212134548,
+            0.9951066045279816,
+            0.4667179948326289,
+            0.11615764123286872,
+            0.2207724865348308,
+            1.702652457704221,
+            0.9723958523088995,
+            0.2615302065258797,
+            1.1912450878497052,
+            0.582110465476425,
+            0.8777175768911597,
+            0.9126667476185759
+          ],
+          "positive_depth": [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "inliers": [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "hypotheses_tested": 512,
+          "fit": "deterministic order-invariant sampling and robust reprojection refinement",
+          "covariance_for_1px_noise": [
+            [
+              1.5384458751411747e-05,
+              7.577120232738105e-06,
+              -5.519097477150794e-05
+            ],
+            [
+              7.577120232738092e-06,
+              8.68391508609529e-06,
+              -3.4905946704978054e-05
+            ],
+            [
+              -5.519097477150794e-05,
+              -3.490594670497811e-05,
+              0.00025296334989058074
+            ]
+          ],
+          "uncertainty_limit": "Conditional on fixed reference poses; adjacent-frame and pose/calibration errors are not independent",
+          "views": [
+            "000000.png",
+            "000001.png",
+            "000110.png",
+            "000111.png",
+            "000129.png",
+            "000138.png",
+            "000155.png",
+            "000167.png",
+            "000177.png",
+            "000615.png",
+            "000616.png",
+            "000629.png",
+            "000630.png",
+            "000654.png",
+            "000681.png",
+            "000682.png",
+            "000708.png",
+            "000716.png"
+          ]
+        },
+        "b": {
+          "point": [
+            -1.266759689100943,
+            -0.8839509278414204,
+            5.690651479931182
+          ],
+          "ray_angle_deg": 20.22062064785301,
+          "residual_px": [
+            1.1844269763906987,
+            0.9571433276525775,
+            0.8311758525221218,
+            0.9400904868741604,
+            0.5858915075828054,
+            0.6300894922193658,
+            0.9810704230306037,
+            2.1653537141546346,
+            2.7907615520725386,
+            0.6651152610867004,
+            0.5517102513258318,
+            0.6374318140064579,
+            0.6321056110036447,
+            1.522585208937495,
+            0.62263424859202,
+            0.23614047685428877,
+            0.921268257294677,
+            1.044465753956106
+          ],
+          "positive_depth": [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "inliers": [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "hypotheses_tested": 512,
+          "fit": "deterministic order-invariant sampling and robust reprojection refinement",
+          "covariance_for_1px_noise": [
+            [
+              4.153326853995618e-06,
+              1.9767397743950025e-06,
+              -1.5030168659202247e-05
+            ],
+            [
+              1.976739774395009e-06,
+              1.017058620463664e-05,
+              -3.7812510287895336e-05
+            ],
+            [
+              -1.503016865920225e-05,
+              -3.781251028789523e-05,
+              0.0002731620466282516
+            ]
+          ],
+          "uncertainty_limit": "Conditional on fixed reference poses; adjacent-frame and pose/calibration errors are not independent",
+          "views": [
+            "000000.png",
+            "000001.png",
+            "000110.png",
+            "000111.png",
+            "000129.png",
+            "000138.png",
+            "000155.png",
+            "000167.png",
+            "000177.png",
+            "000615.png",
+            "000616.png",
+            "000629.png",
+            "000630.png",
+            "000654.png",
+            "000681.png",
+            "000682.png",
+            "000708.png",
+            "000716.png"
+          ]
+        }
+      },
+      "annotation_distance_sd_units": 0.006399209950760753,
+      "estimated_distance_m": 0.5398675833409534,
+      "distance_error_m": 0.039867583340953416
+    }
+  },
+  "uncertainty_note": "Tape +/-0.005m is a stated bound, not a Gaussian SD; annotation SD uses 1px Gaussian perturbations, excludes pose/calibration uncertainty"
+}

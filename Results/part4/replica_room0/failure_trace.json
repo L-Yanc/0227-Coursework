@@ -1,0 +1,19 @@
+{
+  "selection_rule": "Learned-depth run with largest scaled ATE exceeding baseline mean; then timestamp with largest positive local scaled-error difference against baseline run nearest baseline mean.",
+  "causality": "Association only; inspect RGB/prediction/map and tracking states before interpreting cause.",
+  "baseline_mean_ate_m": 0.00492052417080115,
+  "baseline_sd_m": 0.0007028220843978854,
+  "status": "candidate_requires_interpretation",
+  "learned_run": "replica_room0_pseudo_rgbd_every_r1_e14258ed2526497b",
+  "baseline_run": "replica_room0_mono_every_r1_014b886e4cddb962",
+  "frame_id": 1780,
+  "timestamp": 71.2,
+  "local_scaled_error_difference_m": 0.0476032150623618,
+  "exceeds_baseline_sd": true,
+  "scene_hazards": [
+    "blank walls",
+    "mirror",
+    "glass surfaces",
+    "motion blur"
+  ]
+}

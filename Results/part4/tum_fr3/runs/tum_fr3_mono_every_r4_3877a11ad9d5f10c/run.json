@@ -1,0 +1,25 @@
+{
+  "status": "complete",
+  "failure_reason": null,
+  "frames": 2488,
+  "trajectory_poses": 2458,
+  "map_observations": 101194,
+  "inference_calls_if_deployed": 0,
+  "cached_depth": false,
+  "part3_runtime": null,
+  "selected_method": null,
+  "temporal_consistency": {
+    "enabled": false,
+    "development_fraction": 0.5,
+    "min_samples": 30,
+    "min_relative_threshold": 0.05,
+    "mad_multiplier": 3.0
+  },
+  "elapsed_s": 69.48743983299937,
+  "mean_tracking_ms": 19.106264365294205,
+  "backend_quiescent": true,
+  "reference_inputs": false,
+  "policy": "every",
+  "scale_semantics": "arbitrary map units",
+  "subprocess_wall_s": 75.6526809160132
+}

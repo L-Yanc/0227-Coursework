@@ -1,0 +1,22 @@
+{
+  "method": "pseudo_rgbd",
+  "policy": "stride5",
+  "run_number": 4,
+  "features": "ORB2",
+  "backend": "cpp",
+  "playback_speed": 1.5,
+  "max_frames": null,
+  "selected": null,
+  "temporal": {
+    "enabled": false,
+    "development_fraction": 0.5,
+    "min_samples": 30,
+    "min_relative_threshold": 0.05,
+    "mad_multiplier": 3.0
+  },
+  "png_factor": 5000.0,
+  "environment": "indoor",
+  "prepare": "part4/work/living_room_recording2/prepare/60dea217fdb60775",
+  "out": "part4/work/living_room_recording2/slam/be463efb978c38b5",
+  "depth_path": "part4/work/living_room_recording2/depth/19a81ca1a297cfce"
+}

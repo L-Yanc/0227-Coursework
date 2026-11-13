@@ -1,0 +1,39 @@
+<!doctype html><html><meta charset="utf-8"><title>Wall marker centres</title>
+<style>body{font:16px system-ui;margin:24px;background:#f5f6f8;color:#172437}button,select{padding:9px;margin:5px}canvas{max-width:100%;height:auto;background:#ddd;cursor:crosshair}canvas:focus{outline:3px solid #356bd8;outline-offset:3px}#status{white-space:pre-wrap}main{max-width:1200px;margin:auto}</style>
+<main><h1>Wall marker centres</h1><p>Select a wall pair and endpoint, then click its precise centre. Click again to reposition it. After clicking the image, use <b>arrow keys for 1 image pixel</b>, or <b>Shift + arrow for 5 pixels</b>. The blue outline means keyboard adjustment is active.</p><p>Aim for <b>4–6 views per cross centre: 16–24 selections total</b> across the four crosses (minimum 3 each, 12 total). You do not need every frame. Choose sharp, well-separated camera positions with translation, keeping the same physical cross intersection as the target. Skip hidden or cropped crosses.</p>
+<p><b>Shortcuts:</b> <kbd>5</kbd> = wall_50, <kbd>1</kbd> = wall_100; <kbd>A</kbd> / <kbd>B</kbd> = endpoint; <kbd>S</kbd> = save; <kbd>Space</kbd> = next frame.</p>
+<label>Pair <select id="marker"></select></label><label>Endpoint <select id="endpoint"><option>a</option><option>b</option></select></label>
+<button id="prev">Previous</button><select id="frame"></select><button id="next">Next</button><button id="remove">Remove this click</button><button id="save">Save selections</button>
+<p id="status"></p><p id="coordinates" aria-live="polite"></p><canvas id="canvas" tabindex="0" aria-label="Marker image. Click to place the selected endpoint; arrow keys move it one image pixel, Shift and arrow move it five."></canvas><p id="counts"></p></main>
+<script>
+let d, selections=[],img=new Image();const $=s=>document.getElementById(s),cv=$('canvas'),ctx=cv.getContext('2d');
+function current(){return {image:$('frame').value,marker:$('marker').value,endpoint:$('endpoint').value}}
+function same(a,b){return a.image===b.image&&a.marker===b.marker&&a.endpoint===b.endpoint}
+function draw(){cv.width=img.naturalWidth;cv.height=img.naturalHeight;ctx.drawImage(img,0,0);for(const p of selections.filter(p=>p.image===$('frame').value)){ctx.strokeStyle=p.endpoint==='a'?'#ff4040':'#00ffbb';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(p.u-9,p.v);ctx.lineTo(p.u+9,p.v);ctx.moveTo(p.u,p.v-9);ctx.lineTo(p.u,p.v+9);ctx.stroke();if(same(p,current())){ctx.beginPath();ctx.arc(p.u,p.v,13,0,2*Math.PI);ctx.stroke()}ctx.font='18px sans-serif';ctx.fillStyle=ctx.strokeStyle;ctx.fillText(p.marker+'/'+p.endpoint,p.u+16,p.v-16)}$('counts').textContent=Object.entries(d.markers).flatMap(([m,ends])=>ends.map(e=>m+'/'+e+': '+selections.filter(p=>p.marker===m&&p.endpoint===e).length+' views')).join(' | ');const active=selections.find(p=>same(p,current()));$('coordinates').textContent=active?`${active.marker}/${active.endpoint}: x=${active.u.toFixed(2)}, y=${active.v.toFixed(2)} (image pixels)`:'Click the image to place this endpoint.'}
+function load(){img.src='/image?name='+encodeURIComponent($('frame').value);$('status').textContent='Unsaved edits remain local until Save. Coordinates use the full prepared image.'}
+img.onload=draw;
+const clamp=(value,max)=>Math.max(0,Math.min(max,value));
+cv.onclick=e=>{const r=cv.getBoundingClientRect(),p={...current(),u:clamp(Math.round((e.clientX-r.left)*cv.width/r.width),cv.width-1),v:clamp(Math.round((e.clientY-r.top)*cv.height/r.height),cv.height-1)};selections=selections.filter(q=>!same(q,p));selections.push(p);cv.focus({preventScroll:true});$('status').textContent='Unsaved changes. Click again or use arrows (1 px), Shift + arrows (5 px), then Save selections.';draw()};
+cv.onkeydown=e=>{const directions={ArrowLeft:[-1,0],ArrowRight:[1,0],ArrowUp:[0,-1],ArrowDown:[0,1]},delta=directions[e.key];if(!delta)return;e.preventDefault();const active=selections.find(p=>same(p,current()));if(!active){$('status').textContent='Click to place this endpoint before adjusting it.';return}const step=e.shiftKey?5:1;active.u=clamp(active.u+delta[0]*step,cv.width-1);active.v=clamp(active.v+delta[1]*step,cv.height-1);$('status').textContent='Unsaved changes. Press Save selections when finished.';draw()};
+$('remove').onclick=()=>{selections=selections.filter(q=>!same(q,current()));draw()};
+$('save').onclick=async()=>{const r=await fetch('/save',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({reference_key:d.reference_key,selections})});$('status').textContent=r.ok?'Saved. Run ./run-part4 reference to validate triangulation and scale.':await r.text()};
+$('prev').onclick=()=>{$('frame').selectedIndex=Math.max(0,$('frame').selectedIndex-1);load()};$('next').onclick=()=>{$('frame').selectedIndex=Math.min(d.candidates.length-1,$('frame').selectedIndex+1);load()};$('frame').onchange=load;$('marker').onchange=draw;$('endpoint').onchange=draw;
+document.addEventListener('keydown',e=>{
+  if(!d || e.ctrlKey || e.metaKey || e.altKey || e.isComposing)return;
+  const target=e.target;
+  if(target && (target.isContentEditable || /^(INPUT|TEXTAREA)$/.test(target.tagName)))return;
+  const key=e.key.toLowerCase();
+  if(!['1','5','a','b','s',' '].includes(key))return;
+  e.preventDefault();
+  if(e.repeat)return;
+  if(key==='s'){$('save').click();return}
+  if(key===' '){$('next').click();cv.focus({preventScroll:true});return}
+  if(key==='1' || key==='5'){
+    const marker=key==='5'?'wall_50':'wall_100';
+    if(!Object.hasOwn(d.markers,marker))return;
+    $('marker').value=marker;
+  }else $('endpoint').value=key;
+  draw();cv.focus({preventScroll:true});
+});
+fetch('/data').then(r=>r.json()).then(v=>{d=v;selections=d.saved.reference_key&&d.saved.reference_key!==d.reference_key?[]:d.saved.selections;for(const m of Object.keys(d.markers))$('marker').add(new Option(m,m));for(const f of d.candidates)$('frame').add(new Option(`${f.frame_id} — ${Number(f.timestamp).toFixed(2)}s`,f.image));load()});
+</script></html>
