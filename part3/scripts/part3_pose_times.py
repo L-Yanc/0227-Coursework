@@ -1,4 +1,4 @@
-# usage: python part3_pose_times.py RUNS_CSV TRAJ_DIR DATASET_DIR OUT_DIR
+
 import csv
 import glob
 import json
